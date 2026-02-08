@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X, Mail, User, Phone, Briefcase, Shield } from 'lucide-react';
 import { useStore } from '../lib/store';
-import { UserRole } from '../lib/types';
+import type { UserRole } from '../lib/types';
 
 interface InviteMemberModalProps {
     isOpen: boolean;
@@ -100,8 +100,8 @@ export function InviteMemberModal({ isOpen, onClose }: InviteMemberModalProps) {
                                 type="button"
                                 onClick={() => setRole('worker')}
                                 className={`p-3 rounded-xl border text-sm font-medium flex items-center justify-center gap-2 transition-all ${role === 'worker'
-                                        ? 'border-emerald-500 bg-emerald-50 text-emerald-700 ring-2 ring-emerald-200'
-                                        : 'border-slate-200 hover:bg-slate-50 text-slate-600'
+                                    ? 'border-emerald-500 bg-emerald-50 text-emerald-700 ring-2 ring-emerald-200'
+                                    : 'border-slate-200 hover:bg-slate-50 text-slate-600'
                                     }`}
                             >
                                 <Briefcase className="w-4 h-4" />
@@ -111,8 +111,8 @@ export function InviteMemberModal({ isOpen, onClose }: InviteMemberModalProps) {
                                 type="button"
                                 onClick={() => setRole('builder')}
                                 className={`p-3 rounded-xl border text-sm font-medium flex items-center justify-center gap-2 transition-all ${role === 'builder'
-                                        ? 'border-emerald-500 bg-emerald-50 text-emerald-700 ring-2 ring-emerald-200'
-                                        : 'border-slate-200 hover:bg-slate-50 text-slate-600'
+                                    ? 'border-emerald-500 bg-emerald-50 text-emerald-700 ring-2 ring-emerald-200'
+                                    : 'border-slate-200 hover:bg-slate-50 text-slate-600'
                                     }`}
                             >
                                 <Shield className="w-4 h-4" />

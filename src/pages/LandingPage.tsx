@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useStore } from '../lib/store';
 import { ArrowRight, Layout, Calendar, Users, FileText } from 'lucide-react';
 import { motion } from 'framer-motion';
+import dashboardPreview from '../assets/dashboard-preview.png';
 
 export function LandingPage() {
     const { currentUser } = useStore();
@@ -88,22 +89,11 @@ export function LandingPage() {
                     transition={{ duration: 0.7, delay: 0.3 }}
                     className="relative rounded-3xl overflow-hidden shadow-2xl shadow-navy-900/10 border border-slate-200 bg-slate-50 aspect-[16/9]"
                 >
-                    <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
-                        {/* Abstract UI representation */}
-                        <div className="w-full h-full p-8 grid grid-cols-4 gap-6 opacity-50 blur-[1px] scale-95 origin-top transform">
-                            <div className="col-span-1 bg-white rounded-2xl shadow-sm h-full"></div>
-                            <div className="col-span-3 space-y-6">
-                                <div className="h-32 bg-white rounded-2xl shadow-sm w-full"></div>
-                                <div className="grid grid-cols-2 gap-6 h-64">
-                                    <div className="bg-white rounded-2xl shadow-sm"></div>
-                                    <div className="bg-white rounded-2xl shadow-sm"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="absolute inset-0 flex items-center justify-center">
-                            <p className="text-slate-400 font-medium tracking-widest uppercase text-sm">Dashboard Preview</p>
-                        </div>
-                    </div>
+                    <img
+                        src={dashboardPreview}
+                        alt="MEITS Dashboard Preview"
+                        className="w-full h-full object-cover"
+                    />
                 </motion.div>
             </section>
 

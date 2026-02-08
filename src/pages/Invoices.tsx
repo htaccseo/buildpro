@@ -1,0 +1,275 @@
+import { useState } from 'react';
+import { useStore } from '../lib/store';
+import { Card } from '../components/ui/Card';
+import { Plus, ArrowUpRight, ArrowDownLeft, FileText, Clock, AlertCircle, Trash2 } from 'lucide-react';
+import { format } from 'date-fns';
+import { cn } from '../lib/utils';
+import type { Invoice } from '../lib/types';
+
+export function Invoices() {
+    const { invoices, addInvoice, updateInvoiceStatus, deleteInvoice } = useStore();
+    const [activeTab, setActiveTab] = useState<'sent' | 'received'>('sent');
+    const [isFormOpen, setIsFormOpen] = useState(false);
+
+    // Form State
+    const [clientName, setClientName] = useState('');
+    const [amount, setAmount] = useState('');
+    const [dueDate, setDueDate] = useState('');
+    const [issueDate, setIssueDate] = useState(new Date().toISOString().split('T')[0]);
+    const [description, setDescription] = useState('');
+    const [invoiceType, setInvoiceType] = useState<'sent' | 'received'>('sent');
+
+    const filteredInvoices = invoices.filter(inv => inv.type === activeTab);
+
+    // Calculate totals
+    const totalAmount = filteredInvoices.reduce((sum, inv) => sum + inv.amount, 0);
+    const pendingAmount = filteredInvoices.filter(inv => inv.status === 'pending' || inv.status === 'overdue').reduce((sum, inv) => sum + inv.amount, 0);
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        const newInvoice: Invoice = {
+            id: Math.random().toString(36).substr(2, 9),
+            type: invoiceType,
+            amount: parseFloat(amount),
+            clientName,
+            dueDate,
+            description,
+            date: issueDate, // Use user selected date
+            status: 'pending'
+        };
+        addInvoice(newInvoice);
+        setIsFormOpen(false);
+        resetForm();
+    };
+
+    const resetForm = () => {
+        setClientName('');
+        setAmount('');
+        setDueDate('');
+        setIssueDate(new Date().toISOString().split('T')[0]);
+        setDescription('');
+    };
+
+    const getStatusColor = (status: Invoice['status']) => {
+        switch (status) {
+            case 'paid': return 'bg-emerald-100 text-emerald-700';
+            case 'pending': return 'bg-amber-100 text-amber-700';
+            case 'overdue': return 'bg-rose-100 text-rose-700';
+            default: return 'bg-slate-100 text-slate-700';
+        }
+    };
+
+    return (
+        <div className="space-y-8 animate-in fade-in duration-500">
+            {/* ... rest of the component ... */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold text-navy-900">Invoices</h1>
+                    <p className="text-text-muted mt-1">Manage your receivables and payables.</p>
+                </div>
+                <button
+                    onClick={() => {
+                        setInvoiceType(activeTab);
+                        setIsFormOpen(true);
+                    }}
+                    className="flex items-center gap-2 px-6 py-3 bg-navy-900 text-white rounded-xl hover:bg-navy-800 transition-colors shadow-lg shadow-navy-900/20 font-medium"
+                >
+                    <Plus className="w-5 h-5" />
+                    New Invoice
+                </button>
+            </div>
+
+            {/* ... Summary Cards ... */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card className={cn("p-6 border-none shadow-sm text-white",
+                    activeTab === 'sent'
+                        ? "bg-gradient-to-br from-emerald-500 to-teal-600"
+                        : "bg-gradient-to-br from-rose-500 to-orange-600"
+                )}>
+                    <div className="flex items-center gap-4 mb-4">
+                        <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                            {activeTab === 'sent' ? <ArrowUpRight className="w-6 h-6" /> : <ArrowDownLeft className="w-6 h-6" />}
+                        </div>
+                        <div>
+                            <p className="text-white/80 text-sm font-medium">{activeTab === 'sent' ? 'Total Receivables' : 'Total Payables'}</p>
+                            <h3 className="text-3xl font-bold">${totalAmount.toLocaleString()}</h3>
+                        </div>
+                    </div>
+                    <div className="flex items-center justify-between text-sm pt-4 border-t border-white/20">
+                        <span className="text-white/80">Pending</span>
+                        <span className="font-bold text-white">${pendingAmount.toLocaleString()}</span>
+                    </div>
+                </Card>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-3 space-y-6">
+                    {/* Tabs */}
+                    <div className="flex gap-4 border-b border-slate-100 pb-4">
+                        <button
+                            onClick={() => setActiveTab('sent')}
+                            className={cn("px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2", activeTab === 'sent' ? "bg-emerald-50 text-emerald-600" : "text-text-muted hover:text-navy-900 hover:bg-slate-50")}
+                        >
+                            <ArrowUpRight className="w-4 h-4" />
+                            Invoices Sent (Receivables)
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('received')}
+                            className={cn("px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2", activeTab === 'received' ? "bg-emerald-50 text-emerald-600" : "text-text-muted hover:text-navy-900 hover:bg-slate-50")}
+                        >
+                            <ArrowDownLeft className="w-4 h-4" />
+                            Bills to Pay (Payables)
+                        </button>
+                    </div>
+
+                    {/* Invoice List */}
+                    <div className="space-y-4">
+                        {filteredInvoices.length === 0 ? (
+                            <div className="text-center py-12 bg-white rounded-2xl border border-slate-100">
+                                <FileText className="w-12 h-12 text-slate-200 mx-auto mb-3" />
+                                <p className="text-text-muted">No invoices found.</p>
+                            </div>
+                        ) : (
+                            filteredInvoices.map(invoice => (
+                                <Card key={invoice.id} className="p-5 border-none shadow-sm hover:shadow-md transition-shadow flex flex-col md:flex-row items-start md:items-center gap-4">
+                                    <div className={cn("p-3 rounded-lg shrink-0", activeTab === 'sent' ? "bg-emerald-50 text-emerald-600" : "bg-indigo-50 text-indigo-600")}>
+                                        <FileText className="w-6 h-6" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center gap-3 mb-1">
+                                            <h3 className="text-lg font-bold text-navy-900 truncate">{invoice.clientName}</h3>
+                                            <span className={cn("px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide", getStatusColor(invoice.status))}>
+                                                {invoice.status}
+                                            </span>
+                                        </div>
+                                        <p className="text-text-muted text-sm">{invoice.description}</p>
+                                        <div className="flex items-center gap-4 mt-2 text-xs text-text-muted font-medium">
+                                            <span className="flex items-center gap-1">
+                                                <Clock className="w-3.5 h-3.5" />
+                                                Due {format(new Date(invoice.dueDate), 'MMM d, yyyy')}
+                                            </span>
+                                            <span className="flex items-center gap-1">
+                                                <Clock className="w-3.5 h-3.5" />
+                                                Issued {format(new Date(invoice.date), 'MMM d, yyyy')}
+                                            </span>
+                                            {new Date(invoice.dueDate) < new Date() && invoice.status !== 'paid' && (
+                                                <span className="text-rose-500 flex items-center gap-1">
+                                                    <AlertCircle className="w-3.5 h-3.5" />
+                                                    Overdue
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-row md:flex-col items-center md:items-end gap-4 md:gap-2 w-full md:w-auto justify-between md:justify-end">
+                                        <span className="text-xl font-bold text-navy-900">${invoice.amount.toLocaleString()}</span>
+                                        <div className="flex gap-2">
+                                            {invoice.status !== 'paid' ? (
+                                                <button
+                                                    onClick={() => updateInvoiceStatus(invoice.id, 'paid')}
+                                                    className="px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-lg text-xs font-bold hover:bg-emerald-100 transition-colors"
+                                                >
+                                                    Mark Paid
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    onClick={() => updateInvoiceStatus(invoice.id, 'pending')}
+                                                    className="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg text-xs font-bold hover:bg-slate-200 transition-colors"
+                                                >
+                                                    Mark Unpaid
+                                                </button>
+                                            )}
+                                            <button
+                                                onClick={() => deleteInvoice(invoice.id)}
+                                                className="p-1.5 text-slate-400 hover:text-rose-500 transition-colors"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </Card>
+                            ))
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* New Invoice Modal */}
+            {isFormOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl animate-in zoom-in-95 duration-200">
+                        <h3 className="text-xl font-bold text-navy-900 mb-4">{activeTab === 'sent' ? 'New Invoice' : 'New Bill'}</h3>
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-navy-900 mb-1.5">{activeTab === 'sent' ? 'Client Name' : 'Payee Name'}</label>
+                                <input
+                                    type="text"
+                                    value={clientName}
+                                    onChange={(e) => setClientName(e.target.value)}
+                                    className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-navy-900 mb-1.5">Description</label>
+                                <input
+                                    type="text"
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                    className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none"
+                                    required
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-navy-900 mb-1.5">Amount ($)</label>
+                                    <input
+                                        type="number"
+                                        value={amount}
+                                        onChange={(e) => setAmount(e.target.value)}
+                                        className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-navy-900 mb-1.5">Due Date</label>
+                                    <input
+                                        type="date"
+                                        value={dueDate}
+                                        onChange={(e) => setDueDate(e.target.value)}
+                                        className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-navy-900 mb-1.5">Issue Date</label>
+                                <input
+                                    type="date"
+                                    value={issueDate}
+                                    onChange={(e) => setIssueDate(e.target.value)}
+                                    className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none"
+                                    required
+                                />
+                            </div>
+                            <div className="flex gap-3 pt-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsFormOpen(false)}
+                                    className="flex-1 px-4 py-2 rounded-xl border border-slate-200 text-navy-900 hover:bg-slate-50"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="flex-1 px-4 py-2 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-500/20"
+                                >
+                                    Create Check
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}

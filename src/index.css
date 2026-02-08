@@ -1,0 +1,44 @@
+@import "tailwindcss";
+@import "@fontsource/inter";
+
+@theme {
+  --font-sans: "Inter", system-ui, sans-serif;
+
+  /* Brand Colors */
+  --color-navy-900: #020617;
+  /* Darker, richer slate/black */
+  --color-navy-800: #0f172a;
+  --color-navy-700: #1e293b;
+
+  --color-emerald-500: #22c55e;
+  /* Vibrant Green (Tailwind Green-500) */
+  --color-emerald-600: #16a34a;
+
+  /* Semantic Colors */
+  --color-primary: var(--color-navy-900);
+  --color-accent: var(--color-emerald-500);
+
+  --color-bg-app: #FFFFFF;
+  /* Clean White */
+  --color-bg-card: #FFFFFF;
+  --color-text-main: #020617;
+  /* Slate 950 */
+  --color-text-muted: #64748B;
+  /* Slate 500 */
+}
+
+:root {
+  font-family: var(--font-sans);
+  color: var(--color-text-main);
+  background-color: var(--color-bg-app);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}

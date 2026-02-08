@@ -10,6 +10,7 @@ import { Team } from './pages/Team';
 import { Login } from './pages/Login';
 import { Settings } from './pages/Settings';
 import { useStore } from './lib/store';
+import { LandingPage } from './pages/LandingPage';
 
 function AuthGuard({ children }: { children: React.ReactNode }) {
   const { currentUser } = useStore();
@@ -20,13 +21,14 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route
           path="/*"
           element={
             <AuthGuard>
               <Routes>
-                <Route path="/" element={<Dashboard />} />
+                <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/projects" element={<Projects />} />
                 <Route path="/projects/:id" element={<ProjectDetails />} />
                 <Route path="/schedule" element={<Schedule />} />

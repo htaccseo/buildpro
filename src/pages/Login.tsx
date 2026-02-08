@@ -44,7 +44,7 @@ export function Login() {
                 login(email);
             }
             setIsLoading(false);
-            navigate('/');
+            navigate('/dashboard');
         }, 1000);
     };
 

@@ -29,7 +29,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     };
 
     const navItems = [
-        { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
+        { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
         { icon: Briefcase, label: 'Projects', path: '/projects' },
         { icon: Calendar, label: 'Schedule', path: '/schedule' },
         { icon: FileText, label: 'Invoices', path: '/invoices' },

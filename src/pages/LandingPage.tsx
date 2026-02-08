@@ -87,12 +87,12 @@ export function LandingPage() {
                     initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.7, delay: 0.3 }}
-                    className="relative rounded-3xl overflow-hidden shadow-2xl shadow-navy-900/10 border border-slate-200 bg-slate-50 aspect-[16/9]"
+                    className="relative flex justify-center"
                 >
                     <img
                         src={dashboardPreview}
                         alt="MEITS Dashboard Preview"
-                        className="w-full h-full object-cover"
+                        className="w-full max-w-5xl h-auto object-contain"
                     />
                 </motion.div>
             </section>

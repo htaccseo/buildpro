@@ -5,7 +5,7 @@ import { cn } from '../lib/utils';
 import { useStore } from '../lib/store';
 
 export function Layout({ children }: { children: React.ReactNode }) {
-    const { notifications } = useStore();
+    const { notifications, currentUser, currentOrganization } = useStore();
     const location = useLocation();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
@@ -32,9 +32,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
         { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
         { icon: Briefcase, label: 'Projects', path: '/projects' },
         { icon: Calendar, label: 'Schedule', path: '/schedule' },
-        { icon: FileText, label: 'Invoices', path: '/invoices', hidden: !useStore.getState().currentUser?.isAdmin && useStore.getState().currentUser?.role !== 'builder' },
+        { icon: FileText, label: 'Invoices', path: '/invoices', hidden: !currentUser?.isAdmin && currentUser?.role !== 'builder' },
         { icon: Users, label: 'Team', path: '/team' },
     ].filter(item => !item.hidden);
+
+    // Get initials
+    const initials = currentUser?.name
+        ? currentUser.name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()
+        : 'U';
 
     return (
         <div className="flex min-h-screen bg-bg-app font-sans">
@@ -48,7 +53,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                         <div className="w-6 h-6 rounded-md bg-emerald-500 flex items-center justify-center text-white">
                             <Hexagon className="w-4 h-4 fill-current" />
                         </div>
-                        <span className="text-lg font-bold text-navy-900">meits</span>
+                        <span className="text-lg font-bold text-navy-900">{currentOrganization?.name || 'BuildPro'}</span>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -79,8 +84,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
                         <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-white">
                             <Hexagon className="w-5 h-5 fill-current" />
                         </div>
-                        <h1 className="text-xl font-bold tracking-tight text-navy-900">
-                            meits
+                        <h1 className="text-xl font-bold tracking-tight text-navy-900 truncate max-w-[150px]" title={currentOrganization?.name}>
+                            {currentOrganization?.name || 'BuildPro'}
                         </h1>
                     </div>
                     <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden text-slate-400" aria-label="Close menu">
@@ -127,10 +132,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
                         <span>Settings</span>
                     </Link>
                     <div className="mt-4 flex items-center gap-3 px-4 py-2 rounded-xl bg-slate-50">
-                        <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-xs border border-emerald-200">JB</div>
+                        <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-xs border border-emerald-200">
+                            {initials}
+                        </div>
                         <div className="flex-1 overflow-hidden">
-                            <p className="text-sm font-medium truncate text-navy-900">John Builder</p>
-                            <p className="text-xs text-slate-500 truncate">Admin</p>
+                            <p className="text-sm font-medium truncate text-navy-900">{currentUser?.name || 'Guest'}</p>
+                            <p className="text-xs text-slate-500 truncate capitalize">{currentUser?.role || 'Visitor'}</p>
                         </div>
                     </div>
                 </div>

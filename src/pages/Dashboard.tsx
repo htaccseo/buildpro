@@ -74,11 +74,14 @@ export function Dashboard() {
         setMatterNote('');
     };
 
+    // Get current user for greeting
+    const { currentUser } = useStore();
+
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
             {/* Welcome Section */}
             <div>
-                <h1 className="text-3xl font-bold text-navy-900 mb-2">Welcome back, John</h1>
+                <h1 className="text-3xl font-bold text-navy-900 mb-2">Welcome back, {currentUser?.name?.split(' ')[0] || 'Builder'}</h1>
                 <p className="text-text-muted">Here's what's happening across your projects today.</p>
             </div>
 

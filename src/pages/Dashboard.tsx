@@ -29,7 +29,7 @@ export function Dashboard() {
     // Use Store actions (actions are safe to use from store directly as they usually just dispatch)
     // Actually, our store actions need currentOrgId from store state, which is fine.
     // The previous code destructured methods from useStore. Let's keep doing that for actions.
-    const { toggleReminder, addOtherMatter, deleteOtherMatter, currentOrganization } = useStore();
+    const { toggleReminder, addOtherMatter, deleteOtherMatter } = useStore();
 
     const allTasks = projects.flatMap(p => p.tasks);
 

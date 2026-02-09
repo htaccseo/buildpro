@@ -12,7 +12,6 @@ import type { Reminder } from '../lib/types';
 
 export function Schedule() {
     const navigate = useNavigate();
-    const navigate = useNavigate();
     // Use Clean Data Hook (RLS)
     const { projects, meetings, reminders } = useOrganizationData();
     // Store actions

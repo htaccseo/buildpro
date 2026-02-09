@@ -10,7 +10,7 @@ interface InviteMemberModalProps {
 
 export function InviteMemberModal({ isOpen, onClose }: InviteMemberModalProps) {
     const [inviteLink, setInviteLink] = useState('');
-    const { addUser, inviteUser, currentUser } = useStore();
+    const { inviteUser } = useStore();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [role, setRole] = useState<UserRole>('worker');

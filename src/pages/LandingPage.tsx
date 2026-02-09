@@ -191,7 +191,7 @@ export function LandingPage() {
                             <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center text-white">
                                 <Hexagon className="w-5 h-5 fill-current" />
                             </div>
-                            <span className="font-bold text-navy-900 text-xl">meits</span>
+                            <span className="font-extrabold text-navy-900 text-xl">meits</span>
                         </div>
                         <div className="flex gap-8 text-slate-500 text-sm font-medium">
                             <a href="#" className="hover:text-emerald-600 transition-colors">Features</a>

@@ -3,7 +3,7 @@ import { addDays, format } from 'date-fns';
 
 export const MOCK_ORGANIZATION: Organization = {
     id: 'org1',
-    name: 'BuildPro Constructions',
+    name: 'MEITS Constructions',
     createdAt: new Date().toISOString(),
     status: 'active',
     subscriptionStatus: 'active'
@@ -12,11 +12,11 @@ export const MOCK_ORGANIZATION: Organization = {
 const ORG_ID = MOCK_ORGANIZATION.id;
 
 export const MOCK_USERS: User[] = [
-    { id: 'u1', organizationId: ORG_ID, name: 'John Builder', email: 'john@buildpro.com', role: 'builder', company: 'BuildPro Constructions', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=256&h=256&fit=crop&crop=faces' },
-    { id: 'u2', organizationId: ORG_ID, name: 'Mike Carpenter', email: 'mike@buildpro.com', role: 'worker', company: 'BuildPro Constructions', avatar: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=256&h=256&fit=crop&crop=faces' },
-    { id: 'u3', organizationId: ORG_ID, name: 'Sarah Electrician', email: 'sarah@buildpro.com', role: 'worker', company: 'BuildPro Constructions', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=256&h=256&fit=crop&crop=faces' },
-    { id: 'u4', organizationId: ORG_ID, name: 'Dave Plumber', email: 'dave@buildpro.com', role: 'worker', company: 'BuildPro Constructions', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=256&h=256&fit=crop&crop=faces' },
-    { id: 'u_admin', organizationId: ORG_ID, name: 'Super Admin', email: 'me@example.com', role: 'builder', company: 'BuildPro Constructions', avatar: 'https://ui-avatars.com/api/?name=Super+Admin&background=000&color=fff', isAdmin: true, isSuperAdmin: true },
+    { id: 'u1', organizationId: ORG_ID, name: 'John Builder', email: 'john@meits.com', role: 'builder', company: 'MEITS Constructions', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=256&h=256&fit=crop&crop=faces' },
+    { id: 'u2', organizationId: ORG_ID, name: 'Mike Carpenter', email: 'mike@meits.com', role: 'worker', company: 'MEITS Constructions', avatar: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=256&h=256&fit=crop&crop=faces' },
+    { id: 'u3', organizationId: ORG_ID, name: 'Sarah Electrician', email: 'sarah@meits.com', role: 'worker', company: 'MEITS Constructions', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=256&h=256&fit=crop&crop=faces' },
+    { id: 'u4', organizationId: ORG_ID, name: 'Dave Plumber', email: 'dave@meits.com', role: 'worker', company: 'MEITS Constructions', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=256&h=256&fit=crop&crop=faces' },
+    { id: 'u_admin', organizationId: ORG_ID, name: 'Super Admin', email: 'me@example.com', role: 'builder', company: 'MEITS Constructions', avatar: 'https://ui-avatars.com/api/?name=Super+Admin&background=000&color=fff', isAdmin: true, isSuperAdmin: true },
 ];
 
 export const MOCK_PROJECTS: Project[] = [

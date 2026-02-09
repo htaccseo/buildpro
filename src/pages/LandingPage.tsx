@@ -30,7 +30,7 @@ export function LandingPage() {
                         <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white shadow-emerald-500/20 shadow-lg">
                             <Hexagon className="w-6 h-6 fill-current" />
                         </div>
-                        <span className="text-2xl font-bold text-navy-900 tracking-tight">BuildPro</span>
+                        <span className="text-2xl font-bold text-navy-900 tracking-tight">MEITS</span>
                     </div>
 
                     <div className="flex items-center gap-4">
@@ -111,7 +111,7 @@ export function LandingPage() {
                         <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl shadow-navy-900/10 border border-slate-200/60 bg-white">
                             <img
                                 src={dashboardPreview}
-                                alt="BuildPro Dashboard Preview"
+                                alt="MEITS Dashboard Preview"
                                 className="w-full h-auto object-cover"
                             />
 
@@ -170,7 +170,7 @@ export function LandingPage() {
                 <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
                     <h2 className="text-4xl md:text-5xl font-bold mb-8 tracking-tight">Ready to simplify your workflow?</h2>
                     <p className="text-navy-200 text-lg mb-10 max-w-2xl mx-auto">
-                        Join thousands of small builders who are managing their projects with BuildPro.
+                        Join thousands of small builders who are managing their projects with MEITS.
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <button
@@ -191,7 +191,7 @@ export function LandingPage() {
                             <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center text-white">
                                 <Hexagon className="w-5 h-5 fill-current" />
                             </div>
-                            <span className="font-bold text-navy-900 text-xl">BuildPro</span>
+                            <span className="font-bold text-navy-900 text-xl">MEITS</span>
                         </div>
                         <div className="flex gap-8 text-slate-500 text-sm font-medium">
                             <a href="#" className="hover:text-emerald-600 transition-colors">Features</a>
@@ -201,7 +201,7 @@ export function LandingPage() {
                         </div>
                     </div>
                     <div className="border-t border-slate-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-400 text-sm">
-                        <p>© 2026 BuildPro. All rights reserved.</p>
+                        <p>© 2026 MEITS. All rights reserved.</p>
                         <div className="flex gap-4">
                             <a href="#" className="hover:text-slate-600">Privacy Policy</a>
                             <a href="#" className="hover:text-slate-600">Terms of Service</a>

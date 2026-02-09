@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-// Force rebuild: 2026-02-09T19:25
+// Force rebuild: 2026-02-09T19:35 - Fixed ArrowRight build error
 import { useStore } from '../lib/store';
 import { Layout, Calendar, FileText, Hexagon, CheckCircle2 } from 'lucide-react';
 import { motion } from 'framer-motion';

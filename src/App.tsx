@@ -1,4 +1,5 @@
 import React from 'react';
+// Force rebuild: 2026-02-09T11:40
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { Dashboard } from './pages/Dashboard';

@@ -48,8 +48,10 @@ export function Login({ initialMode = 'login' }: { initialMode?: 'login' | 'sign
                     role,
                     organizationName: company // Also used as Org Name
                 });
+                localStorage.setItem('meits_user_email', signupEmail);
             } else {
                 login(email);
+                localStorage.setItem('meits_user_email', email);
             }
             setIsLoading(false);
             navigate('/dashboard');

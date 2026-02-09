@@ -23,6 +23,15 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
 }
 
 function App() {
+  const { fetchData } = useStore();
+
+  React.useEffect(() => {
+    const savedEmail = localStorage.getItem('meits_user_email');
+    if (savedEmail) {
+      fetchData(savedEmail);
+    }
+  }, []);
+
   return (
     <BrowserRouter>
       <Routes>

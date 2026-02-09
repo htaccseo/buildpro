@@ -5,5 +5,12 @@
         "directory": "./dist",
         "binding": "ASSETS"
     },
-    "main": "src/worker.ts"
+    "main": "src/worker.ts",
+    "d1_databases": [
+        {
+            "binding": "DB",
+            "database_name": "meits-db",
+            "database_id": "PLACEHOLDER_ID"
+        }
+    ]
 }

@@ -113,26 +113,40 @@ router.get('/api/data', async (request: Request, env: Env) => {
 
 // POST /api/signup
 router.post('/api/signup', async (request, env: Env) => {
+    const logs: string[] = [];
+    logs.push('Start /api/signup');
+
     try {
         const data = await request.json();
+        logs.push(`Payload received: ${JSON.stringify(data)}`);
+
         const { name, email, password, company, role, phone } = data;
 
         const orgId = generateUUID();
         const userId = generateUUID();
+        logs.push(`Generated IDs: Org=${orgId}, User=${userId}`);
 
         // Create Organization
+        logs.push(`Inserting Org: ${company}`);
         await env.DB.prepare(
             'INSERT INTO organizations (id, name) VALUES (?, ?)'
-        ).bind(orgId, company).run();
+        ).bind(orgId, company || null).run();
+        logs.push('Org Inserted');
 
         // Create User
+        logs.push(`Inserting User: ${email}, Role: ${role}`);
         await env.DB.prepare(
             'INSERT INTO users (id, organization_id, name, email, role, company, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?)'
-        ).bind(userId, orgId, name, email, role, company, 1).run();
+        ).bind(userId, orgId, name || null, email || null, role || null, company || null, 1).run();
+        logs.push('User Inserted');
 
         return Response.json({ success: true, userId, orgId });
     } catch (e: any) {
-        return new Response(`Signup Error: ${e.message}`, { status: 500 });
+        return Response.json({
+            message: `Signup Error: ${e.message}`,
+            stack: e.stack,
+            logs: logs
+        }, { status: 500 });
     }
 });
 

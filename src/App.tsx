@@ -13,6 +13,9 @@ import { Settings } from './pages/Settings';
 import { useStore } from './lib/store';
 import { LandingPage } from './pages/LandingPage';
 
+import { SuperAdminDashboard } from './pages/SuperAdminDashboard';
+import { SuperAdminRoute } from './components/SuperAdminRoute';
+
 function AuthGuard({ children }: { children: React.ReactNode }) {
   const { currentUser } = useStore();
   return currentUser ? <Layout>{children}</Layout> : <Navigate to="/login" replace />;
@@ -24,6 +27,16 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
+        <Route
+          path="/admin"
+          element={
+            <SuperAdminRoute>
+              <Layout>
+                <SuperAdminDashboard />
+              </Layout>
+            </SuperAdminRoute>
+          }
+        />
         <Route
           path="/*"
           element={

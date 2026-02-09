@@ -17,6 +17,7 @@ export interface User {
     company?: string;
     password?: string;
     isAdmin?: boolean;
+    isSuperAdmin?: boolean;
 }
 
 export interface Task {

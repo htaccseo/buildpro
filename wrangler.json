@@ -2,6 +2,8 @@
     "name": "buildpro",
     "compatibility_date": "2024-02-08",
     "assets": {
-        "directory": "./dist"
-    }
+        "directory": "./dist",
+        "binding": "ASSETS"
+    },
+    "main": "src/worker.ts"
 }

@@ -51,7 +51,7 @@ export function LandingPage() {
             </header>
 
             {/* Hero Section */}
-            <section className="pt-32 pb-20 lg:pt-48 lg:pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden">
+            <section className="pt-32 pb-20 lg:pt-48 lg:pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
                 <div className="grid lg:grid-cols-2 gap-16 items-center">
                     {/* Left Column: Text */}
                     <div className="text-left space-y-8 max-w-2xl">
@@ -106,7 +106,7 @@ export function LandingPage() {
                         initial={{ opacity: 0, x: 40, scale: 0.95 }}
                         animate={{ opacity: 1, x: 0, scale: 1 }}
                         transition={{ duration: 0.8, delay: 0.3 }}
-                        className="relative"
+                        className="relative pl-6 pb-6"
                     >
                         <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl shadow-navy-900/10 border border-slate-200/60 bg-white">
                             <img

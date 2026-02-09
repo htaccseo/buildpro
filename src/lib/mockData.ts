@@ -4,7 +4,9 @@ import { addDays, format } from 'date-fns';
 export const MOCK_ORGANIZATION: Organization = {
     id: 'org1',
     name: 'BuildPro Constructions',
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
+    status: 'active',
+    subscriptionStatus: 'active'
 };
 
 const ORG_ID = MOCK_ORGANIZATION.id;

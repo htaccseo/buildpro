@@ -2,6 +2,8 @@ export interface Organization {
     id: string;
     name: string;
     createdAt: string;
+    status: 'active' | 'suspended';
+    subscriptionStatus: 'active' | 'trial' | 'past_due' | 'cancelled';
 }
 
 export type UserRole = 'builder' | 'worker';

@@ -20,6 +20,10 @@ interface AppState {
     currentOrganization: Organization | null;
     currentUser: User | null;
 
+    // Organization Actions
+    deleteOrganization: (id: string) => void;
+    updateOrganizationStatus: (id: string, status: 'active' | 'suspended') => void;
+
     // Actions
     login: (email: string) => void;
     logout: () => void;
@@ -98,21 +102,6 @@ export const useStore = create<AppState>((set, get) => ({
         let orgId = '';
         let newOrg: Organization | undefined;
 
-        // Check if joining existing org (passed via hidden field or special logic)
-        // For simplicity in this demo, if organizationName matches an ID format or we have a way to know, we join.
-        // BUT, looking at the signature, we might need to adjust it or pass orgId separately.
-        // Let's assume if organizationName starts with 'org_', it's an ID. 
-        // OR better: we update the component to pass existingOrgId if present.
-        // Actually, let's look at how we'll call it from Login.tsx. 
-        // We can overload organizationName to be the ID if it matches an existing one? 
-        // No, cleaner to change the signature? 
-        // Let's keep signature but infer: if organizationName is empty, we might be joining?
-        // Wait, the user prompt said "Invite flow".
-        // Let's add `organizationId` to the signup payload optionally.
-
-        // RE-READING signature: signup: (user: Partial<User> & { organizationName: string }) => void;
-        // I will change implementation to check if organizationName matches an existing ID first.
-
         const existingOrg = get().organizations.find(o => o.id === organizationName); // simplistic check
 
         if (existingOrg) {
@@ -122,7 +111,9 @@ export const useStore = create<AppState>((set, get) => ({
             newOrg = {
                 id: Math.random().toString(36).substr(2, 9),
                 name: organizationName,
-                createdAt: new Date().toISOString()
+                createdAt: new Date().toISOString(),
+                status: 'active',
+                subscriptionStatus: 'trial'
             };
             orgId = newOrg.id;
         }
@@ -142,6 +133,17 @@ export const useStore = create<AppState>((set, get) => ({
             currentOrganization: existingOrg || newOrg!
         }));
     },
+
+    deleteOrganization: (id) => set((state) => ({
+        organizations: state.organizations.filter(o => o.id !== id),
+        // Cascade delete users and data related to this org if needed, but for now simple removal
+        users: state.users.filter(u => u.organizationId !== id),
+        projects: state.projects.filter(p => p.organizationId !== id)
+    })),
+
+    updateOrganizationStatus: (id, status) => set((state) => ({
+        organizations: state.organizations.map(o => o.id === id ? { ...o, status } : o)
+    })),
 
     addUser: (user) => {
         const currentOrgId = get().currentOrganization?.id;

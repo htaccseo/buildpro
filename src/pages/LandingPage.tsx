@@ -106,7 +106,7 @@ export function LandingPage() {
                         initial={{ opacity: 0, x: 40, scale: 0.95 }}
                         animate={{ opacity: 1, x: 0, scale: 1 }}
                         transition={{ duration: 0.8, delay: 0.3 }}
-                        className="relative pl-6 pb-6"
+                        className="relative"
                     >
                         <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl shadow-navy-900/10 border border-slate-200/60 bg-white">
                             <img
@@ -115,19 +115,7 @@ export function LandingPage() {
                                 className="w-full h-auto object-cover"
                             />
 
-                            {/* Floating Card Element - Minimal Stats */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 1, duration: 0.6 }}
-                                className="absolute -bottom-6 -left-6 bg-white p-6 rounded-2xl shadow-xl shadow-navy-900/10 border border-slate-100 max-w-[200px] hidden md:block"
-                            >
-                                <div className="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-2">Active Projects</div>
-                                <div className="text-4xl font-bold text-navy-900">12</div>
-                                <div className="w-full bg-slate-100 h-1.5 rounded-full mt-4 overflow-hidden">
-                                    <div className="bg-emerald-500 h-full w-[75%] rounded-full" />
-                                </div>
-                            </motion.div>
+
                         </div>
 
                         {/* Decorative background blob */}

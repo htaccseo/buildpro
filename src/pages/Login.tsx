@@ -7,6 +7,7 @@ import type { UserRole } from '../lib/types';
 export function Login({ initialMode = 'login' }: { initialMode?: 'login' | 'signup' }) {
     const navigate = useNavigate();
     const { login, signup } = useStore();
+
     // URL Params for Invite Flow
     const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
     const inviteOrgId = searchParams.get('orgId');
@@ -16,6 +17,7 @@ export function Login({ initialMode = 'login' }: { initialMode?: 'login' | 'sign
     // Login State
     const [email, setEmail] = useState('john@meits.com');
     const [password, setPassword] = useState('password');
+    const [error, setError] = useState<string | null>(null);
 
     // Sign Up State
     const [name, setName] = useState('');
@@ -30,32 +32,48 @@ export function Login({ initialMode = 'login' }: { initialMode?: 'login' | 'sign
 
     const [isLoading, setIsLoading] = useState(false);
 
-
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
+        setError(null);
 
-        // Simulate API call
-        setTimeout(() => {
+        try {
             if (isSignUp) {
-                signup({
+                await signup({
                     name,
                     email: signupEmail,
                     password: signupPassword,
                     phone,
-                    company, // Kept as user property
+                    company,
                     role,
-                    organizationName: company // Also used as Org Name
+                    organizationName: company
                 });
-                localStorage.setItem('meits_user_email', signupEmail);
+
+                // Check if signup succeeded (user should be set in store)
+                const state = useStore.getState();
+                if (state.currentUser) {
+                    localStorage.setItem('meits_user_email', signupEmail);
+                    navigate('/dashboard');
+                } else {
+                    setError(state.error || 'Signup failed. Please try again.');
+                }
             } else {
-                login(email);
-                localStorage.setItem('meits_user_email', email);
+                await login(email);
+
+                // Check if login succeeded
+                const state = useStore.getState();
+                if (state.currentUser) {
+                    localStorage.setItem('meits_user_email', email);
+                    navigate('/dashboard');
+                } else {
+                    setError(state.error || 'Login failed. Please check your credentials.');
+                }
             }
+        } catch (err: any) {
+            setError(err.message || 'An unexpected error occurred.');
+        } finally {
             setIsLoading(false);
-            navigate('/dashboard');
-        }, 1000);
+        }
     };
 
     return (
@@ -70,6 +88,12 @@ export function Login({ initialMode = 'login' }: { initialMode?: 'login' | 'sign
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
+                    {error && (
+                        <div className="p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-100">
+                            {error}
+                        </div>
+                    )}
+
                     {isSignUp && (
                         <>
                             <div>

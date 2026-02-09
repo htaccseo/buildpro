@@ -1,16 +1,16 @@
 {
-    "name": "meits",
-    "compatibility_date": "2024-02-08",
-    "assets": {
-        "directory": "./dist",
-        "binding": "ASSETS"
-    },
-    "main": "src/worker.ts",
-    "d1_databases": [
-        {
-            "binding": "DB",
-            "database_name": "meits-db",
-            "database_id": "PLACEHOLDER_ID"
-        }
-    ]
+	"name": "meits",
+	"compatibility_date": "2024-02-08",
+	"assets": {
+		"directory": "./dist",
+		"binding": "ASSETS"
+	},
+	"main": "src/worker.ts",
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "meits-db",
+			"database_id": "90e43581-0495-4974-a4ed-dd7736f77b13"
+		}
+	]
 }

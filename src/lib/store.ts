@@ -66,253 +66,274 @@ interface AppState {
     reset: () => void;
 }
 
-export const useStore = create<AppState>((set, get) => ({
-    projects: MOCK_PROJECTS,
-    users: MOCK_USERS,
-    meetings: MOCK_MEETINGS,
-    notifications: MOCK_NOTIFICATIONS,
-    invoices: MOCK_INVOICES,
+import { persist } from 'zustand/middleware';
 
-    organizations: [MOCK_ORGANIZATION],
-    currentOrganization: null,
-    currentUser: null,
+export const useStore = create<AppState>()(
+    persist(
+        (set, get) => ({
+            projects: MOCK_PROJECTS,
+            users: MOCK_USERS,
+            meetings: MOCK_MEETINGS,
+            notifications: MOCK_NOTIFICATIONS,
+            invoices: MOCK_INVOICES,
 
-    login: (email) => {
-        const user = get().users.find(u => u.email === email);
-        if (user) {
-            const org = get().organizations.find(o => o.id === user.organizationId);
-            set({ currentUser: user, currentOrganization: org || null });
-        } else {
-            // Fallback for demo if not found in list (shouldn't happen with correct usage)
-            const defaultUser = { ...MOCK_USERS[0], isAdmin: true };
-            const defaultOrg = MOCK_ORGANIZATION;
-            set({ currentUser: defaultUser, currentOrganization: defaultOrg });
-        }
-    },
+            organizations: [MOCK_ORGANIZATION],
+            currentOrganization: null,
+            currentUser: null,
 
-    inviteUser: (email, role) => {
-        // In a real app, this would send an email. 
-        // For demo, we just log it or we could create a pending user state.
-        console.log(`Inviting ${email} as ${role} to ${get().currentOrganization?.name}`);
-        // We could return the link here if we want to show it in UI
-        return `${window.location.origin}/login?orgId=${get().currentOrganization?.id}&email=${encodeURIComponent(email)}&role=${role}`;
-    },
+            login: (email) => {
+                const user = get().users.find(u => u.email === email);
+                if (user) {
+                    const org = get().organizations.find(o => o.id === user.organizationId);
+                    set({ currentUser: user, currentOrganization: org || null });
+                } else {
+                    // Fallback for demo if not found in list (shouldn't happen with correct usage)
+                    const defaultUser = { ...MOCK_USERS[0], isAdmin: true };
+                    const defaultOrg = MOCK_ORGANIZATION;
+                    set({ currentUser: defaultUser, currentOrganization: defaultOrg });
+                }
+            },
 
-    signup: ({ organizationName, ...userDetails }) => {
-        let orgId = '';
-        let newOrg: Organization | undefined;
+            inviteUser: (email, role) => {
+                // In a real app, this would send an email. 
+                // For demo, we just log it or we could create a pending user state.
+                console.log(`Inviting ${email} as ${role} to ${get().currentOrganization?.name}`);
+                // We could return the link here if we want to show it in UI
+                return `${window.location.origin}/login?orgId=${get().currentOrganization?.id}&email=${encodeURIComponent(email)}&role=${role}`;
+            },
 
-        const existingOrg = get().organizations.find(o => o.id === organizationName); // simplistic check
+            signup: ({ organizationName, ...userDetails }) => {
+                let orgId = '';
+                let newOrg: Organization | undefined;
 
-        if (existingOrg) {
-            orgId = existingOrg.id;
-            // Don't create new org
-        } else {
-            newOrg = {
-                id: Math.random().toString(36).substr(2, 9),
-                name: organizationName,
-                createdAt: new Date().toISOString(),
-                status: 'active',
-                subscriptionStatus: 'trial'
-            };
-            orgId = newOrg.id;
-        }
+                const existingOrg = get().organizations.find(o => o.id === organizationName); // simplistic check
 
-        const newUser: User = {
-            ...userDetails as User,
-            id: Math.random().toString(36).substr(2, 9),
-            organizationId: orgId,
-            avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(userDetails.name || 'User')}&background=random`,
-            isAdmin: !existingOrg // First user of new org is admin
-        };
+                if (existingOrg) {
+                    orgId = existingOrg.id;
+                    // Don't create new org
+                } else {
+                    newOrg = {
+                        id: Math.random().toString(36).substr(2, 9),
+                        name: organizationName,
+                        createdAt: new Date().toISOString(),
+                        status: 'active',
+                        subscriptionStatus: 'trial'
+                    };
+                    orgId = newOrg.id;
+                }
 
-        set((state) => ({
-            organizations: newOrg ? [...state.organizations, newOrg] : state.organizations,
-            users: [...state.users, newUser],
-            currentUser: newUser,
-            currentOrganization: existingOrg || newOrg!
-        }));
-    },
+                const newUser: User = {
+                    ...userDetails as User,
+                    id: Math.random().toString(36).substr(2, 9),
+                    organizationId: orgId,
+                    avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(userDetails.name || 'User')}&background=random`,
+                    isAdmin: !existingOrg // First user of new org is admin
+                };
 
-    deleteOrganization: (id) => set((state) => ({
-        organizations: state.organizations.filter(o => o.id !== id),
-        // Cascade delete users and data related to this org if needed, but for now simple removal
-        users: state.users.filter(u => u.organizationId !== id),
-        projects: state.projects.filter(p => p.organizationId !== id)
-    })),
+                set((state) => ({
+                    organizations: newOrg ? [...state.organizations, newOrg] : state.organizations,
+                    users: [...state.users, newUser],
+                    currentUser: newUser,
+                    currentOrganization: existingOrg || newOrg!
+                }));
+            },
 
-    updateOrganizationStatus: (id, status) => set((state) => ({
-        organizations: state.organizations.map(o => o.id === id ? { ...o, status } : o)
-    })),
+            deleteOrganization: (id) => set((state) => ({
+                organizations: state.organizations.filter(o => o.id !== id),
+                // Cascade delete users and data related to this org if needed, but for now simple removal
+                users: state.users.filter(u => u.organizationId !== id),
+                projects: state.projects.filter(p => p.organizationId !== id)
+            })),
 
-    addUser: (user) => {
-        const currentOrgId = get().currentOrganization?.id;
-        if (!currentOrgId) return;
+            updateOrganizationStatus: (id, status) => set((state) => ({
+                organizations: state.organizations.map(o => o.id === id ? { ...o, status } : o)
+            })),
 
-        set((state) => ({
-            users: [...state.users, { ...user, organizationId: currentOrgId } as User]
-        }));
-    },
+            addUser: (user) => {
+                const currentOrgId = get().currentOrganization?.id;
+                if (!currentOrgId) return;
 
-    updateUser: (updatedUser) => {
-        set((state) => ({
-            currentUser: updatedUser,
-            users: state.users.map(u => u.id === updatedUser.id ? updatedUser : u)
-        }));
-    },
+                set((state) => ({
+                    users: [...state.users, { ...user, organizationId: currentOrgId } as User]
+                }));
+            },
 
-    logout: () => set({ currentUser: null, currentOrganization: null }),
+            updateUser: (updatedUser) => {
+                set((state) => ({
+                    currentUser: updatedUser,
+                    users: state.users.map(u => u.id === updatedUser.id ? updatedUser : u)
+                }));
+            },
 
-    addProject: (project) => {
-        const currentOrgId = get().currentOrganization?.id;
-        if (!currentOrgId) return;
-        set((state) => ({ projects: [...state.projects, { ...project, organizationId: currentOrgId } as Project] }));
-    },
+            logout: () => set({ currentUser: null, currentOrganization: null }),
 
-    updateProject: (updatedProject) => set((state) => ({
-        projects: state.projects.map((p) => p.id === updatedProject.id ? updatedProject : p)
-    })),
+            addProject: (project) => {
+                const currentOrgId = get().currentOrganization?.id;
+                if (!currentOrgId) return;
+                set((state) => ({ projects: [...state.projects, { ...project, organizationId: currentOrgId } as Project] }));
+            },
 
-    updateProjectProgress: (id, progress) => set((state) => ({
-        projects: state.projects.map((p) => p.id === id ? { ...p, progress } : p)
-    })),
+            updateProject: (updatedProject) => set((state) => ({
+                projects: state.projects.map((p) => p.id === updatedProject.id ? updatedProject : p)
+            })),
 
-    addTask: (projectId, task) => set((state) => ({
-        projects: state.projects.map((p) => p.id === projectId ? {
-            ...p,
-            tasks: [...p.tasks, task]
-        } : p)
-    })),
+            updateProjectProgress: (id, progress) => set((state) => ({
+                projects: state.projects.map((p) => p.id === id ? { ...p, progress } : p)
+            })),
 
-    updateTask: (projectId, task) => set((state) => ({
-        projects: state.projects.map((p) => p.id === projectId ? {
-            ...p,
-            tasks: p.tasks.map(t => t.id === task.id ? task : t)
-        } : p)
-    })),
+            addTask: (projectId, task) => set((state) => ({
+                projects: state.projects.map((p) => p.id === projectId ? {
+                    ...p,
+                    tasks: [...p.tasks, task]
+                } : p)
+            })),
 
-    assignTask: (taskId, userId) => set((state) => ({
-        projects: state.projects.map((p) => ({
-            ...p,
-            tasks: p.tasks.map((t) => t.id === taskId ? { ...t, assignedTo: userId } : t)
-        }))
-    })),
+            updateTask: (projectId, task) => set((state) => ({
+                projects: state.projects.map((p) => p.id === projectId ? {
+                    ...p,
+                    tasks: p.tasks.map(t => t.id === task.id ? task : t)
+                } : p)
+            })),
 
-    completeTask: (taskId, note, image) => set((state) => {
-        const project = state.projects.find(p => p.tasks.some(t => t.id === taskId));
-        const task = project?.tasks.find(t => t.id === taskId);
-        const currentOrgId = get().currentOrganization?.id;
-
-        if (task && project && currentOrgId) {
-            const newNotification: Notification = {
-                id: Math.random().toString(36).substr(2, 9),
-                organizationId: currentOrgId,
-                userId: get().currentUser?.id || 'unknown',
-                message: `Task "${task.title}" completed in ${project.name}`,
-                read: false,
-                date: new Date().toISOString(),
-                type: 'task_completed',
-                data: { taskId, note, image }
-            };
-
-            return {
+            assignTask: (taskId, userId) => set((state) => ({
                 projects: state.projects.map((p) => ({
                     ...p,
-                    tasks: p.tasks.map((t) => t.id === taskId ? { ...t, status: 'completed' as const, completedAt: new Date().toISOString(), completionNote: note, completionImage: image } : t)
-                })),
-                notifications: [newNotification, ...state.notifications]
-            };
+                    tasks: p.tasks.map((t) => t.id === taskId ? { ...t, assignedTo: userId } : t)
+                }))
+            })),
+
+            completeTask: (taskId, note, image) => set((state) => {
+                const project = state.projects.find(p => p.tasks.some(t => t.id === taskId));
+                const task = project?.tasks.find(t => t.id === taskId);
+                const currentOrgId = get().currentOrganization?.id;
+
+                if (task && project && currentOrgId) {
+                    const newNotification: Notification = {
+                        id: Math.random().toString(36).substr(2, 9),
+                        organizationId: currentOrgId,
+                        userId: get().currentUser?.id || 'unknown',
+                        message: `Task "${task.title}" completed in ${project.name}`,
+                        read: false,
+                        date: new Date().toISOString(),
+                        type: 'task_completed',
+                        data: { taskId, note, image }
+                    };
+
+                    return {
+                        projects: state.projects.map((p) => ({
+                            ...p,
+                            tasks: p.tasks.map((t) => t.id === taskId ? { ...t, status: 'completed' as const, completedAt: new Date().toISOString(), completionNote: note, completionImage: image } : t)
+                        })),
+                        notifications: [newNotification, ...state.notifications]
+                    };
+                }
+                return state;
+            }),
+
+            addProjectUpdate: (projectId, update) => set((state) => ({
+                projects: state.projects.map(p => p.id === projectId ? {
+                    ...p,
+                    updates: [...(p.updates || []), update]
+                } : p)
+            })),
+
+            markNotificationRead: (id) => set((state) => ({
+                notifications: state.notifications.map(n => n.id === id ? { ...n, read: true } : n)
+            })),
+
+            // Invoice Actions
+            addInvoice: (invoice) => {
+                const currentOrgId = get().currentOrganization?.id;
+                if (!currentOrgId) return;
+                set((state) => ({
+                    invoices: [{ ...invoice, organizationId: currentOrgId } as Invoice, ...state.invoices]
+                }));
+            },
+
+            updateInvoiceStatus: (id, status) => set((state) => ({
+                invoices: state.invoices.map(inv => inv.id === id ? { ...inv, status } : inv)
+            })),
+
+            deleteInvoice: (id) => set((state) => ({
+                invoices: state.invoices.filter(inv => inv.id !== id)
+            })),
+
+            // Meeting Actions
+            addMeeting: (meeting) => {
+                const currentOrgId = get().currentOrganization?.id;
+                if (!currentOrgId) return;
+                set((state) => ({
+                    meetings: [...state.meetings, { ...meeting, organizationId: currentOrgId } as Meeting].sort((a, b) => new Date(a.date + 'T' + a.time).getTime() - new Date(b.date + 'T' + b.time).getTime())
+                }));
+            },
+
+            deleteMeeting: (id) => set((state) => ({
+                meetings: state.meetings.filter(m => m.id !== id)
+            })),
+
+            // Reminder Actions
+            reminders: [],
+
+            addReminder: (reminder) => {
+                const currentOrgId = get().currentOrganization?.id;
+                if (!currentOrgId) return;
+                set((state) => ({
+                    reminders: [...state.reminders, { ...reminder, organizationId: currentOrgId } as Reminder].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                }));
+            },
+
+            updateReminder: (updatedReminder) => set((state) => ({
+                reminders: state.reminders.map(r => r.id === updatedReminder.id ? updatedReminder : r).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+            })),
+
+            deleteReminder: (id) => set((state) => ({
+                reminders: state.reminders.filter(r => r.id !== id)
+            })),
+
+            toggleReminder: (id) => set((state) => ({
+                reminders: state.reminders.map(r => r.id === id ? { ...r, completed: !r.completed } : r)
+            })),
+
+            // Other Matters Actions
+            otherMatters: [],
+
+            addOtherMatter: (matter) => {
+                const currentOrgId = get().currentOrganization?.id;
+                if (!currentOrgId) return;
+                set((state) => ({
+                    otherMatters: [{ ...matter, organizationId: currentOrgId } as OtherMatter, ...state.otherMatters]
+                }));
+            },
+
+            deleteOtherMatter: (id) => set((state) => ({
+                otherMatters: state.otherMatters.filter(om => om.id !== id)
+            })),
+
+            reset: () => set({
+                projects: MOCK_PROJECTS,
+                users: MOCK_USERS,
+                meetings: MOCK_MEETINGS,
+                notifications: MOCK_NOTIFICATIONS,
+                invoices: MOCK_INVOICES,
+                currentUser: MOCK_USERS[0],
+                currentOrganization: MOCK_ORGANIZATION,
+                organizations: [MOCK_ORGANIZATION]
+            }),
+        }),
+        {
+            name: 'meits-storage',
+            partialize: (state) => ({
+                projects: state.projects,
+                users: state.users,
+                meetings: state.meetings,
+                notifications: state.notifications,
+                invoices: state.invoices,
+                organizations: state.organizations,
+                currentOrganization: state.currentOrganization,
+                currentUser: state.currentUser,
+                reminders: state.reminders,
+                otherMatters: state.otherMatters
+            }),
         }
-        return state;
-    }),
-
-    addProjectUpdate: (projectId, update) => set((state) => ({
-        projects: state.projects.map(p => p.id === projectId ? {
-            ...p,
-            updates: [...(p.updates || []), update]
-        } : p)
-    })),
-
-    markNotificationRead: (id) => set((state) => ({
-        notifications: state.notifications.map(n => n.id === id ? { ...n, read: true } : n)
-    })),
-
-    // Invoice Actions
-    addInvoice: (invoice) => {
-        const currentOrgId = get().currentOrganization?.id;
-        if (!currentOrgId) return;
-        set((state) => ({
-            invoices: [{ ...invoice, organizationId: currentOrgId } as Invoice, ...state.invoices]
-        }));
-    },
-
-    updateInvoiceStatus: (id, status) => set((state) => ({
-        invoices: state.invoices.map(inv => inv.id === id ? { ...inv, status } : inv)
-    })),
-
-    deleteInvoice: (id) => set((state) => ({
-        invoices: state.invoices.filter(inv => inv.id !== id)
-    })),
-
-    // Meeting Actions
-    addMeeting: (meeting) => {
-        const currentOrgId = get().currentOrganization?.id;
-        if (!currentOrgId) return;
-        set((state) => ({
-            meetings: [...state.meetings, { ...meeting, organizationId: currentOrgId } as Meeting].sort((a, b) => new Date(a.date + 'T' + a.time).getTime() - new Date(b.date + 'T' + b.time).getTime())
-        }));
-    },
-
-    deleteMeeting: (id) => set((state) => ({
-        meetings: state.meetings.filter(m => m.id !== id)
-    })),
-
-    // Reminder Actions
-    reminders: [],
-
-    addReminder: (reminder) => {
-        const currentOrgId = get().currentOrganization?.id;
-        if (!currentOrgId) return;
-        set((state) => ({
-            reminders: [...state.reminders, { ...reminder, organizationId: currentOrgId } as Reminder].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-        }));
-    },
-
-    updateReminder: (updatedReminder) => set((state) => ({
-        reminders: state.reminders.map(r => r.id === updatedReminder.id ? updatedReminder : r).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-    })),
-
-    deleteReminder: (id) => set((state) => ({
-        reminders: state.reminders.filter(r => r.id !== id)
-    })),
-
-    toggleReminder: (id) => set((state) => ({
-        reminders: state.reminders.map(r => r.id === id ? { ...r, completed: !r.completed } : r)
-    })),
-
-    // Other Matters Actions
-    otherMatters: [],
-
-    addOtherMatter: (matter) => {
-        const currentOrgId = get().currentOrganization?.id;
-        if (!currentOrgId) return;
-        set((state) => ({
-            otherMatters: [{ ...matter, organizationId: currentOrgId } as OtherMatter, ...state.otherMatters]
-        }));
-    },
-
-    deleteOtherMatter: (id) => set((state) => ({
-        otherMatters: state.otherMatters.filter(om => om.id !== id)
-    })),
-
-    reset: () => set({
-        projects: MOCK_PROJECTS,
-        users: MOCK_USERS,
-        meetings: MOCK_MEETINGS,
-        notifications: MOCK_NOTIFICATIONS,
-        invoices: MOCK_INVOICES,
-        currentUser: MOCK_USERS[0],
-        currentOrganization: MOCK_ORGANIZATION,
-        organizations: [MOCK_ORGANIZATION]
-    }),
-}));
+    )
+);

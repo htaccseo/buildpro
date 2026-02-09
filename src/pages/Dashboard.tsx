@@ -1,10 +1,11 @@
 import React from 'react';
 import { useStore } from '../lib/store';
-import { format, isSameDay } from 'date-fns';
+import { useOrganizationData } from '../lib/hooks';
+import { isSameDay } from 'date-fns';
 import { Link, useNavigate } from 'react-router-dom';
 import { MOCK_USERS } from '../lib/mockData';
 import { Activity, Clock, MapPin, X, StickyNote } from 'lucide-react';
-import { cn } from '../lib/utils';
+import { cn, formatDate } from '../lib/utils';
 import { Card } from '../components/ui/Card';
 import { NewMeetingModal } from '../components/NewMeetingModal';
 import { ReminderModal } from '../components/ReminderModal';
@@ -23,7 +24,12 @@ export function Dashboard() {
     const [matterAddress, setMatterAddress] = React.useState('');
     const [matterNote, setMatterNote] = React.useState('');
 
-    const { projects, invoices, meetings, reminders, toggleReminder, otherMatters, addOtherMatter, deleteOtherMatter } = useStore();
+    // Use Clean Data Hook (RLS)
+    const { projects, invoices, meetings, reminders, otherMatters } = useOrganizationData();
+    // Use Store actions (actions are safe to use from store directly as they usually just dispatch)
+    // Actually, our store actions need currentOrgId from store state, which is fine.
+    // The previous code destructured methods from useStore. Let's keep doing that for actions.
+    const { toggleReminder, addOtherMatter, deleteOtherMatter, currentOrganization } = useStore();
 
     const allTasks = projects.flatMap(p => p.tasks);
 
@@ -136,7 +142,7 @@ export function Dashboard() {
                                                         </p>
                                                     )}
                                                 </div>
-                                                <p className="text-sm text-text-muted mt-1">Personal Reminder • {format(new Date(reminder.date), 'MMM d')}</p>
+                                                <p className="text-sm text-text-muted mt-1">Personal Reminder • {formatDate(reminder.date, 'MMM d')}</p>
                                             </div>
                                         </div>
                                     ))}
@@ -171,7 +177,7 @@ export function Dashboard() {
                                                         </p>
                                                     )}
                                                 </div>
-                                                <p className="text-sm text-text-muted mt-1">Project Task • Due: {format(new Date(task.requiredDate), 'MMM d')}</p>
+                                                <p className="text-sm text-text-muted mt-1">Project Task • Due: {formatDate(task.requiredDate, 'MMM d')}</p>
                                             </div>
                                         </div>
                                     ))}
@@ -240,8 +246,8 @@ export function Dashboard() {
                             upcomingMeetings.map(meeting => (
                                 <div key={meeting.id} className="flex items-center gap-4 p-3 rounded-xl bg-slate-50 border border-slate-100">
                                     <div className="flex-col flex items-center justify-center w-12 h-12 bg-white rounded-lg border border-slate-100 shadow-sm shrink-0">
-                                        <span className="text-xs font-bold text-emerald-600 uppercase">{format(new Date(meeting.date), 'MMM')}</span>
-                                        <span className="text-lg font-bold text-navy-900 leading-none">{format(new Date(meeting.date), 'd')}</span>
+                                        <span className="text-xs font-bold text-emerald-600 uppercase">{formatDate(meeting.date, 'MMM')}</span>
+                                        <span className="text-lg font-bold text-navy-900 leading-none">{formatDate(meeting.date, 'd')}</span>
                                     </div>
                                     <div className="min-w-0 flex-1">
                                         <h4 className="font-bold text-navy-900 truncate">{meeting.title}</h4>
@@ -278,7 +284,7 @@ export function Dashboard() {
                                     <div className={cn("w-1.5 h-10 rounded-full", inv.type === 'sent' ? "bg-emerald-500" : "bg-amber-500")} />
                                     <div>
                                         <p className="font-bold text-navy-900 text-sm truncate w-32">{inv.clientName}</p>
-                                        <p className="text-xs text-text-muted">{format(new Date(inv.dueDate), 'MMM d')}</p>
+                                        <p className="text-xs text-text-muted">{formatDate(inv.dueDate, 'MMM d')}</p>
                                     </div>
                                 </div>
                                 <div className="text-right">

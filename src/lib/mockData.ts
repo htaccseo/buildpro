@@ -1,16 +1,25 @@
-import type { Project, User, Meeting, Notification } from './types';
+import type { Project, User, Meeting, Notification, Organization } from './types';
 import { addDays, format } from 'date-fns';
 
+export const MOCK_ORGANIZATION: Organization = {
+    id: 'org1',
+    name: 'BuildPro Constructions',
+    createdAt: new Date().toISOString()
+};
+
+const ORG_ID = MOCK_ORGANIZATION.id;
+
 export const MOCK_USERS: User[] = [
-    { id: 'u1', name: 'John Builder', email: 'john@buildpro.com', role: 'builder', company: 'BuildPro Constructions', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=256&h=256&fit=crop&crop=faces' },
-    { id: 'u2', name: 'Mike Carpenter', email: 'mike@buildpro.com', role: 'worker', company: 'BuildPro Constructions', avatar: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=256&h=256&fit=crop&crop=faces' },
-    { id: 'u3', name: 'Sarah Electrician', email: 'sarah@buildpro.com', role: 'worker', company: 'BuildPro Constructions', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=256&h=256&fit=crop&crop=faces' },
-    { id: 'u4', name: 'Dave Plumber', email: 'dave@buildpro.com', role: 'worker', company: 'BuildPro Constructions', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=256&h=256&fit=crop&crop=faces' },
+    { id: 'u1', organizationId: ORG_ID, name: 'John Builder', email: 'john@buildpro.com', role: 'builder', company: 'BuildPro Constructions', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=256&h=256&fit=crop&crop=faces' },
+    { id: 'u2', organizationId: ORG_ID, name: 'Mike Carpenter', email: 'mike@buildpro.com', role: 'worker', company: 'BuildPro Constructions', avatar: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=256&h=256&fit=crop&crop=faces' },
+    { id: 'u3', organizationId: ORG_ID, name: 'Sarah Electrician', email: 'sarah@buildpro.com', role: 'worker', company: 'BuildPro Constructions', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=256&h=256&fit=crop&crop=faces' },
+    { id: 'u4', organizationId: ORG_ID, name: 'Dave Plumber', email: 'dave@buildpro.com', role: 'worker', company: 'BuildPro Constructions', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=256&h=256&fit=crop&crop=faces' },
 ];
 
 export const MOCK_PROJECTS: Project[] = [
     {
         id: 'p1',
+        organizationId: ORG_ID,
         name: 'Modern Villa Renovation',
         address: '123 Ocean Drive, Sydney',
         clientName: 'Mr. Smith',
@@ -28,6 +37,7 @@ export const MOCK_PROJECTS: Project[] = [
     },
     {
         id: 'p2',
+        organizationId: ORG_ID,
         name: 'City Apartment Complex',
         address: '45 High St, Melbourne',
         clientName: 'Urban Corp',
@@ -44,6 +54,7 @@ export const MOCK_PROJECTS: Project[] = [
     },
     {
         id: 'p3',
+        organizationId: ORG_ID,
         name: 'Downtown Office Fitout',
         address: '88 Market St, Sydney',
         clientName: 'TechFlow Inc',
@@ -59,10 +70,10 @@ export const MOCK_PROJECTS: Project[] = [
 ];
 
 export const MOCK_MEETINGS: Meeting[] = [
-    { id: 'm1', title: 'Site Inspection', date: format(new Date(), 'yyyy-MM-dd'), time: '09:00', projectId: 'p1', attendees: ['u1', 'u2'] },
-    { id: 'm2', title: 'Client Briefing', date: format(addDays(new Date(), 1), 'yyyy-MM-dd'), time: '14:00', projectId: 'p2', attendees: ['u1'] },
+    { id: 'm1', organizationId: ORG_ID, title: 'Site Inspection', date: format(new Date(), 'yyyy-MM-dd'), time: '09:00', projectId: 'p1', attendees: ['u1', 'u2'] },
+    { id: 'm2', organizationId: ORG_ID, title: 'Client Briefing', date: format(addDays(new Date(), 1), 'yyyy-MM-dd'), time: '14:00', projectId: 'p2', attendees: ['u1'] },
 ];
 
 export const MOCK_NOTIFICATIONS: Notification[] = [
-    { id: 'n1', userId: 'u1', message: 'Dave completed "Final Plumbing Check"', read: false, date: format(addDays(new Date(), -1), 'yyyy-MM-dd'), type: 'task_completed', data: { taskId: 't3' } }
+    { id: 'n1', organizationId: ORG_ID, userId: 'u1', message: 'Dave completed "Final Plumbing Check"', read: false, date: format(addDays(new Date(), -1), 'yyyy-MM-dd'), type: 'task_completed', data: { taskId: 't3' } }
 ];

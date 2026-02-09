@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useStore } from '../lib/store';
+import { useOrganizationData } from '../lib/hooks';
 import { Search, Plus, Calendar, MapPin, User as UserIcon, CheckCircle, RotateCcw } from 'lucide-react';
-import { format } from 'date-fns';
-import { cn } from '../lib/utils';
+import { cn, formatDate } from '../lib/utils';
 import { Card } from '../components/ui/Card';
 import { NewProjectModal } from '../components/NewProjectModal';
 
 export function Projects() {
-    const { projects, updateProject } = useStore();
+    const { projects } = useOrganizationData();
+    const { updateProject } = useStore();
     const [searchParams, setSearchParams] = useSearchParams();
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -107,7 +108,7 @@ export function Projects() {
 
                                         <div className="flex items-center gap-3 text-text-muted text-sm">
                                             <Calendar className="w-4 h-4 shrink-0" />
-                                            <span>{format(new Date(project.startDate), 'MMM d')} - {format(new Date(project.endDate), 'MMM d, yyyy')}</span>
+                                            <span>{formatDate(project.startDate, 'MMM d')} - {formatDate(project.endDate, 'MMM d, yyyy')}</span>
                                         </div>
 
                                         <div className="space-y-2 mt-auto">

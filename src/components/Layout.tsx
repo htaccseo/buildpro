@@ -32,16 +32,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
         { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
         { icon: Briefcase, label: 'Projects', path: '/projects' },
         { icon: Calendar, label: 'Schedule', path: '/schedule' },
-        { icon: FileText, label: 'Invoices', path: '/invoices' },
+        { icon: FileText, label: 'Invoices', path: '/invoices', hidden: !useStore.getState().currentUser?.isAdmin && useStore.getState().currentUser?.role !== 'builder' },
         { icon: Users, label: 'Team', path: '/team' },
-    ];
+    ].filter(item => !item.hidden);
 
     return (
         <div className="flex min-h-screen bg-bg-app font-sans">
             {/* Mobile Header */}
             <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-100 z-30 flex items-center justify-between px-4">
                 <div className="flex items-center gap-3">
-                    <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 -ml-2 text-navy-900">
+                    <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 -ml-2 text-navy-900" aria-label="Open menu">
                         <Menu className="w-6 h-6" />
                     </button>
                     <div className="flex items-center gap-2">
@@ -52,7 +52,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
-                    <button className="relative p-2 text-navy-600">
+                    <button className="relative p-2 text-navy-600" aria-label="Notifications">
                         <Bell className="w-5 h-5" />
                         {unreadCount > 0 && (
                             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full" />
@@ -83,7 +83,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                             meits
                         </h1>
                     </div>
-                    <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden text-slate-400">
+                    <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden text-slate-400" aria-label="Close menu">
                         <X className="w-5 h-5" />
                     </button>
                 </div>
@@ -144,13 +144,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     <div className="flex-1" /> {/* Spacer */}
 
                     <div className="flex items-center gap-4 relative">
-                        <Link to="/schedule" className="bg-white p-2.5 rounded-full shadow-sm text-text-muted hover:text-emerald-600 transition-colors border border-slate-100 flex items-center justify-center">
+                        <Link to="/schedule" className="bg-white p-2.5 rounded-full shadow-sm text-text-muted hover:text-emerald-600 transition-colors border border-slate-100 flex items-center justify-center" aria-label="Calendar">
                             <Calendar className="w-5 h-5" />
                         </Link>
 
                         <button
                             onClick={() => setShowNotifications(!showNotifications)}
                             className={cn("relative p-2.5 rounded-full shadow-sm transition-colors border border-slate-100", showNotifications ? "bg-emerald-50 text-emerald-600" : "bg-white text-text-muted hover:text-emerald-600")}
+                            aria-label="Notifications"
                         >
                             <Bell className="w-5 h-5" />
                             {unreadCount > 0 && (

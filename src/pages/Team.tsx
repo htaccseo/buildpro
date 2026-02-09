@@ -1,20 +1,25 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useStore } from '../lib/store';
+import { useOrganizationData } from '../lib/hooks';
 import { Phone, Mail, Users, Plus, Briefcase, Shield, RotateCcw } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Card } from '../components/ui/Card';
 import { InviteMemberModal } from '../components/InviteMemberModal';
 
 export function Team() {
-    const { users, projects, currentUser, reset } = useStore();
+    const { users, projects } = useOrganizationData();
+    const { currentUser, reset } = useStore();
     const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
-    // Filter users from the same company
-    const teamMembers = users.filter(u =>
-        u.company === currentUser?.company && // Same company
-        u.company // Ensure company is not undefined/empty
-    );
+    // Filter users from the same company - logic now redundant but safe to keep or simplify
+    // The hook already filters users by organizationId.
+    const teamMembers = users;
+    // However, the original code also had some specific logic about "currentUser" exclusion maybe?
+    // "u.id !== currentUser?.id" was commented out in original.
+    // The original code:
+    // const teamMembers = users.filter(u => u.organizationId === currentUser?.organizationId);
+    // Since useOrganizationData returns already filtered users, we can just use `users`.
 
     // Helper to get user tasks (if they are a worker)
     const getUserTasks = (userId: string) => {
@@ -58,13 +63,15 @@ export function Team() {
                     >
                         <RotateCcw className="w-4 h-4" />
                     </button>
-                    <button
-                        onClick={() => setIsInviteModalOpen(true)}
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl font-medium flex items-center gap-2 transition-colors shadow-lg shadow-emerald-500/20"
-                    >
-                        <Plus className="w-5 h-5" />
-                        <span>Invite Member</span>
-                    </button>
+                    {currentUser?.isAdmin && (
+                        <button
+                            onClick={() => setIsInviteModalOpen(true)}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl font-medium flex items-center gap-2 transition-colors shadow-lg shadow-emerald-500/20"
+                        >
+                            <Plus className="w-5 h-5" />
+                            <span>Invite Member</span>
+                        </button>
+                    )}
                 </div>
             </div>
 

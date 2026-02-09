@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../lib/store';
+import { useOrganizationData } from '../lib/hooks';
 import { Card } from '../components/ui/Card';
 import { format, startOfWeek, addDays, isSameDay } from 'date-fns';
 import { cn } from '../lib/utils';
@@ -11,7 +12,12 @@ import type { Reminder } from '../lib/types';
 
 export function Schedule() {
     const navigate = useNavigate();
-    const { projects, meetings, reminders, toggleReminder } = useStore();
+    const navigate = useNavigate();
+    // Use Clean Data Hook (RLS)
+    const { projects, meetings, reminders } = useOrganizationData();
+    // Store actions
+    const { toggleReminder } = useStore();
+
     const [currentDate, setCurrentDate] = React.useState(new Date());
     const [isMeetingModalOpen, setIsMeetingModalOpen] = React.useState(false);
     const [selectedReminder, setSelectedReminder] = React.useState<Reminder | null>(null);

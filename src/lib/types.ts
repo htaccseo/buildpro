@@ -1,7 +1,14 @@
+export interface Organization {
+    id: string;
+    name: string;
+    createdAt: string;
+}
+
 export type UserRole = 'builder' | 'worker';
 
 export interface User {
     id: string;
+    organizationId: string;
     name: string;
     email: string;
     role: UserRole;
@@ -9,6 +16,7 @@ export interface User {
     phone?: string;
     company?: string;
     password?: string;
+    isAdmin?: boolean;
 }
 
 export interface Task {
@@ -33,6 +41,7 @@ export interface ProjectUpdate {
 
 export interface Project {
     id: string;
+    organizationId: string;
     name: string;
     address: string;
     clientName: string;
@@ -49,6 +58,7 @@ export interface Project {
 
 export interface Meeting {
     id: string;
+    organizationId: string;
     title: string;
     date: string; // ISO Date
     time: string;
@@ -59,6 +69,7 @@ export interface Meeting {
 
 export interface Notification {
     id: string;
+    organizationId: string;
     userId: string;
     message: string;
     read: boolean;
@@ -69,6 +80,7 @@ export interface Notification {
 
 export interface Invoice {
     id: string;
+    organizationId: string;
     type: 'sent' | 'received'; // sent = receivable (from client), received = payable (to contractor)
     amount: number;
     clientName: string; // Client or Contractor Name
@@ -81,6 +93,7 @@ export interface Invoice {
 
 export interface Reminder {
     id: string;
+    organizationId: string;
     title: string;
     description?: string;
     date: string; // ISO Date
@@ -89,6 +102,7 @@ export interface Reminder {
 
 export interface OtherMatter {
     id: string;
+    organizationId: string;
     title: string;
     address: string;
     note: string;

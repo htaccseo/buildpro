@@ -1,13 +1,16 @@
 import { useState } from 'react';
 import { useStore } from '../lib/store';
+import { useOrganizationData } from '../lib/hooks';
 import { Card } from '../components/ui/Card';
-import { Plus, ArrowUpRight, ArrowDownLeft, FileText, Clock, AlertCircle, Trash2 } from 'lucide-react';
-import { format } from 'date-fns';
-import { cn } from '../lib/utils';
+import { Plus, FileText, ArrowUpRight, ArrowDownLeft, Trash2 } from 'lucide-react';
+import { cn, formatDate } from '../lib/utils';
 import type { Invoice } from '../lib/types';
 
 export function Invoices() {
-    const { invoices, addInvoice, updateInvoiceStatus, deleteInvoice } = useStore();
+    // Use Clean Data Hook (RLS)
+    const { invoices } = useOrganizationData();
+    // Store actions
+    const { addInvoice, updateInvoiceStatus, deleteInvoice } = useStore();
     const [activeTab, setActiveTab] = useState<'sent' | 'received'>('sent');
     const [isFormOpen, setIsFormOpen] = useState(false);
 
@@ -27,7 +30,7 @@ export function Invoices() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const newInvoice: Invoice = {
+        const newInvoice: Omit<Invoice, 'organizationId'> = {
             id: Math.random().toString(36).substr(2, 9),
             type: invoiceType,
             amount: parseFloat(amount),
@@ -48,15 +51,6 @@ export function Invoices() {
         setDueDate('');
         setIssueDate(new Date().toISOString().split('T')[0]);
         setDescription('');
-    };
-
-    const getStatusColor = (status: Invoice['status']) => {
-        switch (status) {
-            case 'paid': return 'bg-emerald-100 text-emerald-700';
-            case 'pending': return 'bg-amber-100 text-amber-700';
-            case 'overdue': return 'bg-rose-100 text-rose-700';
-            default: return 'bg-slate-100 text-slate-700';
-        }
     };
 
     return (
@@ -136,28 +130,31 @@ export function Invoices() {
                                         <FileText className="w-6 h-6" />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <div className="flex items-center gap-3 mb-1">
-                                            <h3 className="text-lg font-bold text-navy-900 truncate">{invoice.clientName}</h3>
-                                            <span className={cn("px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide", getStatusColor(invoice.status))}>
+                                        <div className="flex justify-between items-start mb-2">
+                                            <div>
+                                                <h3 className="font-bold text-navy-900">{invoice.clientName}</h3>
+                                                <p className="text-sm text-text-muted">{invoice.description}</p>
+                                            </div>
+                                            <span className={cn(
+                                                "px-2.5 py-0.5 rounded-full text-xs font-medium uppercase tracking-wide",
+                                                invoice.status === 'paid' ? "bg-emerald-100 text-emerald-700" :
+                                                    invoice.status === 'overdue' ? "bg-rose-100 text-rose-700" :
+                                                        "bg-amber-100 text-amber-700"
+                                            )}>
                                                 {invoice.status}
                                             </span>
                                         </div>
-                                        <p className="text-text-muted text-sm">{invoice.description}</p>
-                                        <div className="flex items-center gap-4 mt-2 text-xs text-text-muted font-medium">
-                                            <span className="flex items-center gap-1">
-                                                <Clock className="w-3.5 h-3.5" />
-                                                Due {format(new Date(invoice.dueDate), 'MMM d, yyyy')}
-                                            </span>
-                                            <span className="flex items-center gap-1">
-                                                <Clock className="w-3.5 h-3.5" />
-                                                Issued {format(new Date(invoice.date), 'MMM d, yyyy')}
-                                            </span>
-                                            {new Date(invoice.dueDate) < new Date() && invoice.status !== 'paid' && (
-                                                <span className="text-rose-500 flex items-center gap-1">
-                                                    <AlertCircle className="w-3.5 h-3.5" />
-                                                    Overdue
-                                                </span>
-                                            )}
+
+                                        <div className="flex justify-between items-end mt-4">
+                                            <div className="text-xs text-text-muted space-y-1">
+                                                <p>Due {formatDate(invoice.dueDate, 'MMM d, yyyy')}</p>
+                                                {/* Assuming 'projects' and 'invoice.projectId' are available in scope if needed */}
+                                                {/* {invoice.projectId && <p>Project: {projects.find(p => p.id === invoice.projectId)?.name}</p>} */}
+                                                <p className="text-slate-400">Issued {formatDate(invoice.date, 'MMM d, yyyy')}</p>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-lg font-bold text-navy-900">${invoice.amount.toLocaleString()}</p>
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="flex flex-row md:flex-col items-center md:items-end gap-4 md:gap-2 w-full md:w-auto justify-between md:justify-end">

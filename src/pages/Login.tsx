@@ -7,19 +7,28 @@ import type { UserRole } from '../lib/types';
 export function Login() {
     const navigate = useNavigate();
     const { login, signup } = useStore();
-    const [isSignUp, setIsSignUp] = useState(false);
+    // URL Params for Invite Flow
+    const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+    const inviteOrgId = searchParams.get('orgId');
+    const inviteEmail = searchParams.get('email');
+    const inviteRole = searchParams.get('role') as UserRole;
 
     // Login State
-    const [email, setEmail] = useState('john@buildpro.com');
+    const [email, setEmail] = useState('john@meits.com');
     const [password, setPassword] = useState('password');
 
     // Sign Up State
     const [name, setName] = useState('');
-    const [signupEmail, setSignupEmail] = useState('');
+    const [signupEmail, setSignupEmail] = useState(inviteEmail || '');
     const [signupPassword, setSignupPassword] = useState('');
     const [phone, setPhone] = useState('');
-    const [company, setCompany] = useState('');
-    const [role, setRole] = useState<UserRole>('builder');
+    const [company, setCompany] = useState(inviteOrgId || '');
+    const [role, setRole] = useState<UserRole>(inviteRole || 'builder');
+
+    // Auto-switch to signup if invite present
+    const [isSignUp, setIsSignUp] = useState(!!inviteOrgId);
+
+    const [isLoading, setIsLoading] = useState(false);
 
     const [isLoading, setIsLoading] = useState(false);
 
@@ -31,14 +40,13 @@ export function Login() {
         setTimeout(() => {
             if (isSignUp) {
                 signup({
-                    id: Math.random().toString(36).substr(2, 9),
                     name,
                     email: signupEmail,
                     password: signupPassword,
                     phone,
-                    company,
+                    company, // Kept as user property
                     role,
-                    avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`
+                    organizationName: company // Also used as Org Name
                 });
             } else {
                 login(email);
@@ -85,14 +93,17 @@ export function Login() {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-navy-900 mb-1.5">Company Name</label>
+                                <label className="block text-sm font-medium text-navy-900 mb-1.5">Company / Organization ID</label>
                                 <input
                                     type="text"
                                     value={company}
                                     onChange={(e) => setCompany(e.target.value)}
-                                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-navy-900"
+                                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-navy-900 disabled:opacity-60 disabled:cursor-not-allowed"
                                     placeholder="Acme Construction"
+                                    required
+                                    disabled={!!inviteOrgId}
                                 />
+                                {inviteOrgId && <p className="text-xs text-emerald-600 mt-1">Joining existing organization</p>}
                             </div>
                         </>
                     )}
@@ -127,7 +138,8 @@ export function Login() {
                             <select
                                 value={role}
                                 onChange={(e) => setRole(e.target.value as UserRole)}
-                                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-navy-900 appearance-none"
+                                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-navy-900 appearance-none disabled:opacity-60 disabled:cursor-not-allowed"
+                                disabled={!!inviteRole}
                             >
                                 <option value="builder">Builder</option>
                                 <option value="worker">Worker</option>

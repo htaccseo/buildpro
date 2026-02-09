@@ -1,11 +1,11 @@
 import { create } from 'zustand';
-import type { Project, User, Meeting, Notification, Task, ProjectUpdate, Invoice, Reminder, OtherMatter } from './types';
-import { MOCK_PROJECTS, MOCK_USERS, MOCK_MEETINGS, MOCK_NOTIFICATIONS } from './mockData';
+import type { Project, User, Meeting, Notification, Task, ProjectUpdate, Invoice, Reminder, OtherMatter, Organization } from './types';
+import { MOCK_PROJECTS, MOCK_USERS, MOCK_MEETINGS, MOCK_NOTIFICATIONS, MOCK_ORGANIZATION } from './mockData';
 
 const MOCK_INVOICES: Invoice[] = [
-    { id: 'inv1', type: 'sent', amount: 15000, clientName: 'Mr. Smith', dueDate: '2024-04-15', status: 'pending', date: '2024-04-01', description: 'Initial Deposit - Villa Renovation', projectId: 'p1' },
-    { id: 'inv2', type: 'received', amount: 2400, clientName: 'Sparky Electric', dueDate: '2024-03-28', status: 'overdue', date: '2024-03-14', description: 'Wiring Materials' },
-    { id: 'inv3', type: 'sent', amount: 8500, clientName: 'Urban Corp', dueDate: '2024-03-20', status: 'paid', date: '2024-02-20', description: 'Foundation Stage', projectId: 'p2' },
+    { id: 'inv1', organizationId: MOCK_ORGANIZATION.id, type: 'sent', amount: 15000, clientName: 'Mr. Smith', dueDate: '2024-04-15', status: 'pending', date: '2024-04-01', description: 'Initial Deposit - Villa Renovation', projectId: 'p1' },
+    { id: 'inv2', organizationId: MOCK_ORGANIZATION.id, type: 'received', amount: 2400, clientName: 'Sparky Electric', dueDate: '2024-03-28', status: 'overdue', date: '2024-03-14', description: 'Wiring Materials' },
+    { id: 'inv3', organizationId: MOCK_ORGANIZATION.id, type: 'sent', amount: 8500, clientName: 'Urban Corp', dueDate: '2024-03-20', status: 'paid', date: '2024-02-20', description: 'Foundation Stage', projectId: 'p2' },
 ];
 
 interface AppState {
@@ -14,15 +14,20 @@ interface AppState {
     meetings: Meeting[];
     notifications: Notification[];
     invoices: Invoice[];
+
+    // Organization
+    organizations: Organization[]; // In a real app, this would be db table
+    currentOrganization: Organization | null;
     currentUser: User | null;
 
     // Actions
     login: (email: string) => void;
     logout: () => void;
-    signup: (user: User) => void;
-    addUser: (user: User) => void;
+    signup: (user: Partial<User> & { organizationName: string }) => void;
+    inviteUser: (email: string, role: string) => string;
+    addUser: (user: Omit<User, 'organizationId'>) => void;
     updateUser: (user: User) => void;
-    addProject: (project: Project) => void;
+    addProject: (project: Omit<Project, 'organizationId'>) => void;
     updateProject: (project: Project) => void;
     updateProjectProgress: (id: string, progress: number) => void;
     addTask: (projectId: string, task: Task) => void;
@@ -33,24 +38,24 @@ interface AppState {
     markNotificationRead: (id: string) => void;
 
     // Invoice Actions
-    addInvoice: (invoice: Invoice) => void;
+    addInvoice: (invoice: Omit<Invoice, 'organizationId'>) => void;
     updateInvoiceStatus: (id: string, status: Invoice['status']) => void;
     deleteInvoice: (id: string) => void;
 
     // Meeting Actions
-    addMeeting: (meeting: Meeting) => void;
+    addMeeting: (meeting: Omit<Meeting, 'organizationId'>) => void;
     deleteMeeting: (id: string) => void;
 
     // Reminder Actions
     reminders: Reminder[];
-    addReminder: (reminder: Reminder) => void;
+    addReminder: (reminder: Omit<Reminder, 'organizationId'>) => void;
     updateReminder: (reminder: Reminder) => void;
     deleteReminder: (id: string) => void;
     toggleReminder: (id: string) => void;
 
     // Other Matters Actions
     otherMatters: OtherMatter[];
-    addOtherMatter: (matter: OtherMatter) => void;
+    addOtherMatter: (matter: Omit<OtherMatter, 'organizationId'>) => void;
     deleteOtherMatter: (id: string) => void;
 
     // Debug
@@ -63,25 +68,87 @@ export const useStore = create<AppState>((set, get) => ({
     meetings: MOCK_MEETINGS,
     notifications: MOCK_NOTIFICATIONS,
     invoices: MOCK_INVOICES,
+
+    organizations: [MOCK_ORGANIZATION],
+    currentOrganization: null,
     currentUser: null,
 
     login: (email) => {
-        const user = MOCK_USERS.find(u => u.email === email) || MOCK_USERS[0];
-        set({ currentUser: user });
+        const user = get().users.find(u => u.email === email);
+        if (user) {
+            const org = get().organizations.find(o => o.id === user.organizationId);
+            set({ currentUser: user, currentOrganization: org || null });
+        } else {
+            // Fallback for demo if not found in list (shouldn't happen with correct usage)
+            const defaultUser = { ...MOCK_USERS[0], isAdmin: true };
+            const defaultOrg = MOCK_ORGANIZATION;
+            set({ currentUser: defaultUser, currentOrganization: defaultOrg });
+        }
     },
 
-    signup: (user) => {
-        // In a real app, this would make an API call.
-        // For now, we update the local state.
+    inviteUser: (email, role) => {
+        // In a real app, this would send an email. 
+        // For demo, we just log it or we could create a pending user state.
+        console.log(`Inviting ${email} as ${role} to ${get().currentOrganization?.name}`);
+        // We could return the link here if we want to show it in UI
+        return `${window.location.origin}/login?orgId=${get().currentOrganization?.id}&email=${encodeURIComponent(email)}&role=${role}`;
+    },
+
+    signup: ({ organizationName, ...userDetails }) => {
+        let orgId = '';
+        let newOrg: Organization | undefined;
+
+        // Check if joining existing org (passed via hidden field or special logic)
+        // For simplicity in this demo, if organizationName matches an ID format or we have a way to know, we join.
+        // BUT, looking at the signature, we might need to adjust it or pass orgId separately.
+        // Let's assume if organizationName starts with 'org_', it's an ID. 
+        // OR better: we update the component to pass existingOrgId if present.
+        // Actually, let's look at how we'll call it from Login.tsx. 
+        // We can overload organizationName to be the ID if it matches an existing one? 
+        // No, cleaner to change the signature? 
+        // Let's keep signature but infer: if organizationName is empty, we might be joining?
+        // Wait, the user prompt said "Invite flow".
+        // Let's add `organizationId` to the signup payload optionally.
+
+        // RE-READING signature: signup: (user: Partial<User> & { organizationName: string }) => void;
+        // I will change implementation to check if organizationName matches an existing ID first.
+
+        const existingOrg = get().organizations.find(o => o.id === organizationName); // simplistic check
+
+        if (existingOrg) {
+            orgId = existingOrg.id;
+            // Don't create new org
+        } else {
+            newOrg = {
+                id: Math.random().toString(36).substr(2, 9),
+                name: organizationName,
+                createdAt: new Date().toISOString()
+            };
+            orgId = newOrg.id;
+        }
+
+        const newUser: User = {
+            ...userDetails as User,
+            id: Math.random().toString(36).substr(2, 9),
+            organizationId: orgId,
+            avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(userDetails.name || 'User')}&background=random`,
+            isAdmin: !existingOrg // First user of new org is admin
+        };
+
         set((state) => ({
-            users: [...state.users, user],
-            currentUser: user
+            organizations: newOrg ? [...state.organizations, newOrg] : state.organizations,
+            users: [...state.users, newUser],
+            currentUser: newUser,
+            currentOrganization: existingOrg || newOrg!
         }));
     },
 
-    addUser: (user: User) => {
+    addUser: (user) => {
+        const currentOrgId = get().currentOrganization?.id;
+        if (!currentOrgId) return;
+
         set((state) => ({
-            users: [...state.users, user]
+            users: [...state.users, { ...user, organizationId: currentOrgId } as User]
         }));
     },
 
@@ -92,9 +159,13 @@ export const useStore = create<AppState>((set, get) => ({
         }));
     },
 
-    logout: () => set({ currentUser: null }),
+    logout: () => set({ currentUser: null, currentOrganization: null }),
 
-    addProject: (project) => set((state) => ({ projects: [...state.projects, project] })),
+    addProject: (project) => {
+        const currentOrgId = get().currentOrganization?.id;
+        if (!currentOrgId) return;
+        set((state) => ({ projects: [...state.projects, { ...project, organizationId: currentOrgId } as Project] }));
+    },
 
     updateProject: (updatedProject) => set((state) => ({
         projects: state.projects.map((p) => p.id === updatedProject.id ? updatedProject : p)
@@ -126,15 +197,15 @@ export const useStore = create<AppState>((set, get) => ({
     })),
 
     completeTask: (taskId, note, image) => set((state) => {
-        // Find the task and project to create a notification
         const project = state.projects.find(p => p.tasks.some(t => t.id === taskId));
         const task = project?.tasks.find(t => t.id === taskId);
+        const currentOrgId = get().currentOrganization?.id;
 
-        // Create detailed notification
-        if (task && project) {
+        if (task && project && currentOrgId) {
             const newNotification: Notification = {
                 id: Math.random().toString(36).substr(2, 9),
-                userId: get().currentUser?.id || 'unknown', // Notification for the builder
+                organizationId: currentOrgId,
+                userId: get().currentUser?.id || 'unknown',
                 message: `Task "${task.title}" completed in ${project.name}`,
                 read: false,
                 date: new Date().toISOString(),
@@ -153,7 +224,7 @@ export const useStore = create<AppState>((set, get) => ({
         return state;
     }),
 
-    addProjectUpdate: (projectId: string, update: ProjectUpdate) => set((state) => ({
+    addProjectUpdate: (projectId, update) => set((state) => ({
         projects: state.projects.map(p => p.id === projectId ? {
             ...p,
             updates: [...(p.updates || []), update]
@@ -165,9 +236,13 @@ export const useStore = create<AppState>((set, get) => ({
     })),
 
     // Invoice Actions
-    addInvoice: (invoice) => set((state) => ({
-        invoices: [invoice, ...state.invoices]
-    })),
+    addInvoice: (invoice) => {
+        const currentOrgId = get().currentOrganization?.id;
+        if (!currentOrgId) return;
+        set((state) => ({
+            invoices: [{ ...invoice, organizationId: currentOrgId } as Invoice, ...state.invoices]
+        }));
+    },
 
     updateInvoiceStatus: (id, status) => set((state) => ({
         invoices: state.invoices.map(inv => inv.id === id ? { ...inv, status } : inv)
@@ -178,20 +253,28 @@ export const useStore = create<AppState>((set, get) => ({
     })),
 
     // Meeting Actions
-    addMeeting: (meeting) => set((state) => ({
-        meetings: [...state.meetings, meeting].sort((a, b) => new Date(a.date + 'T' + a.time).getTime() - new Date(b.date + 'T' + b.time).getTime())
-    })),
+    addMeeting: (meeting) => {
+        const currentOrgId = get().currentOrganization?.id;
+        if (!currentOrgId) return;
+        set((state) => ({
+            meetings: [...state.meetings, { ...meeting, organizationId: currentOrgId } as Meeting].sort((a, b) => new Date(a.date + 'T' + a.time).getTime() - new Date(b.date + 'T' + b.time).getTime())
+        }));
+    },
 
     deleteMeeting: (id) => set((state) => ({
         meetings: state.meetings.filter(m => m.id !== id)
     })),
 
     // Reminder Actions
-    reminders: [], // Initial empty state
+    reminders: [],
 
-    addReminder: (reminder) => set((state) => ({
-        reminders: [...state.reminders, reminder].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-    })),
+    addReminder: (reminder) => {
+        const currentOrgId = get().currentOrganization?.id;
+        if (!currentOrgId) return;
+        set((state) => ({
+            reminders: [...state.reminders, { ...reminder, organizationId: currentOrgId } as Reminder].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+        }));
+    },
 
     updateReminder: (updatedReminder) => set((state) => ({
         reminders: state.reminders.map(r => r.id === updatedReminder.id ? updatedReminder : r).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
@@ -208,9 +291,13 @@ export const useStore = create<AppState>((set, get) => ({
     // Other Matters Actions
     otherMatters: [],
 
-    addOtherMatter: (matter) => set((state) => ({
-        otherMatters: [matter, ...state.otherMatters]
-    })),
+    addOtherMatter: (matter) => {
+        const currentOrgId = get().currentOrganization?.id;
+        if (!currentOrgId) return;
+        set((state) => ({
+            otherMatters: [{ ...matter, organizationId: currentOrgId } as OtherMatter, ...state.otherMatters]
+        }));
+    },
 
     deleteOtherMatter: (id) => set((state) => ({
         otherMatters: state.otherMatters.filter(om => om.id !== id)
@@ -222,6 +309,8 @@ export const useStore = create<AppState>((set, get) => ({
         meetings: MOCK_MEETINGS,
         notifications: MOCK_NOTIFICATIONS,
         invoices: MOCK_INVOICES,
-        currentUser: MOCK_USERS[0], // Reset to default user
+        currentUser: MOCK_USERS[0],
+        currentOrganization: MOCK_ORGANIZATION,
+        organizations: [MOCK_ORGANIZATION]
     }),
 }));

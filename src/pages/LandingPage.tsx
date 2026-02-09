@@ -93,9 +93,9 @@ export function LandingPage() {
                             >
                                 Get Started
                             </button>
-                            <div className="flex items-center gap-2 text-sm text-slate-500 px-2">
+                            <div className="flex items-center gap-2 text-sm text-slate-500 px-2 opacity-0">
                                 <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                                <span>No credit card required</span>
+                                <span>&nbsp;</span>
                             </div>
                         </motion.div>
                     </div>
@@ -133,9 +133,6 @@ export function LandingPage() {
                                 We stripped away the bloat to give you exactly what you need.
                             </p>
                         </div>
-                        <button className="text-emerald-600 font-semibold flex items-center gap-2 hover:gap-3 transition-all">
-                            View all features <ArrowRight className="w-4 h-4" />
-                        </button>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -147,7 +144,7 @@ export function LandingPage() {
                         <FeatureCard
                             icon={Calendar}
                             title="Smart Schedule"
-                            description="Drag-and-drop scheduling that keeps your team and subcontractors aligned."
+                            description="A simple way to schedule that keeps your team and subcontractors aligned."
                         />
                         <FeatureCard
                             icon={Hexagon} // Using Hexagon as a placeholder for a 'Project' icon if needed, or Users
@@ -156,8 +153,8 @@ export function LandingPage() {
                         />
                         <FeatureCard
                             icon={FileText}
-                            title="Invoices & Docs"
-                            description="Professional documents generated in seconds, not hours."
+                            title="Invoices"
+                            description="An efficient way to monitor outstanding payments."
                         />
                     </div>
                 </div>

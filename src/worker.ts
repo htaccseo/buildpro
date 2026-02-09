@@ -17,7 +17,13 @@ const corsHeaders = {
 };
 
 const withCors = (response: Response) => {
-    if (!response) return new Response('Internal Router Error', { status: 500 });
+    if (!response) {
+        // Fallback if null response
+        return new Response('Internal Router Error: No response', {
+            status: 500,
+            headers: corsHeaders
+        });
+    }
 
     const newHeaders = new Headers(response.headers);
     Object.entries(corsHeaders).forEach(([key, value]) => {
@@ -117,8 +123,14 @@ router.post('/api/signup', async (request, env: Env) => {
     logs.push('Start /api/signup');
 
     try {
-        const data = await request.json();
-        logs.push(`Payload received: ${JSON.stringify(data)}`);
+        let data;
+        try {
+            data = await request.json();
+            logs.push(`Payload received: ${JSON.stringify(data)}`);
+        } catch (jsonErr: any) {
+            logs.push(`JSON Parse Error: ${jsonErr.message}`);
+            throw new Error(`Invalid JSON body: ${jsonErr.message}`);
+        }
 
         const { name, email, password, company, role, phone } = data;
 
@@ -128,20 +140,31 @@ router.post('/api/signup', async (request, env: Env) => {
 
         // Create Organization
         logs.push(`Inserting Org: ${company}`);
-        await env.DB.prepare(
-            'INSERT INTO organizations (id, name) VALUES (?, ?)'
-        ).bind(orgId, company || null).run();
+        try {
+            await env.DB.prepare(
+                'INSERT INTO organizations (id, name) VALUES (?, ?)'
+            ).bind(orgId, company || null).run();
+        } catch (dbErr: any) {
+            logs.push(`DB Org Insert Error: ${dbErr.message}`);
+            throw dbErr;
+        }
         logs.push('Org Inserted');
 
         // Create User
         logs.push(`Inserting User: ${email}, Role: ${role}`);
-        await env.DB.prepare(
-            'INSERT INTO users (id, organization_id, name, email, role, company, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?)'
-        ).bind(userId, orgId, name || null, email || null, role || null, company || null, 1).run();
+        try {
+            await env.DB.prepare(
+                'INSERT INTO users (id, organization_id, name, email, role, company, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?)'
+            ).bind(userId, orgId, name || null, email || null, role || null, company || null, 1).run();
+        } catch (dbErr: any) {
+            logs.push(`DB User Insert Error: ${dbErr.message}`);
+            throw dbErr;
+        }
         logs.push('User Inserted');
 
         return Response.json({ success: true, userId, orgId });
     } catch (e: any) {
+        // Return JSON error response explicitly
         return Response.json({
             message: `Signup Error: ${e.message}`,
             stack: e.stack,
@@ -164,7 +187,7 @@ router.post('/api/project', async (request, env: Env) => {
         ).run();
         return Response.json({ success: true });
     } catch (e: any) {
-        return new Response(`Project Error: ${e.message}`, { status: 500 });
+        return Response.json({ message: `Project Error: ${e.message}` }, { status: 500 });
     }
 });
 
@@ -180,7 +203,7 @@ router.post('/api/task', async (request, env: Env) => {
         ).run();
         return Response.json({ success: true });
     } catch (e: any) {
-        return new Response(`Task Error: ${e.message}`, { status: 500 });
+        return Response.json({ message: `Task Error: ${e.message}` }, { status: 500 });
     }
 });
 
@@ -189,70 +212,88 @@ router.all('/api/*', () => new Response('API Endpoint Not Found', { status: 404 
 
 export default {
     fetch: async (request: Request, env: Env, ctx: ExecutionContext) => {
-        // Emergency Debug Check
-        if (request.url.endsWith('/debug')) {
-            const dbStatus = env.DB ? 'Present' : 'Missing';
-            const assetsStatus = env.ASSETS ? 'Present' : 'Missing';
-
-            let dbCheck = 'Not attempted';
-            try {
-                const { results } = await env.DB.prepare('SELECT * FROM users LIMIT 1').all();
-                dbCheck = `Success (Found ${results.length} users). Sample: ${JSON.stringify(results[0] || {})}`;
-            } catch (e: any) {
-                dbCheck = `Failed: ${e.message}`;
+        // PARANOID GLOBAL TRY-CATCH
+        try {
+            // Handle CORS Preflight globally and immediately
+            if (request.method === 'OPTIONS') {
+                return new Response(null, {
+                    headers: corsHeaders
+                });
             }
 
-            let assetCheck = 'Not attempted';
-            try {
-                const assetReq = new Request(new URL('/index.html', request.url));
-                const assetRes = await env.ASSETS.fetch(assetReq);
-                assetCheck = `Success (${assetRes.status})`;
-            } catch (e: any) {
-                assetCheck = `Failed: ${e.message}`;
-            }
+            // Emergency Debug Check
+            if (request.url.endsWith('/debug')) {
+                const dbStatus = env.DB ? 'Present' : 'Missing';
+                const assetsStatus = env.ASSETS ? 'Present' : 'Missing';
 
-            return new Response(`Worker Status:
+                let dbCheck = 'Not attempted';
+                try {
+                    const { results } = await env.DB.prepare('SELECT * FROM users LIMIT 1').all();
+                    dbCheck = `Success (Found ${results.length} users). Sample: ${JSON.stringify(results[0] || {})}`;
+                } catch (e: any) {
+                    dbCheck = `Failed: ${e.message}`;
+                }
+
+                let assetCheck = 'Not attempted';
+                try {
+                    const assetReq = new Request(new URL('/index.html', request.url));
+                    const assetRes = await env.ASSETS.fetch(assetReq);
+                    assetCheck = `Success (${assetRes.status})`;
+                } catch (e: any) {
+                    assetCheck = `Failed: ${e.message}`;
+                }
+
+                return new Response(`Worker Status:
 - DB Binding: ${dbStatus}
 - DB Query: ${dbCheck}
 - ASSETS Binding: ${assetsStatus}
 - Index Asset Fetch: ${assetCheck}
 `);
-        }
+            }
 
-        const url = new URL(request.url);
+            const url = new URL(request.url);
 
-        // API Request Handling
-        if (url.pathname.startsWith('/api/')) {
-            try {
-                const response = await router.handle(request, env, ctx);
-                if (!response) {
-                    return new Response('API Router returned no response', { status: 500 });
+            // API Request Handling
+            if (url.pathname.startsWith('/api/')) {
+                try {
+                    const response = await router.handle(request, env, ctx);
+                    if (!response) {
+                        return new Response('API Router returned no response', { status: 500 }); // Should be caught by 404 handler though
+                    }
+                    return withCors(response);
+                } catch (e: any) {
+                    // Try to return JSON error
+                    try {
+                        return withCors(Response.json({
+                            message: `Worker Global API Error: ${e.message}`,
+                            stack: e.stack
+                        }, { status: 500 }));
+                    } catch (jsonErr) {
+                        // If Response.json fails (e.g. invalid object), fall back to text
+                        return new Response(`Worker Global API Error (Text Fallback): ${e.message}\n${e.stack}`, {
+                            status: 500,
+                            headers: corsHeaders
+                        });
+                    }
                 }
-                return withCors(response);
+            }
+
+            // Asset Handling (Bypassing Router for performance and safety)
+            try {
+                let response = await env.ASSETS.fetch(request);
+
+                if (response.status === 404 && !url.pathname.includes('.')) {
+                    const indexRequest = new Request(new URL('/index.html', request.url), request);
+                    response = await env.ASSETS.fetch(indexRequest);
+                }
+                return response;
             } catch (e: any) {
-                return new Response(`Worker Global API Error: ${e.message}\n${e.stack}`, { status: 500 });
+                return new Response(`Worker Global Asset Error: ${e.message}\n${e.stack}`, { status: 500 });
             }
-        }
 
-        // Asset Handling (Bypassing Router for performance and safety)
-        try {
-            let response = await env.ASSETS.fetch(request);
-
-            if (response.status === 404 && !url.pathname.includes('.')) {
-                const indexRequest = new Request(new URL('/index.html', request.url), request);
-                response = await env.ASSETS.fetch(indexRequest);
-            }
-            return response;
-        } catch (e: any) {
-            // Check if it's an API request to return JSON
-            if (request.url.includes('/api/')) {
-                return withCors(Response.json({
-                    message: `Worker Global Error: ${e.message}`,
-                    stack: e.stack,
-                    logs: [] // Add logs if available in scope context in future
-                }, { status: 500 }));
-            }
-            return new Response(`Worker Global Error: ${e.message}\n${e.stack}`, { status: 500 });
+        } catch (globalError: any) {
+            // This catches completely unexpected errors (like syntax errors at runtime, or weird env issues)
+            return new Response(`CRITICAL WORKER FAILURE: ${globalError.message}\n${globalError.stack}`, { status: 500 });
         }
     }
 };

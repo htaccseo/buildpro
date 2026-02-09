@@ -30,7 +30,7 @@ export function LandingPage() {
                         <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white shadow-emerald-500/20 shadow-lg">
                             <Hexagon className="w-6 h-6 fill-current" />
                         </div>
-                        <span className="text-2xl font-bold text-navy-900 tracking-tight">MEITS</span>
+                        <span className="text-2xl font-extrabold text-navy-900 tracking-tight">meits</span>
                     </div>
 
                     <div className="flex items-center gap-4">
@@ -60,11 +60,11 @@ export function LandingPage() {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.6 }}
                         >
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold uppercase tracking-wider mb-6 border border-emerald-100">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-extrabold uppercase tracking-wider mb-6 border border-emerald-100">
                                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                                 Simple & Minimal
                             </div>
-                            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-navy-900 tracking-tight leading-[1.1]">
+                            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-navy-900 tracking-tight leading-[1.1]">
                                 Project <br />
                                 Management <br />
                                 <span className="text-emerald-600">Simplified.</span>
@@ -90,7 +90,7 @@ export function LandingPage() {
                         >
                             <button
                                 onClick={handleSignUpClick}
-                                className="px-8 py-4 bg-emerald-600 text-white text-lg font-bold rounded-2xl hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-500/30 hover:-translate-y-1 w-full sm:w-auto"
+                                className="px-8 py-4 bg-emerald-600 text-white text-lg font-extrabold rounded-2xl hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-500/30 hover:-translate-y-1 w-full sm:w-auto"
                             >
                                 Get Started
                             </button>
@@ -111,7 +111,7 @@ export function LandingPage() {
                         <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl shadow-navy-900/10 border border-slate-200/60 bg-white">
                             <img
                                 src={dashboardPreview}
-                                alt="MEITS Dashboard Preview"
+                                alt="meits Dashboard Preview"
                                 className="w-full h-auto object-cover"
                             />
 
@@ -129,7 +129,7 @@ export function LandingPage() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
                         <div className="max-w-xl">
-                            <h2 className="text-3xl font-bold text-navy-900 mb-4">Focus on building, not paperwork</h2>
+                            <h2 className="text-3xl font-extrabold text-navy-900 mb-4">Focus on building, not paperwork</h2>
                             <p className="text-slate-600 text-lg">
                                 We stripped away the bloat to give you exactly what you need.
                             </p>
@@ -168,14 +168,14 @@ export function LandingPage() {
                 </div>
 
                 <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
-                    <h2 className="text-4xl md:text-5xl font-bold mb-8 tracking-tight">Ready to simplify your workflow?</h2>
+                    <h2 className="text-4xl md:text-5xl font-extrabold mb-8 tracking-tight">Ready to simplify your workflow?</h2>
                     <p className="text-navy-200 text-lg mb-10 max-w-2xl mx-auto">
-                        Join thousands of small builders who are managing their projects with MEITS.
+                        Join thousands of small builders who are managing their projects with meits.
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <button
                             onClick={handleSignUpClick}
-                            className="px-8 py-4 bg-emerald-500 text-white text-lg font-bold rounded-2xl hover:bg-emerald-400 transition-all shadow-xl shadow-emerald-500/20 hover:-translate-y-1 w-full sm:w-auto"
+                            className="px-8 py-4 bg-emerald-500 text-white text-lg font-extrabold rounded-2xl hover:bg-emerald-400 transition-all shadow-xl shadow-emerald-500/20 hover:-translate-y-1 w-full sm:w-auto"
                         >
                             Get Started Now
                         </button>
@@ -191,7 +191,7 @@ export function LandingPage() {
                             <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center text-white">
                                 <Hexagon className="w-5 h-5 fill-current" />
                             </div>
-                            <span className="font-bold text-navy-900 text-xl">MEITS</span>
+                            <span className="font-bold text-navy-900 text-xl">meits</span>
                         </div>
                         <div className="flex gap-8 text-slate-500 text-sm font-medium">
                             <a href="#" className="hover:text-emerald-600 transition-colors">Features</a>

@@ -64,7 +64,7 @@ export function Login({ initialMode = 'login' }: { initialMode?: 'login' | 'sign
                         <LayoutDashboard className="w-6 h-6 text-white" />
                     </div>
                     <h1 className="text-2xl font-bold text-navy-900">{isSignUp ? 'Create Account' : 'Welcome Back'}</h1>
-                    <p className="text-text-muted mt-2">{isSignUp ? 'Join MEITS to manage your projects' : 'Sign in to your MEITS account'}</p>
+                    <p className="text-text-muted mt-2">{isSignUp ? 'Join meits to manage your projects' : 'Sign in to your meits account'}</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">

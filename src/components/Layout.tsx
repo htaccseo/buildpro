@@ -53,7 +53,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                         <div className="w-6 h-6 rounded-md bg-emerald-500 flex items-center justify-center text-white">
                             <Hexagon className="w-4 h-4 fill-current" />
                         </div>
-                        <span className="text-lg font-bold text-navy-900">{currentOrganization?.name || 'MEITS'}</span>
+                        <span className="text-lg font-extrabold text-navy-900">{currentOrganization?.name || 'meits'}</span>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -84,8 +84,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
                         <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-white">
                             <Hexagon className="w-5 h-5 fill-current" />
                         </div>
-                        <h1 className="text-xl font-bold tracking-tight text-navy-900 truncate max-w-[150px]" title={currentOrganization?.name}>
-                            {currentOrganization?.name || 'MEITS'}
+                        <h1 className="text-xl font-extrabold tracking-tight text-navy-900 truncate max-w-[150px]" title={currentOrganization?.name}>
+                            {currentOrganization?.name || 'meits'}
                         </h1>
                     </div>
                     <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden text-slate-400" aria-label="Close menu">

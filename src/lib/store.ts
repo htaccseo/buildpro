@@ -104,8 +104,7 @@ export const useStore = create<AppState>((set, get) => ({
                     currentUser: data.user,
                     currentOrganization: data.organization,
                     users: data.users || [],
-                    projects: data.projects || [],
-                    // Convert tasks array back to distributed project tasks if needed, 
+
                     // or better, just keep tasks separate in state
                     // For now, let's map tasks back to projects for compatibility with existing UI
                     // or we should update UI to read from a tasks map. 
@@ -314,8 +313,6 @@ export const useStore = create<AppState>((set, get) => ({
     })),
 
     // Reminder Actions
-    reminders: [],
-
     addReminder: (reminder) => {
         const currentOrgId = get().currentOrganization?.id;
         if (!currentOrgId) return;
@@ -337,8 +334,6 @@ export const useStore = create<AppState>((set, get) => ({
     })),
 
     // Other Matters Actions
-    otherMatters: [],
-
     addOtherMatter: (matter) => {
         const currentOrgId = get().currentOrganization?.id;
         if (!currentOrgId) return;

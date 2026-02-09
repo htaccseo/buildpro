@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../lib/store';
-import { ArrowRight, Layout, Calendar, FileText, Hexagon, CheckCircle2 } from 'lucide-react';
+import { Layout, Calendar, FileText, Hexagon, CheckCircle2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import dashboardPreview from '../assets/dashboard-preview.png';
 

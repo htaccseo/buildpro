@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useStore } from '../lib/store';
 import { Card } from '../components/ui/Card';
-import { Users, Building, Settings, Trash2, Ban, CheckCircle, Search, BarChart3, TrendingUp } from 'lucide-react';
+import { Users, Building, Trash2, Ban, CheckCircle, Search, TrendingUp } from 'lucide-react';
 
 export function SuperAdminDashboard() {
     const { users, organizations, deleteOrganization, updateOrganizationStatus } = useStore();

@@ -15,6 +15,7 @@ import { LandingPage } from './pages/LandingPage';
 
 import { SuperAdminDashboard } from './pages/SuperAdminDashboard';
 import { SuperAdminRoute } from './components/SuperAdminRoute';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 function AuthGuard({ children }: { children: React.ReactNode }) {
   const { currentUser } = useStore();
@@ -30,11 +31,13 @@ function App() {
         <Route
           path="/admin"
           element={
-            <SuperAdminRoute>
-              <Layout>
-                <SuperAdminDashboard />
-              </Layout>
-            </SuperAdminRoute>
+            <ErrorBoundary>
+              <SuperAdminRoute>
+                <Layout>
+                  <SuperAdminDashboard />
+                </Layout>
+              </SuperAdminRoute>
+            </ErrorBoundary>
           }
         />
         <Route

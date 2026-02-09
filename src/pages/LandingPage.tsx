@@ -17,8 +17,7 @@ export function LandingPage() {
     };
 
     const handleSignUpClick = () => {
-        // For now, redirect to login or a signup page if it existed
-        navigate('/login');
+        navigate('/signup');
     };
 
     return (
@@ -89,7 +88,7 @@ export function LandingPage() {
                             className="flex flex-col sm:flex-row items-start sm:items-center gap-4 pt-2"
                         >
                             <button
-                                onClick={handleLoginClick}
+                                onClick={handleSignUpClick}
                                 className="px-8 py-4 bg-emerald-600 text-white text-lg font-bold rounded-2xl hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-500/30 hover:-translate-y-1 w-full sm:w-auto"
                             >
                                 Get Started
@@ -177,7 +176,7 @@ export function LandingPage() {
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <button
-                            onClick={handleLoginClick}
+                            onClick={handleSignUpClick}
                             className="px-8 py-4 bg-emerald-500 text-white text-lg font-bold rounded-2xl hover:bg-emerald-400 transition-all shadow-xl shadow-emerald-500/20 hover:-translate-y-1 w-full sm:w-auto"
                         >
                             Get Started Now

@@ -4,7 +4,7 @@ import { useStore } from '../lib/store';
 import { LayoutDashboard } from 'lucide-react';
 import type { UserRole } from '../lib/types';
 
-export function Login() {
+export function Login({ initialMode = 'login' }: { initialMode?: 'login' | 'signup' }) {
     const navigate = useNavigate();
     const { login, signup } = useStore();
     // URL Params for Invite Flow
@@ -25,8 +25,8 @@ export function Login() {
     const [company, setCompany] = useState(inviteOrgId || '');
     const [role, setRole] = useState<UserRole>(inviteRole || 'builder');
 
-    // Auto-switch to signup if invite present
-    const [isSignUp, setIsSignUp] = useState(!!inviteOrgId);
+    // Auto-switch to signup if invite present or initialMode is signup
+    const [isSignUp, setIsSignUp] = useState(!!inviteOrgId || initialMode === 'signup');
 
     const [isLoading, setIsLoading] = useState(false);
 

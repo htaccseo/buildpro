@@ -117,63 +117,8 @@ router.get('/api/data', async (request: Request, env: Env) => {
     }
 });
 
-// POST /api/signup
-router.post('/api/signup', async (request, env: Env) => {
-    const logs: string[] = [];
-    logs.push('Start /api/signup');
-
-    try {
-        let data;
-        try {
-            data = await request.json();
-            logs.push(`Payload received: ${JSON.stringify(data)}`);
-        } catch (jsonErr: any) {
-            logs.push(`JSON Parse Error: ${jsonErr.message}`);
-            throw new Error(`Invalid JSON body: ${jsonErr.message}`);
-        }
-
-        const { name, email, password, company, role, phone } = data;
-
-        const orgId = generateUUID();
-        const userId = generateUUID();
-        logs.push(`Generated IDs: Org=${orgId}, User=${userId}`);
-
-        // Create Organization
-        logs.push(`Inserting Org: ${company}`);
-        try {
-            await env.DB.prepare(
-                'INSERT INTO organizations (id, name) VALUES (?, ?)'
-            ).bind(orgId, company || null).run();
-        } catch (dbErr: any) {
-            logs.push(`DB Org Insert Error: ${dbErr.message}`);
-            throw dbErr;
-        }
-
-        logs.push('Org Inserted');
-
-        // Create User
-        logs.push(`Inserting User: ${email}, Role: ${role}`);
-        try {
-            await env.DB.prepare(
-                'INSERT INTO users (id, organization_id, name, email, role, company, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?)'
-            ).bind(userId, orgId, name || null, email || null, role || null, company || null, 1).run();
-        } catch (dbErr: any) {
-            logs.push(`DB User Insert Error: ${dbErr.message}`);
-            throw dbErr;
-        }
-
-        logs.push('User Inserted');
-
-        return Response.json({ success: true, userId, orgId, logs });
-    } catch (e: any) {
-        // Return JSON error response explicitly
-        return Response.json({
-            message: `Signup Error: ${e.message}`,
-            stack: e.stack,
-            logs: logs
-        }, { status: 500 });
-    }
-});
+// POST /api/signup (IGNORED by Fetch Handler Manual Override, keeping for reference but corrupted to avoid matching)
+// router.post('/api/signup', ...);
 
 // POST /api/project
 router.post('/api/project', async (request, env: Env) => {
@@ -256,6 +201,79 @@ export default {
             const url = new URL(request.url);
 
             // API Request Handling
+
+            // MANUAL SIGNUP HANDLER (Bypassing Router to fix 1101 Error)
+            if (url.pathname === '/api/signup' && request.method === 'POST') {
+                const logs: string[] = [];
+                logs.push('Start /api/signup (Manual Handler)');
+                console.log('[Worker] Start /api/signup (Manual Handler)');
+
+                try {
+                    let data;
+                    try {
+                        data = await request.json();
+                        logs.push(`Payload received: ${JSON.stringify(data)}`);
+                        console.log(`[Worker] Payload received: ${JSON.stringify(data)}`);
+                    } catch (jsonErr: any) {
+                        logs.push(`JSON Parse Error: ${jsonErr.message}`);
+                        console.error(`[Worker] JSON Parse Error: ${jsonErr.message}`);
+                        throw new Error(`Invalid JSON body: ${jsonErr.message}`);
+                    }
+
+                    const { name, email, password, company, role, phone } = data;
+
+                    const orgId = generateUUID();
+                    const userId = generateUUID();
+                    logs.push(`Generated IDs: Org=${orgId}, User=${userId}`);
+                    console.log(`[Worker] Generated IDs: Org=${orgId}, User=${userId}`);
+
+                    // Create Organization
+                    logs.push(`Inserting Org: ${company}`);
+                    console.log(`[Worker] Inserting Org: ${company} (ID: ${orgId})`);
+                    try {
+                        const orgResult = await env.DB.prepare(
+                            'INSERT INTO organizations (id, name) VALUES (?, ?)'
+                        ).bind(orgId, company || null).run();
+                        console.log(`[Worker] Org Insert Result: ${JSON.stringify(orgResult)}`);
+                    } catch (dbErr: any) {
+                        console.error(`[Worker] DB Org Insert Error: ${dbErr.message}`);
+                        logs.push(`DB Org Insert Error: ${dbErr.message}`);
+                        throw dbErr;
+                    }
+
+                    logs.push('Org Inserted');
+                    console.log('[Worker] Org Inserted');
+
+                    // Create User
+                    logs.push(`Inserting User: ${email}, Role: ${role}`);
+                    console.log(`[Worker] Inserting User: ${email} (ID: ${userId})`);
+                    try {
+                        const userResult = await env.DB.prepare(
+                            'INSERT INTO users (id, organization_id, name, email, role, company, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?)'
+                        ).bind(userId, orgId, name || null, email || null, role || null, company || null, 1).run();
+                        console.log(`[Worker] User Insert Result: ${JSON.stringify(userResult)}`);
+                    } catch (dbErr: any) {
+                        console.error(`[Worker] DB User Insert Error: ${dbErr.message}`);
+                        logs.push(`DB User Insert Error: ${dbErr.message}`);
+                        throw dbErr;
+                    }
+
+                    logs.push('User Inserted');
+                    console.log('[Worker] User Inserted');
+
+                    return withCors(Response.json({ success: true, userId, orgId, logs }));
+
+                } catch (e: any) {
+                    console.error(`[Worker] Signup Fatal Error: ${e.message}`, e.stack);
+                    return withCors(Response.json({
+                        message: `Signup Error: ${e.message}`,
+                        stack: e.stack,
+                        logs: logs
+                    }, { status: 500 }));
+                }
+            }
+
+
             if (url.pathname.startsWith('/api/')) {
                 try {
                     const response = await router.handle(request, env, ctx);

@@ -140,31 +140,29 @@ router.post('/api/signup', async (request, env: Env) => {
 
         // Create Organization
         logs.push(`Inserting Org: ${company}`);
-        /* DISABLED FOR DEBUG */
-        // try {
-        //     await env.DB.prepare(
-        //         'INSERT INTO organizations (id, name) VALUES (?, ?)'
-        //     ).bind(orgId, company || null).run();
-        // } catch (dbErr: any) {
-        //     logs.push(`DB Org Insert Error: ${dbErr.message}`);
-        //     throw dbErr;
-        // }
-        // 
-        logs.push('Org Inserted (Simulated)');
+        try {
+            await env.DB.prepare(
+                'INSERT INTO organizations (id, name) VALUES (?, ?)'
+            ).bind(orgId, company || null).run();
+        } catch (dbErr: any) {
+            logs.push(`DB Org Insert Error: ${dbErr.message}`);
+            throw dbErr;
+        }
+
+        logs.push('Org Inserted');
 
         // Create User
         logs.push(`Inserting User: ${email}, Role: ${role}`);
-        /* DISABLED FOR DEBUG */
-        // try {
-        //     await env.DB.prepare(
-        //         'INSERT INTO users (id, organization_id, name, email, role, company, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?)'
-        //     ).bind(userId, orgId, name || null, email || null, role || null, company || null, 1).run();
-        // } catch (dbErr: any) {
-        //     logs.push(`DB User Insert Error: ${dbErr.message}`);
-        //     throw dbErr;
-        // }
-        // 
-        logs.push('User Inserted (Simulated)');
+        try {
+            await env.DB.prepare(
+                'INSERT INTO users (id, organization_id, name, email, role, company, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?)'
+            ).bind(userId, orgId, name || null, email || null, role || null, company || null, 1).run();
+        } catch (dbErr: any) {
+            logs.push(`DB User Insert Error: ${dbErr.message}`);
+            throw dbErr;
+        }
+
+        logs.push('User Inserted');
 
         return Response.json({ success: true, userId, orgId, logs });
     } catch (e: any) {

@@ -91,15 +91,21 @@ export default {
                         // Fetch tasks for all projects
                         const projectIds = (projects || []).map((p: any) => p.id);
                         let tasks: any[] = [];
+                        let projectUpdates: any[] = [];
                         logs.push(`Project IDs: ${projectIds.join(',')}`);
 
                         if (projectIds.length > 0) {
                             const placeholders = projectIds.map(() => '?').join(',');
                             logs.push(`Fetching tasks with placeholders: ${placeholders}`);
-                            const { results } = await env.DB.prepare(`SELECT * FROM tasks WHERE project_id IN (${placeholders})`).bind(...projectIds).all();
-                            tasks = results || [];
+                            const { results: taskResults } = await env.DB.prepare(`SELECT * FROM tasks WHERE project_id IN (${placeholders})`).bind(...projectIds).all();
+                            tasks = taskResults || [];
+
+                            logs.push(`Fetching project updates...`);
+                            const { results: updateResults } = await env.DB.prepare(`SELECT * FROM project_updates WHERE project_id IN (${placeholders})`).bind(...projectIds).all();
+                            projectUpdates = updateResults || [];
                         }
                         logs.push(`Tasks found: ${tasks.length}`);
+                        logs.push(`Project Updates found: ${projectUpdates.length}`);
 
                         logs.push('Fetching other data');
                         const { results: users } = await env.DB.prepare('SELECT * FROM users WHERE organization_id = ?').bind(orgId).all();
@@ -114,6 +120,7 @@ export default {
                             users,
                             projects,
                             tasks,
+                            projectUpdates,
                             meetings,
                             invoices,
                             notifications
@@ -331,6 +338,22 @@ export default {
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {
                         return withCors(Response.json({ message: `Meeting Error: ${e.message}` }, { status: 500 }));
+                    }
+                }
+
+                // POST /api/project/update-post (Progress Notification)
+                if (url.pathname === '/api/project/update-post' && request.method === 'POST') {
+                    try {
+                        const update = await request.json();
+                        await env.DB.prepare(`
+                            INSERT INTO project_updates (id, project_id, message, date, author_name)
+                            VALUES (?, ?, ?, ?, ?)
+                        `).bind(
+                            update.id, update.projectId, update.message, update.date, update.authorName
+                        ).run();
+                        return withCors(Response.json({ success: true }));
+                    } catch (e: any) {
+                        return withCors(Response.json({ message: `Project Update Post Error: ${e.message}` }, { status: 500 }));
                     }
                 }
 

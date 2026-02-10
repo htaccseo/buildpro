@@ -137,6 +137,13 @@ export const useStore = create<AppState>((set, get) => ({
                                 completedAt: t.completed_at,
                                 completionNote: t.completion_note,
                                 completionImage: t.completion_image
+                            })),
+                        updates: (data.projectUpdates || [])
+                            .filter((u: any) => u.project_id === p.id)
+                            .map((u: any) => ({
+                                ...u,
+                                projectId: u.project_id,
+                                authorName: u.author_name
                             }))
                     })),
 
@@ -358,12 +365,20 @@ export const useStore = create<AppState>((set, get) => ({
         }
     },
 
-    addProjectUpdate: (projectId, update) => set((state) => ({
-        projects: state.projects.map(p => p.id === projectId ? {
-            ...p,
-            updates: [...(p.updates || []), update]
-        } : p)
-    })),
+    addProjectUpdate: async (projectId, update) => {
+        set((state) => ({
+            projects: state.projects.map(p => p.id === projectId ? {
+                ...p,
+                updates: [...(p.updates || []), update]
+            } : p)
+        }));
+
+        try {
+            await apiRequest('/project/update-post', 'POST', { ...update, projectId });
+        } catch (e) {
+            console.error("Failed to add project update", e);
+        }
+    },
 
     markNotificationRead: (id) => set((state) => ({
         notifications: state.notifications.map(n => n.id === id ? { ...n, read: true } : n)

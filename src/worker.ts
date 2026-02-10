@@ -213,8 +213,8 @@ export default {
                             INSERT INTO projects (id, organization_id, name, address, client_name, client_email, client_phone, start_date, end_date, color, status, progress)
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                         `).bind(
-                            project.id, project.organizationId, project.name, project.address, project.clientName,
-                            project.clientEmail, project.clientPhone, project.startDate, project.endDate, project.color,
+                            project.id, project.organizationId, project.name, project.address || null, project.clientName || null,
+                            project.clientEmail || null, project.clientPhone || null, project.startDate || null, project.endDate || null, project.color || null,
                             project.status || 'active', project.progress || 0
                         ).run();
                         return withCors(Response.json({ success: true }));
@@ -231,7 +231,7 @@ export default {
                             INSERT INTO tasks (id, project_id, title, description, status, required_date, assigned_to)
                             VALUES (?, ?, ?, ?, ?, ?, ?)
                         `).bind(
-                            task.id, task.projectId, task.title, task.description, task.status || 'pending', task.requiredDate, task.assignedTo
+                            task.id, task.projectId, task.title, task.description || null, task.status || 'pending', task.requiredDate || null, task.assignedTo || null
                         ).run();
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {
@@ -249,7 +249,7 @@ export default {
                             SET name = ?, address = ?, status = ?, progress = ?, start_date = ?, end_date = ?
                             WHERE id = ?
                         `).bind(
-                            project.name, project.address, project.status, project.progress, project.startDate, project.endDate, project.id
+                            project.name, project.address || null, project.status || 'active', project.progress || 0, project.startDate || null, project.endDate || null, project.id
                         ).run();
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {
@@ -266,7 +266,7 @@ export default {
                             SET title = ?, description = ?, status = ?, required_date = ?, assigned_to = ?
                             WHERE id = ?
                         `).bind(
-                            task.title, task.description, task.status, task.requiredDate, task.assignedTo, task.id
+                            task.title, task.description || null, task.status || 'pending', task.requiredDate || null, task.assignedTo || null, task.id
                         ).run();
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {
@@ -283,7 +283,7 @@ export default {
                             SET status = 'completed', completed_at = ?, completion_note = ?, completion_image = ?
                             WHERE id = ?
                         `).bind(
-                            new Date().toISOString(), data.note, data.image, data.taskId
+                            new Date().toISOString(), data.note || null, data.image || null, data.taskId
                         ).run();
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {
@@ -317,7 +317,7 @@ export default {
                             INSERT INTO invoices (id, organization_id, type, amount, client_name, due_date, status, date, description, project_id)
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                         `).bind(
-                            invoice.id, invoice.organizationId, invoice.type, invoice.amount, invoice.clientName, invoice.dueDate, invoice.status, invoice.date, invoice.description, invoice.projectId
+                            invoice.id, invoice.organizationId, invoice.type, invoice.amount, invoice.clientName || null, invoice.dueDate || null, invoice.status || 'pending', invoice.date || null, invoice.description || null, invoice.projectId || null
                         ).run();
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {
@@ -333,7 +333,7 @@ export default {
                             INSERT INTO meetings (id, organization_id, title, date, time, project_id, attendees, address)
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                         `).bind(
-                            meeting.id, meeting.organizationId, meeting.title, meeting.date, meeting.time, meeting.projectId, JSON.stringify(meeting.attendees), meeting.address
+                            meeting.id, meeting.organizationId, meeting.title, meeting.date, meeting.time, meeting.projectId || null, meeting.attendees ? JSON.stringify(meeting.attendees) : '[]', meeting.address || null
                         ).run();
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {
@@ -365,7 +365,7 @@ export default {
                             INSERT INTO notifications (id, organization_id, user_id, message, read, date, type, data)
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                         `).bind(
-                            notification.id, notification.organizationId, notification.userId, notification.message, notification.read ? 1 : 0, notification.date, notification.type, JSON.stringify(notification.data)
+                            notification.id, notification.organizationId, notification.userId, notification.message, notification.read ? 1 : 0, notification.date || null, notification.type || null, notification.data ? JSON.stringify(notification.data) : '{}'
                         ).run();
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {

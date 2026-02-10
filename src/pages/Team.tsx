@@ -61,7 +61,7 @@ export function Team() {
                         <RotateCcw className="w-4 h-4" />
                     </button>
                     {/* Check for admin or super admin logic if needed, currently assumes isAdmin flag */}
-                    {(currentUser?.isAdmin || currentUser?.role === 'builder' || currentUser?.role === 'admin') && (
+                    {(currentUser?.isAdmin || currentUser?.role === 'builder') && (
                         <button
                             onClick={() => setIsInviteModalOpen(true)}
                             className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl font-medium flex items-center gap-2 transition-colors shadow-lg shadow-emerald-500/20"

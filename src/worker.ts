@@ -232,6 +232,79 @@ export default {
                     }
                 }
 
+                // POST /api/project/update
+                if (url.pathname === '/api/project/update' && request.method === 'POST') {
+                    try {
+                        const project = await request.json();
+                        // Only update fields that are typically editable
+                        await env.DB.prepare(`
+                            UPDATE projects 
+                            SET name = ?, address = ?, status = ?, progress = ?, start_date = ?, end_date = ?
+                            WHERE id = ?
+                        `).bind(
+                            project.name, project.address, project.status, project.progress, project.startDate, project.endDate, project.id
+                        ).run();
+                        return withCors(Response.json({ success: true }));
+                    } catch (e: any) {
+                        return withCors(Response.json({ message: `Project Update Error: ${e.message}` }, { status: 500 }));
+                    }
+                }
+
+                // POST /api/task/update
+                if (url.pathname === '/api/task/update' && request.method === 'POST') {
+                    try {
+                        const task = await request.json();
+                        await env.DB.prepare(`
+                            UPDATE tasks 
+                            SET title = ?, description = ?, status = ?, required_date = ?, assigned_to = ?
+                            WHERE id = ?
+                        `).bind(
+                            task.title, task.description, task.status, task.requiredDate, task.assignedTo, task.id
+                        ).run();
+                        return withCors(Response.json({ success: true }));
+                    } catch (e: any) {
+                        return withCors(Response.json({ message: `Task Update Error: ${e.message}` }, { status: 500 }));
+                    }
+                }
+
+                // POST /api/task/complete
+                if (url.pathname === '/api/task/complete' && request.method === 'POST') {
+                    try {
+                        const data = await request.json();
+                        await env.DB.prepare(`
+                            UPDATE tasks 
+                            SET status = 'completed', completed_at = ?, completion_note = ?, completion_image = ?
+                            WHERE id = ?
+                        `).bind(
+                            new Date().toISOString(), data.note, data.image, data.taskId
+                        ).run();
+                        return withCors(Response.json({ success: true }));
+                    } catch (e: any) {
+                        return withCors(Response.json({ message: `Task Complete Error: ${e.message}` }, { status: 500 }));
+                    }
+                }
+
+                // POST /api/invite
+                if (url.pathname === '/api/invite' && request.method === 'POST') {
+                    try {
+                        const data = await request.json();
+                        const { email, role, organizationId } = data;
+
+                        // Check if user exists
+                        const existingUser = await env.DB.prepare('SELECT * FROM users WHERE email = ?').bind(email).first();
+
+                        // Ideally send email here. For now, we simulate success or create a placeholder if needed.
+                        // In this app design, invites are links.
+
+                        // We could create a placeholder user to show in "Invited" state if we had that column.
+                        // For now, just return success so frontend can generate the link.
+
+                        return withCors(Response.json({ success: true, link: `https://buildpro.old-dream-22e5.workers.dev/login?orgId=${organizationId}&email=${email}&role=${role}` }));
+                    } catch (e: any) {
+                        return withCors(Response.json({ message: `Invite Error: ${e.message}` }, { status: 500 }));
+                    }
+                }
+
                 // 404 for unknown API
                 return new Response('API Endpoint Not Found', { status: 404 });
             }

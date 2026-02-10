@@ -153,7 +153,12 @@ export const useStore = create<AppState>((set, get) => ({
 
     inviteUser: (email, role) => {
         console.log(`Inviting ${email} as ${role} to ${get().currentOrganization?.name}`);
-        return `${window.location.origin}/login?orgId=${get().currentOrganization?.id}&email=${encodeURIComponent(email)}&role=${role}`;
+        const orgId = get().currentOrganization?.id;
+
+        // Call API to invite
+        apiRequest('/invite', 'POST', { email, role, organizationId: orgId }).catch(e => console.error("Invite failed", e));
+
+        return `${window.location.origin}/login?orgId=${orgId}&email=${encodeURIComponent(email)}&role=${role}`;
     },
 
     // TODO: Implement other API calls
@@ -203,9 +208,17 @@ export const useStore = create<AppState>((set, get) => ({
         }
     },
 
-    updateProject: (updatedProject) => set((state) => ({
-        projects: state.projects.map((p) => p.id === updatedProject.id ? updatedProject : p)
-    })),
+    updateProject: async (updatedProject) => {
+        set((state) => ({
+            projects: state.projects.map((p) => p.id === updatedProject.id ? updatedProject : p)
+        }));
+
+        try {
+            await apiRequest('/project/update', 'POST', updatedProject);
+        } catch (e) {
+            console.error("Failed to update project", e);
+        }
+    },
 
     updateProjectProgress: (id, progress) => set((state) => ({
         projects: state.projects.map((p) => p.id === id ? { ...p, progress } : p)
@@ -229,47 +242,77 @@ export const useStore = create<AppState>((set, get) => ({
         }
     },
 
-    updateTask: (projectId, task) => set((state) => ({
-        projects: state.projects.map((p) => p.id === projectId ? {
-            ...p,
-            tasks: (p.tasks || []).map(t => t.id === task.id ? task : t)
-        } : p)
-    })),
+    updateTask: async (projectId, task) => {
+        set((state) => ({
+            projects: state.projects.map((p) => p.id === projectId ? {
+                ...p,
+                tasks: (p.tasks || []).map(t => t.id === task.id ? task : t)
+            } : p)
+        }));
 
-    assignTask: (taskId, userId) => set((state) => ({
-        projects: state.projects.map((p) => ({
-            ...p,
-            tasks: (p.tasks || []).map((t) => t.id === taskId ? { ...t, assignedTo: userId } : t)
-        }))
-    })),
+        try {
+            await apiRequest('/task/update', 'POST', { ...task, projectId });
+        } catch (e) {
+            console.error("Failed to update task", e);
+        }
+    },
 
-    completeTask: (taskId, note, image) => set((state) => {
-        const project = state.projects.find(p => (p.tasks || []).some(t => t.id === taskId));
+    assignTask: async (taskId, userId) => {
+        set((state) => ({
+            projects: state.projects.map((p) => ({
+                ...p,
+                tasks: (p.tasks || []).map((t) => t.id === taskId ? { ...t, assignedTo: userId } : t)
+            }))
+        }));
+
+        // Find task and project to get details
+        const project = get().projects.find(p => (p.tasks || []).some(t => t.id === taskId));
+        const task = project?.tasks.find(t => t.id === taskId);
+
+        if (task) {
+            try {
+                await apiRequest('/task/update', 'POST', { ...task, assignedTo: userId });
+            } catch (e) {
+                console.error("Failed to assign task", e);
+            }
+        }
+    },
+
+    completeTask: async (taskId, note, image) => {
+        const project = get().projects.find(p => (p.tasks || []).some(t => t.id === taskId));
         const task = project?.tasks.find(t => t.id === taskId);
         const currentOrgId = get().currentOrganization?.id;
 
         if (task && project && currentOrgId) {
-            const newNotification: Notification = {
-                id: Math.random().toString(36).substr(2, 9),
-                organizationId: currentOrgId,
-                userId: get().currentUser?.id || 'unknown',
-                message: `Task "${task.title}" completed in ${project.name}`,
-                read: false,
-                date: new Date().toISOString(),
-                type: 'task_completed',
-                data: { taskId, note, image }
-            };
+            // Optimistic Update
+            set((state) => {
+                const newNotification: Notification = {
+                    id: Math.random().toString(36).substr(2, 9),
+                    organizationId: currentOrgId,
+                    userId: get().currentUser?.id || 'unknown',
+                    message: `Task "${task.title}" completed in ${project.name}`,
+                    read: false,
+                    date: new Date().toISOString(),
+                    type: 'task_completed',
+                    data: { taskId, note, image }
+                };
 
-            return {
-                projects: state.projects.map((p) => ({
-                    ...p,
-                    tasks: (p.tasks || []).map((t) => t.id === taskId ? { ...t, status: 'completed' as const, completedAt: new Date().toISOString(), completionNote: note, completionImage: image } : t)
-                })),
-                notifications: [newNotification, ...state.notifications]
-            };
+                return {
+                    projects: state.projects.map((p) => ({
+                        ...p,
+                        tasks: (p.tasks || []).map((t) => t.id === taskId ? { ...t, status: 'completed' as const, completedAt: new Date().toISOString(), completionNote: note, completionImage: image } : t)
+                    })),
+                    notifications: [newNotification, ...state.notifications]
+                };
+            });
+
+            try {
+                await apiRequest('/task/complete', 'POST', { taskId, note, image });
+            } catch (e) {
+                console.error("Failed to complete task", e);
+            }
         }
-        return state;
-    }),
+    },
 
     addProjectUpdate: (projectId, update) => set((state) => ({
         projects: state.projects.map(p => p.id === projectId ? {

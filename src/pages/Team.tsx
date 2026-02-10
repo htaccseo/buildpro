@@ -12,19 +12,19 @@ export function Team() {
     const { currentUser, reset } = useStore();
     const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
-    // Filter users from the same company - logic now redundant but safe to keep or simplify
-    // The hook already filters users by organizationId.
-    const teamMembers = users;
-    // However, the original code also had some specific logic about "currentUser" exclusion maybe?
-    // "u.id !== currentUser?.id" was commented out in original.
-    // The original code:
-    // const teamMembers = users.filter(u => u.organizationId === currentUser?.organizationId);
-    // Since useOrganizationData returns already filtered users, we can just use `users`.
+    // Filter users from the same company
+    // Ensure current user is in the list if they have the same org ID (which they should)
+    // The hook `useOrganizationData` returns users filtered by current org.
+    // We just need to make sure we display them correctly.
+
+    // Debug: check if current user is in the list
+    const currentUserInList = users.find(u => u.id === currentUser?.id);
+    const teamMembers = currentUserInList ? users : (currentUser ? [...users, currentUser] : users);
 
     // Helper to get user tasks (if they are a worker)
     const getUserTasks = (userId: string) => {
         return projects.flatMap(p =>
-            p.tasks
+            (p.tasks || [])
                 .filter(t => t.assignedTo === userId)
                 .map(t => ({ ...t, projectName: p.name }))
         );
@@ -40,9 +40,6 @@ export function Team() {
                 <p className="text-text-muted max-w-md"> Please update your profile settings to add a company name to see your team members.</p>
                 <div className="flex gap-4">
                     <Link to="/settings" className="px-4 py-2 text-emerald-600 font-medium hover:bg-emerald-50 rounded-lg transition-colors">Go to Settings</Link>
-                    <button onClick={() => { reset(); window.location.reload(); }} className="px-4 py-2 text-slate-500 font-medium hover:bg-slate-100 rounded-lg transition-colors flex items-center gap-2">
-                        <RotateCcw className="w-4 h-4" /> Reset Data
-                    </button>
                 </div>
             </div>
         );
@@ -59,11 +56,12 @@ export function Team() {
                     <button
                         onClick={() => { reset(); window.location.reload(); }}
                         className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium flex items-center gap-2 transition-colors"
-                        title="Reset Debug Data"
+                        title="Reload Data"
                     >
                         <RotateCcw className="w-4 h-4" />
                     </button>
-                    {currentUser?.isAdmin && (
+                    {/* Check for admin or super admin logic if needed, currently assumes isAdmin flag */}
+                    {(currentUser?.isAdmin || currentUser?.role === 'builder' || currentUser?.role === 'admin') && (
                         <button
                             onClick={() => setIsInviteModalOpen(true)}
                             className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl font-medium flex items-center gap-2 transition-colors shadow-lg shadow-emerald-500/20"
@@ -83,16 +81,9 @@ export function Team() {
                     <div>
                         <h3 className="text-lg font-bold text-navy-900">No Team Members Found</h3>
                         <p className="text-text-muted max-w-sm mx-auto mt-1">
-                            We couldn't find anyone else in "{currentUser.company}".
-                            Try resetting the data if you think this is an error.
+                            You are the only member of "{currentUser.company}" so far.
                         </p>
                     </div>
-                    <button
-                        onClick={() => { reset(); window.location.reload(); }}
-                        className="mt-4 text-emerald-600 font-medium hover:underline flex items-center gap-2"
-                    >
-                        <RotateCcw className="w-4 h-4" /> Use Default Test Data
-                    </button>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -107,7 +98,7 @@ export function Team() {
                                     <div className="flex items-start justify-between">
                                         <div className="flex items-center gap-4">
                                             <div className="relative">
-                                                <img src={member.avatar} alt={member.name} className="w-14 h-14 rounded-full object-cover ring-4 ring-slate-50" />
+                                                <img src={member.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=random`} alt={member.name} className="w-14 h-14 rounded-full object-cover ring-4 ring-slate-50" />
                                                 {isCurrentUser && (
                                                     <span className="absolute -bottom-1 -right-1 bg-emerald-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white">YOU</span>
                                                 )}

@@ -9,7 +9,7 @@ import { InviteMemberModal } from '../components/InviteMemberModal';
 
 export function Team() {
     const { users, projects } = useOrganizationData();
-    const { currentUser, reset } = useStore();
+    const { currentUser } = useStore();
     const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
     // Filter users from the same company
@@ -54,9 +54,17 @@ export function Team() {
                 </div>
                 <div className="flex gap-3">
                     <button
-                        onClick={() => { reset(); window.location.reload(); }}
+                        onClick={() => {
+                            if (currentUser?.email) {
+                                // Re-fetch data instead of hard reset
+                                const { fetchData } = useStore.getState();
+                                fetchData(currentUser.email);
+                            } else {
+                                window.location.reload();
+                            }
+                        }}
                         className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium flex items-center gap-2 transition-colors"
-                        title="Reload Data"
+                        title="Refresh Data"
                     >
                         <RotateCcw className="w-4 h-4" />
                     </button>

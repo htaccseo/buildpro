@@ -101,18 +101,43 @@ export const useStore = create<AppState>((set, get) => ({
             const data: any = await apiRequest(`/data?email=${encodeURIComponent(email)}`);
             if (data.user) {
                 set({
-                    currentUser: data.user,
-                    currentOrganization: data.organization,
-                    users: data.users || [],
-
-                    // or better, just keep tasks separate in state
-                    // For now, let's map tasks back to projects for compatibility with existing UI
-                    // or we should update UI to read from a tasks map. 
-                    // Existing UI reads project.tasks. Let's hydrate that.
+                    currentUser: {
+                        ...data.user,
+                        organizationId: data.user.organization_id,
+                        isAdmin: !!data.user.is_admin,
+                        isSuperAdmin: !!data.user.is_super_admin
+                    },
+                    currentOrganization: {
+                        ...data.organization,
+                        createdAt: data.organization.created_at,
+                        subscriptionStatus: data.organization.subscription_status
+                    },
+                    users: (data.users || []).map((u: any) => ({
+                        ...u,
+                        organizationId: u.organization_id,
+                        isAdmin: !!u.is_admin,
+                        isSuperAdmin: !!u.is_super_admin
+                    })),
 
                     projects: (data.projects || []).map((p: any) => ({
                         ...p,
-                        tasks: (data.tasks || []).filter((t: any) => t.project_id === p.id)
+                        organizationId: p.organization_id,
+                        clientName: p.client_name,
+                        clientEmail: p.client_email,
+                        clientPhone: p.client_phone,
+                        startDate: p.start_date,
+                        endDate: p.end_date,
+                        tasks: (data.tasks || [])
+                            .filter((t: any) => t.project_id === p.id)
+                            .map((t: any) => ({
+                                ...t,
+                                projectId: t.project_id,
+                                requiredDate: t.required_date,
+                                assignedTo: t.assigned_to,
+                                completedAt: t.completed_at,
+                                completionNote: t.completion_note,
+                                completionImage: t.completion_image
+                            }))
                     })),
 
                     meetings: data.meetings || [],

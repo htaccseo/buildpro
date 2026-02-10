@@ -14,6 +14,14 @@ export function Login({ initialMode = 'login' }: { initialMode?: 'login' | 'sign
     const inviteEmail = searchParams.get('email');
     const inviteRole = searchParams.get('role') as UserRole;
 
+    // Redirect if already logged in
+    const { currentUser } = useStore();
+    React.useEffect(() => {
+        if (currentUser) {
+            navigate('/dashboard');
+        }
+    }, [currentUser, navigate]);
+
     // Login State
     const [email, setEmail] = useState('john@meits.com');
     const [password, setPassword] = useState('password');

@@ -23,14 +23,25 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
 }
 
 function App() {
-  const { fetchData } = useStore();
+  const { fetchData, currentUser } = useStore();
+  const [isRestoring, setIsRestoring] = React.useState(true);
 
   React.useEffect(() => {
     const savedEmail = localStorage.getItem('meits_user_email');
-    if (savedEmail) {
-      fetchData(savedEmail);
+    if (savedEmail && !currentUser) {
+      fetchData(savedEmail).finally(() => setIsRestoring(false));
+    } else {
+      setIsRestoring(false);
     }
   }, []);
+
+  if (isRestoring) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+      </div>
+    );
+  }
 
   return (
     <BrowserRouter>

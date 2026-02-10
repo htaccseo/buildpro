@@ -140,9 +140,28 @@ export const useStore = create<AppState>((set, get) => ({
                             }))
                     })),
 
-                    meetings: data.meetings || [],
-                    invoices: data.invoices || [],
-                    notifications: data.notifications || []
+                    meetings: (data.meetings || []).map((m: any) => ({
+                        ...m,
+                        organizationId: m.organization_id,
+                        projectId: m.project_id,
+                        attendees: JSON.parse(m.attendees || '[]')
+                    })),
+
+                    invoices: (data.invoices || []).map((i: any) => ({
+                        ...i,
+                        organizationId: i.organization_id,
+                        clientName: i.client_name,
+                        dueDate: i.due_date,
+                        projectId: i.project_id
+                    })),
+
+                    notifications: (data.notifications || []).map((n: any) => ({
+                        ...n,
+                        organizationId: n.organization_id,
+                        userId: n.user_id,
+                        read: !!n.read,
+                        data: JSON.parse(n.data || '{}')
+                    }))
                 });
             }
         } catch (e: any) {
@@ -351,12 +370,20 @@ export const useStore = create<AppState>((set, get) => ({
     })),
 
     // Invoice Actions
-    addInvoice: (invoice) => {
+    addInvoice: async (invoice) => {
         const currentOrgId = get().currentOrganization?.id;
         if (!currentOrgId) return;
+
+        const newInvoice = { ...invoice, organizationId: currentOrgId } as Invoice;
         set((state) => ({
-            invoices: [{ ...invoice, organizationId: currentOrgId } as Invoice, ...state.invoices]
+            invoices: [newInvoice, ...state.invoices]
         }));
+
+        try {
+            await apiRequest('/invoice', 'POST', newInvoice);
+        } catch (e) {
+            console.error("Failed to add invoice", e);
+        }
     },
 
     updateInvoiceStatus: (id, status) => set((state) => ({
@@ -368,12 +395,21 @@ export const useStore = create<AppState>((set, get) => ({
     })),
 
     // Meeting Actions
-    addMeeting: (meeting) => {
+    addMeeting: async (meeting) => {
         const currentOrgId = get().currentOrganization?.id;
         if (!currentOrgId) return;
+
+        const newMeeting = { ...meeting, organizationId: currentOrgId } as Meeting;
+        // Optimistic update
         set((state) => ({
-            meetings: [...state.meetings, { ...meeting, organizationId: currentOrgId } as Meeting].sort((a, b) => new Date(a.date + 'T' + a.time).getTime() - new Date(b.date + 'T' + b.time).getTime())
+            meetings: [...state.meetings, newMeeting].sort((a, b) => new Date(a.date + 'T' + a.time).getTime() - new Date(b.date + 'T' + b.time).getTime())
         }));
+
+        try {
+            await apiRequest('/meeting', 'POST', newMeeting);
+        } catch (e) {
+            console.error("Failed to add meeting", e);
+        }
     },
 
     deleteMeeting: (id) => set((state) => ({

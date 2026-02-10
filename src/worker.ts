@@ -296,12 +296,57 @@ export default {
                         // Ideally send email here. For now, we simulate success or create a placeholder if needed.
                         // In this app design, invites are links.
 
-                        // We could create a placeholder user to show in "Invited" state if we had that column.
-                        // For now, just return success so frontend can generate the link.
-
                         return withCors(Response.json({ success: true, link: `https://buildpro.old-dream-22e5.workers.dev/login?orgId=${organizationId}&email=${email}&role=${role}` }));
                     } catch (e: any) {
                         return withCors(Response.json({ message: `Invite Error: ${e.message}` }, { status: 500 }));
+                    }
+                }
+
+                // POST /api/invoice
+                if (url.pathname === '/api/invoice' && request.method === 'POST') {
+                    try {
+                        const invoice = await request.json();
+                        await env.DB.prepare(`
+                            INSERT INTO invoices (id, organization_id, type, amount, client_name, due_date, status, date, description, project_id)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        `).bind(
+                            invoice.id, invoice.organizationId, invoice.type, invoice.amount, invoice.clientName, invoice.dueDate, invoice.status, invoice.date, invoice.description, invoice.projectId
+                        ).run();
+                        return withCors(Response.json({ success: true }));
+                    } catch (e: any) {
+                        return withCors(Response.json({ message: `Invoice Error: ${e.message}` }, { status: 500 }));
+                    }
+                }
+
+                // POST /api/meeting
+                if (url.pathname === '/api/meeting' && request.method === 'POST') {
+                    try {
+                        const meeting = await request.json();
+                        await env.DB.prepare(`
+                            INSERT INTO meetings (id, organization_id, title, date, time, project_id, attendees, address)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                        `).bind(
+                            meeting.id, meeting.organizationId, meeting.title, meeting.date, meeting.time, meeting.projectId, JSON.stringify(meeting.attendees), meeting.address
+                        ).run();
+                        return withCors(Response.json({ success: true }));
+                    } catch (e: any) {
+                        return withCors(Response.json({ message: `Meeting Error: ${e.message}` }, { status: 500 }));
+                    }
+                }
+
+                // POST /api/notification
+                if (url.pathname === '/api/notification' && request.method === 'POST') {
+                    try {
+                        const notification = await request.json();
+                        await env.DB.prepare(`
+                            INSERT INTO notifications (id, organization_id, user_id, message, read, date, type, data)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                        `).bind(
+                            notification.id, notification.organizationId, notification.userId, notification.message, notification.read ? 1 : 0, notification.date, notification.type, JSON.stringify(notification.data)
+                        ).run();
+                        return withCors(Response.json({ success: true }));
+                    } catch (e: any) {
+                        return withCors(Response.json({ message: `Notification Error: ${e.message}` }, { status: 500 }));
                     }
                 }
 

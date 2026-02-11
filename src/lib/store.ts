@@ -469,9 +469,17 @@ export const useStore = create<AppState>((set, get) => ({
         reminders: state.reminders.map(r => r.id === updatedReminder.id ? updatedReminder : r).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     })),
 
-    deleteReminder: (id) => set((state) => ({
-        reminders: state.reminders.filter(r => r.id !== id)
-    })),
+    deleteReminder: async (id) => {
+        set((state) => ({
+            reminders: state.reminders.filter(r => r.id !== id)
+        }));
+
+        try {
+            await apiRequest('/reminder', 'DELETE', { id });
+        } catch (e) {
+            console.error("Failed to delete reminder", e);
+        }
+    },
 
     toggleReminder: async (id) => {
         const reminder = get().reminders.find(r => r.id === id);

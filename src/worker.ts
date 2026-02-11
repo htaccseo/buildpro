@@ -427,6 +427,17 @@ export default {
                     }
                 }
 
+                // DELETE /api/reminder
+                if (url.pathname === '/api/reminder' && request.method === 'DELETE') {
+                    try {
+                        const { id } = await request.json();
+                        await env.DB.prepare('DELETE FROM reminders WHERE id = ?').bind(id).run();
+                        return withCors(Response.json({ success: true }));
+                    } catch (e: any) {
+                        return withCors(Response.json({ message: `Reminder Delete Error: ${e.message}` }, { status: 500 }));
+                    }
+                }
+
                 // POST /api/other-matter
                 if (url.pathname === '/api/other-matter' && request.method === 'POST') {
                     try {

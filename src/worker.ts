@@ -345,6 +345,17 @@ export default {
                     }
                 }
 
+                // DELETE /api/meeting
+                if (url.pathname === '/api/meeting' && request.method === 'DELETE') {
+                    try {
+                        const { id } = await request.json();
+                        await env.DB.prepare('DELETE FROM meetings WHERE id = ?').bind(id).run();
+                        return withCors(Response.json({ success: true }));
+                    } catch (e: any) {
+                        return withCors(Response.json({ message: `Meeting Delete Error: ${e.message}` }, { status: 500 }));
+                    }
+                }
+
                 // POST /api/project/update-post (Progress Notification)
                 if (url.pathname === '/api/project/update-post' && request.method === 'POST') {
                     try {

@@ -29,7 +29,7 @@ export function Dashboard() {
     // Use Store actions (actions are safe to use from store directly as they usually just dispatch)
     // Actually, our store actions need currentOrgId from store state, which is fine.
     // The previous code destructured methods from useStore. Let's keep doing that for actions.
-    const { toggleReminder, addOtherMatter, deleteOtherMatter } = useStore();
+    const { toggleReminder, addOtherMatter, deleteOtherMatter, deleteMeeting } = useStore();
 
     const allTasks = projects.flatMap(p => p.tasks);
 
@@ -247,7 +247,19 @@ export function Dashboard() {
                             <div className="text-center py-6 text-sm text-text-muted">No upcoming meetings.</div>
                         ) : (
                             upcomingMeetings.map(meeting => (
-                                <div key={meeting.id} className="flex items-center gap-4 p-3 rounded-xl bg-slate-50 border border-slate-100">
+                                <div key={meeting.id} className="group relative flex items-center gap-4 p-3 rounded-xl bg-slate-50 border border-slate-100 pr-8">
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            if (confirm('Delete this meeting?')) {
+                                                deleteMeeting(meeting.id);
+                                            }
+                                        }}
+                                        className="absolute top-2 right-2 text-slate-400 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        title="Delete Meeting"
+                                    >
+                                        <X className="w-4 h-4" />
+                                    </button>
                                     <div className="flex-col flex items-center justify-center w-12 h-12 bg-white rounded-lg border border-slate-100 shadow-sm shrink-0">
                                         <span className="text-xs font-bold text-emerald-600 uppercase">{formatDate(meeting.date, 'MMM')}</span>
                                         <span className="text-lg font-bold text-navy-900 leading-none">{formatDate(meeting.date, 'd')}</span>

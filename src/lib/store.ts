@@ -449,9 +449,7 @@ export const useStore = create<AppState>((set, get) => ({
         }
     },
 
-    deleteMeeting: (id) => set((state) => ({
-        meetings: state.meetings.filter(m => m.id !== id)
-    })),
+
 
     // Reminder Actions
     addReminder: async (reminder) => {
@@ -568,6 +566,17 @@ export const useStore = create<AppState>((set, get) => ({
             await apiRequest('/project/update', 'DELETE', { id: updateId });
         } catch (e) {
             console.error("Failed to delete project update", e);
+        }
+    },
+
+    deleteMeeting: async (id) => {
+        set((state) => ({
+            meetings: state.meetings.filter(m => m.id !== id)
+        }));
+        try {
+            await apiRequest('/meeting', 'DELETE', { id });
+        } catch (e) {
+            console.error("Failed to delete meeting", e);
         }
     },
 

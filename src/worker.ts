@@ -460,10 +460,10 @@ export default {
                     try {
                         const reminder = await request.json();
                         await env.DB.prepare(`
-                            INSERT INTO reminders (id, organization_id, title, description, date, completed, created_by)
-                            VALUES (?, ?, ?, ?, ?, ?, ?)
+                            INSERT INTO reminders (id, organization_id, title, description, date, completed, created_by, assigned_to)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                         `).bind(
-                            reminder.id, reminder.organizationId, reminder.title, reminder.description || null, reminder.date || null, reminder.completed ? 1 : 0, reminder.createdBy || null
+                            reminder.id, reminder.organizationId, reminder.title, reminder.description || null, reminder.date || null, reminder.completed ? 1 : 0, reminder.createdBy || null, reminder.assignedTo || null
                         ).run();
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {
@@ -477,10 +477,10 @@ export default {
                         const reminder = await request.json();
                         await env.DB.prepare(`
                             UPDATE reminders 
-                            SET completed = ?
+                            SET completed = ?, completed_by = ?
                             WHERE id = ?
                         `).bind(
-                            reminder.completed ? 1 : 0, reminder.id
+                            reminder.completed ? 1 : 0, reminder.completedBy || null, reminder.id
                         ).run();
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {

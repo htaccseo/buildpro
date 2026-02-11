@@ -120,6 +120,8 @@ CREATE TABLE reminders (
     date TEXT,
     completed INTEGER DEFAULT 0,
     created_by TEXT,
+    assigned_to TEXT,
+    completed_by TEXT,
     FOREIGN KEY (organization_id) REFERENCES organizations(id)
 );
 

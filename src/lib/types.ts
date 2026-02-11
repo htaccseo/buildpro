@@ -111,6 +111,8 @@ export interface Reminder {
     completed: boolean;
     title: string;
     description?: string;
+    assignedTo?: string;
+    completedBy?: string;
 }
 
 export interface OtherMatter {

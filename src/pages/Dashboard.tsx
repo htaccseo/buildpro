@@ -161,19 +161,28 @@ export function Dashboard() {
                                             />
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex justify-between items-start">
-                                                    <h4 className={cn("font-medium text-navy-900 truncate", reminder.completed && "line-through text-text-muted")}>
+                                                    <h4 className={cn("font-medium text-navy-900 truncate cursor-pointer", reminder.completed && "line-through text-text-muted")} title={reminder.title}>
                                                         {reminder.title}
                                                     </h4>
-                                                    <div className="flex items-center gap-2">
-                                                        <UserAvatar userId={reminder.createdBy} className="h-6 w-6 text-[10px]" />
+                                                    <div className="flex items-center gap-1">
+                                                        {reminder.assignedTo && (
+                                                            <UserAvatar userId={reminder.assignedTo} className="h-5 w-5 text-[8px] ring-1 ring-white" />
+                                                        )}
+                                                        {reminder.completed && reminder.completedBy && (
+                                                            <UserAvatar userId={reminder.completedBy} className="h-5 w-5 text-[8px] ring-1 ring-white opacity-50" />
+                                                        )}
                                                     </div>
                                                 </div>
                                                 {reminder.description && (
-                                                    <p className={cn("text-sm mt-0.5 line-clamp-2", reminder.completed ? "text-text-muted" : "text-navy-600")}>
-                                                        {reminder.description}
-                                                    </p>
+                                                    <div className="group/desc relative">
+                                                        <p className={cn("text-sm mt-0.5 line-clamp-2 cursor-help", reminder.completed ? "text-text-muted" : "text-navy-600")} title={reminder.description}>
+                                                            {reminder.description}
+                                                        </p>
+                                                    </div>
                                                 )}
-                                                <p className="text-sm text-text-muted mt-1">Personal Reminder • {formatDate(reminder.date, 'MMM d')}</p>
+                                                <div className="flex items-center gap-2 mt-1">
+                                                    <p className="text-sm text-text-muted">Personal Reminder • {formatDate(reminder.date, 'MMM d')}</p>
+                                                </div>
                                             </div>
                                         </div>
                                     ))}
@@ -290,9 +299,9 @@ export function Dashboard() {
                                         <span className="text-xs font-bold text-emerald-600 uppercase">{formatDate(meeting.date, 'MMM')}</span>
                                         <span className="text-lg font-bold text-navy-900 leading-none">{formatDate(meeting.date, 'd')}</span>
                                     </div>
-                                    <div className="min-w-0 flex-1">
+                                    <div className="min-w-0 flex-1 group/title relative">
                                         <div className="flex justify-between items-start">
-                                            <h4 className="font-bold text-navy-900 truncate pr-4">{meeting.title}</h4>
+                                            <h4 className="font-bold text-navy-900 truncate pr-4 cursor-help" title={meeting.title}>{meeting.title}</h4>
                                             <UserAvatar userId={meeting.createdBy} className="h-5 w-5 text-[8px]" />
                                         </div>
                                         <p className="text-xs text-text-muted flex items-center gap-1.5 mt-0.5">
@@ -327,10 +336,7 @@ export function Dashboard() {
                                 <div className="flex gap-3 items-center">
                                     <div className={cn("w-1.5 h-10 rounded-full", inv.type === 'sent' ? "bg-emerald-500" : "bg-amber-500")} />
                                     <div>
-                                        <div className="flex items-center gap-2">
-                                            <p className="font-bold text-navy-900 text-sm truncate w-24">{inv.clientName}</p>
-                                            <UserAvatar userId={inv.createdBy} className="h-4 w-4 text-[8px]" />
-                                        </div>
+                                        <p className="font-bold text-navy-900 text-sm truncate w-24">{inv.clientName}</p>
                                         <p className="text-xs text-text-muted">{formatDate(inv.dueDate, 'MMM d')}</p>
                                     </div>
                                 </div>
@@ -403,12 +409,13 @@ export function Dashboard() {
                         )}
                     </Card>
                 </div>
-            </div>
+            </div >
 
             {/* New Meeting Modal */}
-            <NewMeetingModal
+            < NewMeetingModal
                 isOpen={isMeetingModalOpen}
-                onClose={() => setIsMeetingModalOpen(false)}
+                onClose={() => setIsMeetingModalOpen(false)
+                }
             />
 
             {/* Reminder Modal (Add/Edit) */}

@@ -14,8 +14,9 @@ export function ReminderModal({ isOpen, onClose, initialDate, existingReminder }
     const [title, setTitle] = React.useState('');
     const [description, setDescription] = React.useState('');
     const [date, setDate] = React.useState('');
+    const [assignedTo, setAssignedTo] = React.useState('');
     const [completed, setCompleted] = React.useState(false);
-    const { addReminder, updateReminder, deleteReminder } = useStore();
+    const { addReminder, updateReminder, deleteReminder, users, currentUser } = useStore();
 
     React.useEffect(() => {
         if (isOpen) {
@@ -23,11 +24,13 @@ export function ReminderModal({ isOpen, onClose, initialDate, existingReminder }
                 setTitle(existingReminder.title);
                 setDescription(existingReminder.description || '');
                 setDate(existingReminder.date);
+                setAssignedTo(existingReminder.assignedTo || '');
                 setCompleted(existingReminder.completed);
             } else {
                 setTitle('');
                 setDescription('');
                 setDate(initialDate ? initialDate.toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
+                setAssignedTo(currentUser?.id || '');
                 setCompleted(false);
             }
         }
@@ -41,7 +44,8 @@ export function ReminderModal({ isOpen, onClose, initialDate, existingReminder }
                 title,
                 description,
                 date,
-                completed
+                assignedTo,
+                completed: existingReminder.completed
             });
         } else {
             addReminder({
@@ -49,6 +53,7 @@ export function ReminderModal({ isOpen, onClose, initialDate, existingReminder }
                 title,
                 description,
                 date,
+                assignedTo,
                 completed: false
             });
         }
@@ -99,12 +104,27 @@ export function ReminderModal({ isOpen, onClose, initialDate, existingReminder }
                         <textarea
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-indigo-500 outline-none min-h-[80px] resize-none"
-                            placeholder="Add details..."
+                            className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-indigo-500 outline-none h-24 resize-none"
+                            placeholder="Details..."
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-navy-900 mb-1.5">Date</label>
+                        <label className="block text-sm font-medium text-navy-900 mb-1.5">Assign To</label>
+                        <select
+                            value={assignedTo}
+                            onChange={(e) => setAssignedTo(e.target.value)}
+                            className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-indigo-500 outline-none"
+                        >
+                            <option value="">Select User...</option>
+                            {users.map(u => (
+                                <option key={u.id} value={u.id}>
+                                    {u.id === currentUser?.id ? `${u.name} (Me)` : u.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-navy-900 mb-1.5">Due Date</label>
                         <input
                             type="date"
                             value={date}

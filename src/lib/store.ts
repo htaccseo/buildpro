@@ -187,7 +187,9 @@ export const useStore = create<AppState>((set, get) => ({
                         ...r,
                         organizationId: r.organization_id,
                         completed: !!r.completed,
-                        createdBy: r.created_by
+                        createdBy: r.created_by,
+                        assignedTo: r.assigned_to,
+                        completedBy: r.completed_by
                     })),
 
                     otherMatters: (data.otherMatters || []).map((m: any) => ({
@@ -566,18 +568,18 @@ export const useStore = create<AppState>((set, get) => ({
 
     toggleReminder: async (id) => {
         const reminder = get().reminders.find(r => r.id === id);
-        if (!reminder) return;
+        if (reminder) {
+            const completedBy = !reminder.completed ? get().currentUser?.id : undefined;
+            const updatedReminder = { ...reminder, completed: !reminder.completed, completedBy };
+            set((state) => ({
+                reminders: state.reminders.map(r => r.id === id ? updatedReminder : r)
+            }));
 
-        const updatedCompleted = !reminder.completed;
-
-        set((state) => ({
-            reminders: state.reminders.map(r => r.id === id ? { ...r, completed: updatedCompleted } : r)
-        }));
-
-        try {
-            await apiRequest('/reminder/update', 'POST', { id, completed: updatedCompleted });
-        } catch (e) {
-            console.error("Failed to toggle reminder", e);
+            try {
+                await apiRequest('/reminder/update', 'POST', updatedReminder);
+            } catch (e) {
+                console.error("Failed to toggle reminder", e);
+            }
         }
     },
 

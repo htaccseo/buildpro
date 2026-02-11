@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useStore } from '../lib/store';
 import { format } from 'date-fns';
 import { ArrowLeft, Calendar, MapPin, CheckCircle, Clock, UserPlus, FileText, Camera, Pencil, Plus, MessageSquare, Send } from 'lucide-react';
-import { cn } from '../lib/utils';
+import { cn, resizeImage } from '../lib/utils';
 import { Card } from '../components/ui/Card';
 import { NewProjectModal } from '../components/NewProjectModal';
 import type { Task } from '../lib/types';
@@ -113,14 +113,22 @@ export function ProjectDetails() {
         }
     };
 
-    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setCompletionImage(reader.result as string);
-            };
-            reader.readAsDataURL(file);
+            try {
+                // Resize image to max 800px width and compress to 0.7 quality
+                const resizedImage = await resizeImage(file, 800, 0.7);
+                setCompletionImage(resizedImage);
+            } catch (error) {
+                console.error("Error resizing image:", error);
+                // Fallback to original if resize fails (though unlikely)
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    setCompletionImage(reader.result as string);
+                };
+                reader.readAsDataURL(file);
+            }
         }
     };
 

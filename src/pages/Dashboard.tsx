@@ -338,27 +338,17 @@ export function Dashboard() {
                                                 >
                                                     {meeting.completed && <Check className="w-2.5 h-2.5 text-white" />}
                                                 </div>
-                                                <h4 className={cn("font-bold text-navy-900 truncate pr-4 cursor-help", meeting.completed && "line-through text-text-muted")} title={meeting.title}>
+                                                <h4 className={cn("font-bold text-navy-900 truncate pr-4 cursor-help max-w-[150px]", meeting.completed && "line-through text-text-muted")} title={meeting.title}>
                                                     {meeting.title}
                                                 </h4>
                                             </div>
-                                            <div className="flex items-center gap-1">
+                                            <div className="flex items-center gap-1 shrink-0">
                                                 {meeting.assignedTo && (
-                                                    <UserAvatar userId={meeting.assignedTo} className="h-5 w-5 text-[8px] ring-1 ring-white" />
-                                                )}
-                                                {meeting.completed && meeting.completedBy && (
-                                                    <UserAvatar userId={meeting.completedBy} className="h-5 w-5 text-[8px] ring-1 ring-white opacity-50" />
-                                                )}
-                                                {!meeting.assignedTo && !meeting.completed && (
-                                                    <UserAvatar userId={meeting.createdBy} className="h-5 w-5 text-[8px]" />
+                                                    <UserAvatar userId={meeting.assignedTo} className="w-8 h-8 text-[10px]" />
                                                 )}
                                             </div>
                                         </div>
-                                        {meeting.description && (
-                                            <p className={cn("text-xs mt-1 line-clamp-2 cursor-help", meeting.completed ? "text-text-muted" : "text-navy-600")} title={meeting.description}>
-                                                {meeting.description}
-                                            </p>
-                                        )}
+
                                         <p className="text-xs text-text-muted flex items-center gap-1.5 mt-1">
                                             <Clock className="w-3 h-3" />
                                             {meeting.time}

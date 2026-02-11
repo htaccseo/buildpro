@@ -73,7 +73,7 @@ export function Settings() {
 
                     <div className="flex items-center gap-6 mb-8">
                         <div className="relative group cursor-pointer">
-                            <UserAvatar userId={currentUser.id} className="w-24 h-24 text-2xl ring-4 ring-slate-50 group-hover:opacity-75 transition-opacity" />
+                            <UserAvatar userId={currentUser.id} className="w-24 h-24 text-3xl shadow-sm" />
                             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                 <Camera className="w-8 h-8 text-white drop-shadow-lg" />
                             </div>

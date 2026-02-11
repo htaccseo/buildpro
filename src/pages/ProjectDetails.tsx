@@ -1,9 +1,9 @@
 
-import { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useStore } from '../lib/store';
 import { format } from 'date-fns';
-import { ArrowLeft, Calendar, Camera, CheckCircle, Clock, FileText, MapPin, MessageSquare, Pencil, Plus, Send, Trash2, UserPlus } from 'lucide-react';
+import { ArrowLeft, Calendar, Camera, CheckCircle, Clock, FileText, MapPin, MessageSquare, Pencil, Plus, Send, Trash2, UserPlus, Edit2 } from 'lucide-react';
 import { cn, resizeImage } from '../lib/utils';
 import { Card } from '../components/ui/Card';
 import { NewProjectModal } from '../components/NewProjectModal';
@@ -12,7 +12,7 @@ import type { Task } from '../lib/types';
 export function ProjectDetails() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { projects, users, currentUser, assignTask, completeTask, addTask, updateTask, addProjectUpdate, deleteProject, deleteTask, deleteProjectUpdate } = useStore();
+    const { projects, users, currentUser, assignTask, completeTask, addTask, updateTask, addProjectUpdate, deleteProject, deleteTask } = useStore();
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     // Task Management State
@@ -109,13 +109,7 @@ export function ProjectDetails() {
         }
     };
 
-    const handleDeleteUpdate = async (updateId: string) => {
-        if (confirm('Delete this progress notification?')) {
-            if (project) {
-                await deleteProjectUpdate(project.id, updateId);
-            }
-        }
-    };
+
 
     // Task Completion State
     const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
@@ -535,35 +529,16 @@ export function ProjectDetails() {
                                     </div>
                                 ) : (
                                     (project.updates || []).slice().reverse().map((update) => (
-                                        <Card key={update.id} className="p-5 border-none shadow-sm flex gap-4">
-                                            <div className="mt-1 w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
-                                                <span className="text-emerald-700 font-bold">{update.authorName.charAt(0)}</span>
-                                            </div>
-                                            <div>
-                                                <div className="flex items-center justify-between mb-1">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="font-bold text-navy-900">{update.authorName}</span>
-                                                        <span className="text-text-muted text-xs">• {format(new Date(update.date), 'MMM d, h:mm a')}</span>
-                                                    </div>
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            handleDeleteUpdate(update.id);
-                                                        }}
-                                                        className="text-slate-300 hover:text-rose-500 transition-colors"
-                                                    >
-                                                        <Trash2 className="w-3.5 h-3.5" />
-                                                    </button>
-                                                </div>
-                                                <p className="text-navy-700 leading-relaxed">{update.message}</p>
-                                            </div>
-                                        </Card>
+                                        <ProjectUpdateCard key={update.id} update={update} projectId={project.id} />
                                     ))
                                 )}
                             </div>
                         </div>
                     )}
                 </div>
+
+
+
 
                 {/* Sidebar Info */}
                 <div className="space-y-6">
@@ -605,3 +580,82 @@ export function ProjectDetails() {
         </div>
     );
 }
+
+const ProjectUpdateCard = ({ update, projectId }: { update: any, projectId: string }) => {
+    const { deleteProjectUpdate, updateProjectUpdate } = useStore();
+    const [isEditing, setIsEditing] = React.useState(false);
+    const [message, setMessage] = React.useState(update.message);
+
+    const handleSave = () => {
+        if (message.trim()) {
+            updateProjectUpdate(projectId, { ...update, message });
+            setIsEditing(false);
+        }
+    };
+
+    const handleDelete = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (confirm('Are you sure you want to delete this update?')) {
+            deleteProjectUpdate(projectId, update.id);
+        }
+    };
+
+    return (
+        <Card className="p-5 border-none shadow-sm flex gap-4 bg-white">
+            <div className="mt-1 w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                <span className="text-emerald-700 font-bold">{update.authorName.charAt(0)}</span>
+            </div>
+            <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-2">
+                        <span className="font-bold text-navy-900">{update.authorName}</span>
+                        <span className="text-text-muted text-xs">• {format(new Date(update.date), 'MMM d, h:mm a')}</span>
+                    </div>
+                    <div className="flex gap-1">
+                        <button
+                            onClick={() => setIsEditing(!isEditing)}
+                            className="p-1.5 text-slate-300 hover:text-emerald-600 transition-colors rounded-lg hover:bg-emerald-50"
+                            title="Edit Update"
+                        >
+                            <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                            onClick={handleDelete}
+                            className="p-1.5 text-slate-300 hover:text-rose-500 transition-colors rounded-lg hover:bg-rose-50"
+                            title="Delete Update"
+                        >
+                            <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                    </div>
+                </div>
+
+                {isEditing ? (
+                    <div className="mt-2 space-y-2">
+                        <textarea
+                            value={message}
+                            onChange={(e) => setMessage(e.target.value)}
+                            className="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none text-navy-700 resize-none min-h-[80px]"
+                            autoFocus
+                        />
+                        <div className="flex gap-2 justify-end">
+                            <button
+                                onClick={() => setIsEditing(false)}
+                                className="px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleSave}
+                                className="px-3 py-1.5 text-xs font-medium bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg transition-colors"
+                            >
+                                Save Changes
+                            </button>
+                        </div>
+                    </div>
+                ) : (
+                    <p className="text-navy-700 leading-relaxed whitespace-pre-wrap">{update.message}</p>
+                )}
+            </div>
+        </Card>
+    );
+};

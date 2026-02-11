@@ -52,6 +52,7 @@ interface AppState {
     completeTask: (taskId: string, note?: string, image?: string) => void;
     deleteTask: (projectId: string, taskId: string) => Promise<void>;
     addProjectUpdate: (projectId: string, update: ProjectUpdate) => void;
+    updateProjectUpdate: (projectId: string, update: ProjectUpdate) => Promise<void>;
     deleteProjectUpdate: (projectId: string, updateId: string) => Promise<void>;
     markNotificationRead: (id: string) => void;
 
@@ -566,6 +567,20 @@ export const useStore = create<AppState>((set, get) => ({
             await apiRequest('/project/update', 'DELETE', { id: updateId });
         } catch (e) {
             console.error("Failed to delete project update", e);
+        }
+    },
+
+    updateProjectUpdate: async (projectId, update) => {
+        set((state) => ({
+            projects: state.projects.map(p => p.id === projectId ? {
+                ...p,
+                updates: (p.updates || []).map(u => u.id === update.id ? update : u)
+            } : p)
+        }));
+        try {
+            await apiRequest('/project/update', 'PUT', { id: update.id, message: update.message });
+        } catch (e) {
+            console.error("Failed to update project update", e);
         }
     },
 

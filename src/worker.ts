@@ -375,6 +375,17 @@ export default {
                     }
                 }
 
+                // PUT /api/project/update
+                if (url.pathname === '/api/project/update' && request.method === 'PUT') {
+                    try {
+                        const { id, message } = await request.json();
+                        await env.DB.prepare('UPDATE project_updates SET message = ? WHERE id = ?').bind(message, id).run();
+                        return withCors(Response.json({ success: true }));
+                    } catch (e: any) {
+                        return withCors(Response.json({ message: `Project Update Update Error: ${e.message}` }, { status: 500 }));
+                    }
+                }
+
                 // POST /api/notification
                 if (url.pathname === '/api/notification' && request.method === 'POST') {
                     try {

@@ -1,8 +1,9 @@
+
 import { useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useStore } from '../lib/store';
 import { format } from 'date-fns';
-import { ArrowLeft, Calendar, MapPin, CheckCircle, Clock, UserPlus, FileText, Camera, Pencil, Plus, MessageSquare, Send } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Calendar, Camera, CheckCircle, Clock, FileText, MapPin, MessageSquare, MoreVertical, Pencil, Plus, Send, Trash2, Upload, UserPlus, X } from 'lucide-react';
 import { cn, resizeImage } from '../lib/utils';
 import { Card } from '../components/ui/Card';
 import { NewProjectModal } from '../components/NewProjectModal';
@@ -11,7 +12,7 @@ import type { Task } from '../lib/types';
 export function ProjectDetails() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { projects, users, currentUser, assignTask, completeTask, addTask, updateTask, addProjectUpdate } = useStore();
+    const { projects, users, currentUser, assignTask, completeTask, addTask, updateTask, addProjectUpdate, deleteProject, deleteTask, deleteProjectUpdate } = useStore();
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     // Task Management State
@@ -89,6 +90,31 @@ export function ProjectDetails() {
         setIsUpdateFormOpen(false);
     };
 
+    const handleDeleteProject = async () => {
+        if (confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
+            if (project) {
+                await deleteProject(project.id);
+                navigate('/projects');
+            }
+        }
+    };
+
+    const handleDeleteTask = async (taskId: string) => {
+        if (confirm('Delete this work requirement?')) {
+            if (project) {
+                await deleteTask(project.id, taskId);
+            }
+        }
+    };
+
+    const handleDeleteUpdate = async (updateId: string) => {
+        if (confirm('Delete this progress notification?')) {
+            if (project) {
+                await deleteProjectUpdate(project.id, updateId);
+            }
+        }
+    };
+
     // Task Completion State
     const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
     const [completionTaskId, setCompletionTaskId] = useState<string | null>(null);
@@ -144,13 +170,22 @@ export function ProjectDetails() {
                     <ArrowLeft className="w-4 h-4" />
                     Back to Projects
                 </button>
-                <button
-                    onClick={() => setIsEditModalOpen(true)}
-                    className="flex items-center gap-2 px-4 py-2 bg-white text-navy-900 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm font-medium"
-                >
-                    <Pencil className="w-4 h-4" />
-                    Edit Project
-                </button>
+                <div className="flex gap-3">
+                    <button
+                        onClick={() => setIsEditModalOpen(true)}
+                        className="flex items-center gap-2 px-4 py-2 bg-white text-navy-900 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm font-medium"
+                    >
+                        <Pencil className="w-4 h-4" />
+                        Edit Project
+                    </button>
+                    <button
+                        onClick={handleDeleteProject}
+                        className="flex items-center gap-2 px-4 py-2 bg-rose-50 text-rose-600 border border-rose-100 rounded-xl hover:bg-rose-100 transition-colors shadow-sm font-medium"
+                    >
+                        <Trash2 className="w-4 h-4" />
+                        Delete
+                    </button>
+                </div>
             </div>
 
             {/* Header */}
@@ -178,7 +213,7 @@ export function ProjectDetails() {
                                 <span className="text-emerald-600 font-bold">{project.progress}%</span>
                             </div>
                             <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                                <div className="h-full bg-emerald-500" style={{ width: `${project.progress}%` }} />
+                                <div className="h-full bg-emerald-500" style={{ width: `${project.progress}% ` }} />
                             </div>
                         </div>
                     </div>
@@ -363,6 +398,12 @@ export function ProjectDetails() {
                                                         >
                                                             <Pencil className="w-3.5 h-3.5" />
                                                         </button>
+                                                        <button
+                                                            onClick={() => handleDeleteTask(task.id)}
+                                                            className="text-slate-400 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                        >
+                                                            <Trash2 className="w-3.5 h-3.5" />
+                                                        </button>
                                                     </div>
                                                     <p className="text-text-muted text-sm mt-1">{task.description}</p>
                                                 </div>
@@ -497,9 +538,17 @@ export function ProjectDetails() {
                                                 <span className="text-emerald-700 font-bold">{update.authorName.charAt(0)}</span>
                                             </div>
                                             <div>
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <span className="font-bold text-navy-900">{update.authorName}</span>
-                                                    <span className="text-text-muted text-xs">• {format(new Date(update.date), 'MMM d, h:mm a')}</span>
+                                                <div className="flex items-center justify-between mb-1">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="font-bold text-navy-900">{update.authorName}</span>
+                                                        <span className="text-text-muted text-xs">• {format(new Date(update.date), 'MMM d, h:mm a')}</span>
+                                                    </div>
+                                                    <button
+                                                        onClick={() => handleDeleteUpdate(update.id)}
+                                                        className="text-slate-300 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                    >
+                                                        <Trash2 className="w-3.5 h-3.5" />
+                                                    </button>
                                                 </div>
                                                 <p className="text-navy-700 leading-relaxed">{update.message}</p>
                                             </div>
@@ -524,12 +573,12 @@ export function ProjectDetails() {
                                 <span className="text-xs font-medium text-text-muted uppercase tracking-wider">Contact</span>
                                 <div className="mt-1 space-y-1">
                                     {project.clientEmail && (
-                                        <a href={`mailto:${project.clientEmail}`} className="block text-emerald-600 hover:underline font-medium break-all">
+                                        <a href={`mailto:${project.clientEmail} `} className="block text-emerald-600 hover:underline font-medium break-all">
                                             {project.clientEmail}
                                         </a>
                                     )}
                                     {project.clientPhone && (
-                                        <a href={`tel:${project.clientPhone}`} className="block text-navy-700 hover:text-navy-900 font-medium">
+                                        <a href={`tel:${project.clientPhone} `} className="block text-navy-700 hover:text-navy-900 font-medium">
                                             {project.clientPhone}
                                         </a>
                                     )}

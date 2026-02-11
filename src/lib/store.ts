@@ -50,8 +50,13 @@ interface AppState {
     updateTask: (projectId: string, task: Task) => void;
     assignTask: (taskId: string, userId: string) => void;
     completeTask: (taskId: string, note?: string, image?: string) => void;
+    deleteTask: (projectId: string, taskId: string) => Promise<void>;
     addProjectUpdate: (projectId: string, update: ProjectUpdate) => void;
+    deleteProjectUpdate: (projectId: string, updateId: string) => Promise<void>;
     markNotificationRead: (id: string) => void;
+
+    // Project Deletion
+    deleteProject: (id: string) => Promise<void>;
 
     // Invoice Actions
     addInvoice: (invoice: Omit<Invoice, 'organizationId'>) => void;
@@ -391,7 +396,7 @@ export const useStore = create<AppState>((set, get) => ({
         }));
 
         try {
-            await apiRequest('/project/update-post', 'POST', { ...update, projectId });
+            await apiRequest('/project/update-post', 'POST', update);
         } catch (e) {
             console.error("Failed to add project update", e);
         }
@@ -515,9 +520,56 @@ export const useStore = create<AppState>((set, get) => ({
         }
     },
 
-    deleteOtherMatter: (id) => set((state) => ({
-        otherMatters: state.otherMatters.filter(om => om.id !== id)
-    })),
+    deleteOtherMatter: async (id) => {
+        set((state) => ({
+            otherMatters: state.otherMatters.filter(om => om.id !== id)
+        }));
+        try {
+            // Missing API endpoint for delete other matter in worker currently
+        } catch (e) {
+            console.error("Failed to delete other matter", e);
+        }
+    },
+
+    // Deletion Actions (Project, Task, Updates)
+    deleteProject: async (id) => {
+        set((state) => ({
+            projects: state.projects.filter(p => p.id !== id),
+        }));
+        try {
+            await apiRequest('/project', 'DELETE', { id });
+        } catch (e) {
+            console.error("Failed to delete project", e);
+        }
+    },
+
+    deleteTask: async (projectId, taskId) => {
+        set((state) => ({
+            projects: state.projects.map(p => p.id === projectId ? {
+                ...p,
+                tasks: p.tasks.filter(t => t.id !== taskId)
+            } : p)
+        }));
+        try {
+            await apiRequest('/task', 'DELETE', { id: taskId });
+        } catch (e) {
+            console.error("Failed to delete task", e);
+        }
+    },
+
+    deleteProjectUpdate: async (projectId, updateId) => {
+        set((state) => ({
+            projects: state.projects.map(p => p.id === projectId ? {
+                ...p,
+                updates: (p.updates || []).filter(u => u.id !== updateId)
+            } : p)
+        }));
+        try {
+            await apiRequest('/project/update', 'DELETE', { id: updateId });
+        } catch (e) {
+            console.error("Failed to delete project update", e);
+        }
+    },
 
     reset: () => set({
         projects: [],
@@ -527,6 +579,8 @@ export const useStore = create<AppState>((set, get) => ({
         invoices: [],
         currentUser: null,
         currentOrganization: null,
-        organizations: []
+        organizations: [],
+        reminders: [],
+        otherMatters: []
     }),
 }));

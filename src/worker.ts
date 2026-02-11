@@ -349,11 +349,14 @@ export default {
                 if (url.pathname === '/api/project/update-post' && request.method === 'POST') {
                     try {
                         const update = await request.json();
+                        // Debug log
+                        console.log('Project Update Payload:', JSON.stringify(update));
+
                         await env.DB.prepare(`
                             INSERT INTO project_updates (id, project_id, message, date, author_name)
                             VALUES (?, ?, ?, ?, ?)
                         `).bind(
-                            update.id, update.projectId, update.message, update.date, update.authorName
+                            update.id || null, update.projectId || null, update.message || null, update.date || null, update.authorName || 'Admin'
                         ).run();
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {
@@ -451,6 +454,46 @@ export default {
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {
                         return withCors(Response.json({ message: `Other Matter Error: ${e.message}` }, { status: 500 }));
+                    }
+                }
+
+                // DELETE /api/project
+                if (url.pathname === '/api/project' && request.method === 'DELETE') {
+                    try {
+                        const { id } = await request.json();
+                        // Manual cascade delete
+                        await env.DB.batch([
+                            env.DB.prepare('DELETE FROM tasks WHERE project_id = ?').bind(id),
+                            env.DB.prepare('DELETE FROM project_updates WHERE project_id = ?').bind(id),
+                            env.DB.prepare('DELETE FROM invoices WHERE project_id = ?').bind(id),
+                            env.DB.prepare('DELETE FROM meetings WHERE project_id = ?').bind(id),
+                            env.DB.prepare('DELETE FROM projects WHERE id = ?').bind(id)
+                        ]);
+                        return withCors(Response.json({ success: true }));
+                    } catch (e: any) {
+                        return withCors(Response.json({ message: `Destructive Project Delete Error: ${e.message}` }, { status: 500 }));
+                    }
+                }
+
+                // DELETE /api/task
+                if (url.pathname === '/api/task' && request.method === 'DELETE') {
+                    try {
+                        const { id } = await request.json();
+                        await env.DB.prepare('DELETE FROM tasks WHERE id = ?').bind(id).run();
+                        return withCors(Response.json({ success: true }));
+                    } catch (e: any) {
+                        return withCors(Response.json({ message: `Task Delete Error: ${e.message}` }, { status: 500 }));
+                    }
+                }
+
+                // DELETE /api/project/update
+                if (url.pathname === '/api/project/update' && request.method === 'DELETE') {
+                    try {
+                        const { id } = await request.json();
+                        await env.DB.prepare('DELETE FROM project_updates WHERE id = ?').bind(id).run();
+                        return withCors(Response.json({ success: true }));
+                    } catch (e: any) {
+                        return withCors(Response.json({ message: `Project Update Delete Error: ${e.message}` }, { status: 500 }));
                     }
                 }
 

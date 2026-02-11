@@ -202,12 +202,13 @@ export const useStore = create<AppState>((set, get) => ({
         await get().fetchData(email);
     },
 
-    signup: async ({ organizationName, ...userDetails }) => {
+    signup: async ({ organizationName, organizationId, ...userDetails }) => {
         set({ isLoading: true, error: null });
         try {
             const result = await apiRequest('/signup', 'POST', {
                 ...userDetails,
-                company: organizationName
+                company: organizationName,
+                organizationId
             });
             // After signup, fetch data to log them in
             if (result.success && userDetails.email) {

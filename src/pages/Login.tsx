@@ -14,13 +14,13 @@ export function Login({ initialMode = 'login' }: { initialMode?: 'login' | 'sign
     const inviteEmail = searchParams.get('email');
     const inviteRole = searchParams.get('role') as UserRole;
 
-    // Redirect if already logged in
+    // Redirect if already logged in (SKIP if accepting invite)
     const { currentUser } = useStore();
     React.useEffect(() => {
-        if (currentUser) {
+        if (currentUser && !inviteOrgId) {
             navigate('/dashboard');
         }
-    }, [currentUser, navigate]);
+    }, [currentUser, navigate, inviteOrgId]);
 
     // Login State
     const [email, setEmail] = useState('john@meits.com');
@@ -32,6 +32,9 @@ export function Login({ initialMode = 'login' }: { initialMode?: 'login' | 'sign
     const [signupEmail, setSignupEmail] = useState(inviteEmail || '');
     const [signupPassword, setSignupPassword] = useState('');
     const [phone, setPhone] = useState('');
+    // For invites, company field is organizationId, but display logic might want name.
+    // However, signup expects 'company' as string.
+    // If inviting, we set organizationId explicitly.
     const [company, setCompany] = useState(inviteOrgId || '');
     const [role, setRole] = useState<UserRole>(inviteRole || 'builder');
 
@@ -52,9 +55,12 @@ export function Login({ initialMode = 'login' }: { initialMode?: 'login' | 'sign
                     email: signupEmail,
                     password: signupPassword,
                     phone,
-                    company,
+                    company: inviteOrgId ? 'Hidden' : company, // Dummy name if joining existing? Or let user type name? 
+                    // Actually, if joining, we should probably hide the company input.
+                    // But for now, let's just pass organizationId.
                     role,
-                    organizationName: company
+                    organizationName: company, // If joining, this might be confusing. Backend uses orgId if present.
+                    organizationId: inviteOrgId || undefined
                 });
 
                 // Check if signup succeeded (user should be set in store)
@@ -126,19 +132,25 @@ export function Login({ initialMode = 'login' }: { initialMode?: 'login' | 'sign
                                     required
                                 />
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium text-navy-900 mb-1.5">Company / Organization ID</label>
-                                <input
-                                    type="text"
-                                    value={company}
-                                    onChange={(e) => setCompany(e.target.value)}
-                                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-navy-900 disabled:opacity-60 disabled:cursor-not-allowed"
-                                    placeholder="Acme Construction"
-                                    required
-                                    disabled={!!inviteOrgId}
-                                />
-                                {inviteOrgId && <p className="text-xs text-emerald-600 mt-1">Joining existing organization</p>}
-                            </div>
+                            {!inviteOrgId && (
+                                <div>
+                                    <label className="block text-sm font-medium text-navy-900 mb-1.5">Company Name</label>
+                                    <input
+                                        type="text"
+                                        value={company}
+                                        onChange={(e) => setCompany(e.target.value)}
+                                        className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-navy-900"
+                                        placeholder="Acme Construction"
+                                        required
+                                    />
+                                </div>
+                            )}
+                            {inviteOrgId && (
+                                <div className="p-3 bg-emerald-50 text-emerald-700 text-sm rounded-xl border border-emerald-100 flex items-center gap-2">
+                                    <span className="font-bold">Joining Team</span>
+                                    <span className="text-emerald-600 text-xs">(Organization ID applied)</span>
+                                </div>
+                            )}
                         </>
                     )}
 

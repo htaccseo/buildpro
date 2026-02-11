@@ -159,29 +159,32 @@ export default {
                             throw new Error(`Invalid JSON body: ${jsonErr.message}`);
                         }
 
-                        const { name, email, password, company, role, phone } = data;
+                        const { name, email, password, company, role, phone, organizationId } = data;
 
-                        const orgId = generateUUID();
+                        let orgId = organizationId;
                         const userId = generateUUID();
-                        logs.push(`Generated IDs: Org=${orgId}, User=${userId}`);
-                        console.log(`[Worker] Generated IDs: Org=${orgId}, User=${userId}`);
+                        logs.push(`IDs: Org=${orgId || 'New'}, User=${userId}`);
 
-                        // Create Organization
-                        logs.push(`Inserting Org: ${company}`);
-                        console.log(`[Worker] Inserting Org: ${company} (ID: ${orgId})`);
-                        try {
-                            const orgResult = await env.DB.prepare(
-                                'INSERT INTO organizations (id, name) VALUES (?, ?)'
-                            ).bind(orgId, company || null).run();
-                            console.log(`[Worker] Org Insert Result: ${JSON.stringify(orgResult)}`);
-                        } catch (dbErr: any) {
-                            console.error(`[Worker] DB Org Insert Error: ${dbErr.message}`);
-                            logs.push(`DB Org Insert Error: ${dbErr.message}`);
-                            throw dbErr;
+                        if (!orgId) {
+                            orgId = generateUUID();
+                            // Create Organization
+                            logs.push(`Inserting Org: ${company}`);
+                            console.log(`[Worker] Inserting Org: ${company} (ID: ${orgId})`);
+                            try {
+                                const orgResult = await env.DB.prepare(
+                                    'INSERT INTO organizations (id, name) VALUES (?, ?)'
+                                ).bind(orgId, company || null).run();
+                                console.log(`[Worker] Org Insert Result: ${JSON.stringify(orgResult)}`);
+                            } catch (dbErr: any) {
+                                console.error(`[Worker] DB Org Insert Error: ${dbErr.message}`);
+                                logs.push(`DB Org Insert Error: ${dbErr.message}`);
+                                throw dbErr;
+                            }
+                            logs.push('Org Inserted');
+                            console.log('[Worker] Org Inserted');
+                        } else {
+                            logs.push(`Joining Existing Org: ${orgId}`);
                         }
-
-                        logs.push('Org Inserted');
-                        console.log('[Worker] Org Inserted');
 
                         // Create User
                         logs.push(`Inserting User: ${email}, Role: ${role}`);

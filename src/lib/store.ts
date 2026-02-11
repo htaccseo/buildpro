@@ -78,6 +78,7 @@ interface AppState {
     // Other Matters Actions
     otherMatters: OtherMatter[];
     addOtherMatter: (matter: Omit<OtherMatter, 'organizationId'>) => void;
+    updateOtherMatter: (id: string, updates: Partial<OtherMatter>) => void;
     deleteOtherMatter: (id: string) => void;
 
     // Debug

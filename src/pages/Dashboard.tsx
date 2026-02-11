@@ -4,12 +4,12 @@ import { useOrganizationData } from '../lib/hooks';
 import { isSameDay } from 'date-fns';
 import { Link, useNavigate } from 'react-router-dom';
 import { MOCK_USERS } from '../lib/mockData';
-import { Activity, Clock, MapPin, X, StickyNote } from 'lucide-react';
+import { Activity, Clock, MapPin, X, StickyNote, Edit2, Trash2 } from 'lucide-react';
 import { cn, formatDate } from '../lib/utils';
 import { Card } from '../components/ui/Card';
 import { NewMeetingModal } from '../components/NewMeetingModal';
 import { ReminderModal } from '../components/ReminderModal';
-import type { Reminder } from '../lib/types';
+import type { Reminder, OtherMatter } from '../lib/types';
 
 export function Dashboard() {
     const navigate = useNavigate();
@@ -20,6 +20,7 @@ export function Dashboard() {
 
     // Other Matters State
     const [isMatterModalOpen, setIsMatterModalOpen] = React.useState(false);
+    const [matterToEdit, setMatterToEdit] = React.useState<OtherMatter | null>(null);
     const [matterTitle, setMatterTitle] = React.useState('');
     const [matterAddress, setMatterAddress] = React.useState('');
     const [matterNote, setMatterNote] = React.useState('');
@@ -29,7 +30,7 @@ export function Dashboard() {
     // Use Store actions (actions are safe to use from store directly as they usually just dispatch)
     // Actually, our store actions need currentOrgId from store state, which is fine.
     // The previous code destructured methods from useStore. Let's keep doing that for actions.
-    const { toggleReminder, addOtherMatter, deleteOtherMatter, deleteMeeting } = useStore();
+    const { toggleReminder, addOtherMatter, updateOtherMatter, deleteOtherMatter, deleteMeeting } = useStore();
 
     const allTasks = projects.flatMap(p => p.tasks);
 
@@ -61,17 +62,41 @@ export function Dashboard() {
 
     const handleAddOtherMatter = (e: React.FormEvent) => {
         e.preventDefault();
-        addOtherMatter({
-            id: Math.random().toString(36).substr(2, 9),
-            title: matterTitle,
-            address: matterAddress,
-            note: matterNote,
-            date: new Date().toISOString()
-        });
+        if (matterToEdit) {
+            updateOtherMatter(matterToEdit.id, {
+                title: matterTitle,
+                address: matterAddress,
+                note: matterNote
+            });
+        } else {
+            addOtherMatter({
+                id: Math.random().toString(36).substr(2, 9),
+                title: matterTitle,
+                address: matterAddress,
+                note: matterNote,
+                date: new Date().toISOString()
+            });
+        }
         setIsMatterModalOpen(false);
+        setMatterToEdit(null);
         setMatterTitle('');
         setMatterAddress('');
         setMatterNote('');
+    };
+
+    const openMatterModal = (matter?: OtherMatter) => {
+        if (matter) {
+            setMatterToEdit(matter);
+            setMatterTitle(matter.title);
+            setMatterAddress(matter.address || '');
+            setMatterNote(matter.note);
+        } else {
+            setMatterToEdit(null);
+            setMatterTitle('');
+            setMatterAddress('');
+            setMatterNote('');
+        }
+        setIsMatterModalOpen(true);
     };
 
     // Get current user for greeting
@@ -332,12 +357,22 @@ export function Dashboard() {
                         {otherMatters && otherMatters.length > 0 ? (
                             otherMatters.map(matter => (
                                 <div key={matter.id} className="p-4 rounded-xl bg-amber-50 border border-amber-100 space-y-2 group relative">
-                                    <button
-                                        onClick={() => deleteOtherMatter(matter.id)}
-                                        className="absolute top-2 right-2 text-amber-400 hover:text-amber-600 opacity-0 group-hover:opacity-100 transition-opacity"
-                                    >
-                                        <X className="w-4 h-4" />
-                                    </button>
+                                    <div className="absolute top-2 right-2 flex gap-1 group-hover:opacity-100 opacity-0 transition-opacity">
+                                        <button
+                                            onClick={() => openMatterModal(matter)}
+                                            className="text-amber-400 hover:text-amber-600 p-1"
+                                            title="Edit Note"
+                                        >
+                                            <Edit2 className="w-4 h-4" />
+                                        </button>
+                                        <button
+                                            onClick={() => deleteOtherMatter(matter.id)}
+                                            className="text-amber-400 hover:text-amber-600 p-1"
+                                            title="Delete Note"
+                                        >
+                                            <X className="w-4 h-4" />
+                                        </button>
+                                    </div>
                                     <h4 className="font-bold text-navy-900 flex items-center gap-2">
                                         <StickyNote className="w-4 h-4 text-amber-500" />
                                         {matter.title}

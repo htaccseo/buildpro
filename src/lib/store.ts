@@ -523,7 +523,7 @@ export const useStore = create<AppState>((set, get) => ({
             otherMatters: state.otherMatters.filter(om => om.id !== id)
         }));
         try {
-            // Missing API endpoint for delete other matter in worker currently
+            await apiRequest('/other-matter', 'DELETE', { id });
         } catch (e) {
             console.error("Failed to delete other matter", e);
         }

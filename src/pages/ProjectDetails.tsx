@@ -546,8 +546,11 @@ export function ProjectDetails() {
                                                         <span className="text-text-muted text-xs">• {format(new Date(update.date), 'MMM d, h:mm a')}</span>
                                                     </div>
                                                     <button
-                                                        onClick={() => handleDeleteUpdate(update.id)}
-                                                        className="text-slate-300 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleDeleteUpdate(update.id);
+                                                        }}
+                                                        className="text-slate-300 hover:text-rose-500 transition-colors"
                                                     >
                                                         <Trash2 className="w-3.5 h-3.5" />
                                                     </button>

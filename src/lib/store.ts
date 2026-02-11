@@ -428,9 +428,16 @@ export const useStore = create<AppState>((set, get) => ({
         invoices: state.invoices.map(inv => inv.id === id ? { ...inv, status } : inv)
     })),
 
-    deleteInvoice: (id) => set((state) => ({
-        invoices: state.invoices.filter(inv => inv.id !== id)
-    })),
+    deleteInvoice: async (id) => {
+        set((state) => ({
+            invoices: state.invoices.filter(inv => inv.id !== id)
+        }));
+        try {
+            await apiRequest('/invoice', 'DELETE', { id });
+        } catch (e) {
+            console.error("Failed to delete invoice", e);
+        }
+    },
 
     // Meeting Actions
     addMeeting: async (meeting) => {

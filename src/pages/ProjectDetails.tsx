@@ -491,25 +491,27 @@ export function ProjectDetails() {
                                                             <FileText className="w-4 h-4" />
                                                             Completion Report
                                                         </div>
-                                                        <button
-                                                            onClick={() => openCompletionModal(task.id, task.completionNote, task.completionImage)}
-                                                            className="text-emerald-600 hover:text-emerald-800 opacity-0 group-hover/report:opacity-100 transition-opacity bg-white/50 hover:bg-white rounded-lg p-1.5"
-                                                            title="Edit Report"
-                                                        >
-                                                            <Edit2 className="w-3.5 h-3.5" />
-                                                        </button>
-                                                        <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                if (confirm('Delete this completion report? The task will revert to pending status.')) {
-                                                                    uncompleteTask(task.id);
-                                                                }
-                                                            }}
-                                                            className="text-rose-400 hover:text-rose-600 opacity-0 group-hover/report:opacity-100 transition-opacity bg-white/50 hover:bg-white rounded-lg p-1.5 ml-2"
-                                                            title="Delete Report"
-                                                        >
-                                                            <Trash2 className="w-3.5 h-3.5" />
-                                                        </button>
+                                                        <div className="flex gap-1 opacity-0 group-hover/report:opacity-100 transition-opacity">
+                                                            <button
+                                                                onClick={() => openCompletionModal(task.id, task.completionNote, task.completionImage)}
+                                                                className="text-emerald-600 hover:text-emerald-800 bg-white/50 hover:bg-white rounded-lg p-1.5"
+                                                                title="Edit Report"
+                                                            >
+                                                                <Edit2 className="w-3.5 h-3.5" />
+                                                            </button>
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    if (confirm('Delete this completion report? The task will revert to pending status.')) {
+                                                                        uncompleteTask(task.id);
+                                                                    }
+                                                                }}
+                                                                className="text-rose-400 hover:text-rose-600 bg-white/50 hover:bg-white rounded-lg p-1.5"
+                                                                title="Delete Report"
+                                                            >
+                                                                <Trash2 className="w-3.5 h-3.5" />
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                     <p className="text-sm text-navy-700">{task.completionNote}</p>
                                                     {task.completionImage && (

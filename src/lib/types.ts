@@ -37,6 +37,7 @@ export interface Task {
 
 export interface ProjectUpdate {
     id: string;
+    projectId: string;
     message: string;
     date: string; // ISO Date
     authorName: string;

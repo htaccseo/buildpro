@@ -6,6 +6,7 @@ import { Phone, Mail, Users, Plus, Briefcase, Shield, RotateCcw } from 'lucide-r
 import { cn } from '../lib/utils';
 import { Card } from '../components/ui/Card';
 import { InviteMemberModal } from '../components/InviteMemberModal';
+import { UserAvatar } from '../components/UserAvatar';
 
 export function Team() {
     const { users, projects } = useOrganizationData();
@@ -98,7 +99,7 @@ export function Team() {
                     {teamMembers.map(member => {
                         const tasks = getUserTasks(member.id);
                         const activeTasks = tasks.filter(t => t.status !== 'completed');
-                        const isCurrentUser = member.id === currentUser.id;
+
 
                         return (
                             <Card key={member.id} className="overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1 border-none shadow-sm flex flex-col">
@@ -106,10 +107,11 @@ export function Team() {
                                     <div className="flex items-start justify-between">
                                         <div className="flex items-center gap-4">
                                             <div className="relative">
-                                                <img src={member.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=random`} alt={member.name} className="w-14 h-14 rounded-full object-cover ring-4 ring-slate-50" />
-                                                {isCurrentUser && (
-                                                    <span className="absolute -bottom-1 -right-1 bg-emerald-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white">YOU</span>
-                                                )}
+                                                <UserAvatar
+                                                    userId={member.id}
+                                                    className="w-14 h-14 text-xl ring-4 ring-slate-50"
+                                                    showBadge={true}
+                                                />
                                             </div>
                                             <div>
                                                 <h3 className="text-lg font-bold text-navy-900">{member.name}</h3>

@@ -6,9 +6,10 @@ interface UserAvatarProps {
     userId?: string;
     className?: string;
     showName?: boolean;
+    showBadge?: boolean;
 }
 
-export function UserAvatar({ userId, className, showName = false }: UserAvatarProps) {
+export function UserAvatar({ userId, className, showName = false, showBadge = false }: UserAvatarProps) {
     const { users, currentUser } = useStore();
 
     if (!userId) return null;
@@ -54,7 +55,7 @@ export function UserAvatar({ userId, className, showName = false }: UserAvatarPr
                 >
                     {initials}
                 </div>
-                {isCurrentUser && (
+                {isCurrentUser && showBadge && (
                     <div className="absolute -bottom-1 -right-1 bg-emerald-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-white shadow-sm">
                         YOU
                     </div>

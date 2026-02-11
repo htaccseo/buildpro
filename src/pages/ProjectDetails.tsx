@@ -3,7 +3,7 @@ import { useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useStore } from '../lib/store';
 import { format } from 'date-fns';
-import { AlertCircle, ArrowLeft, Calendar, Camera, CheckCircle, Clock, FileText, MapPin, MessageSquare, MoreVertical, Pencil, Plus, Send, Trash2, Upload, UserPlus, X } from 'lucide-react';
+import { ArrowLeft, Calendar, Camera, CheckCircle, Clock, FileText, MapPin, MessageSquare, Pencil, Plus, Send, Trash2, UserPlus } from 'lucide-react';
 import { cn, resizeImage } from '../lib/utils';
 import { Card } from '../components/ui/Card';
 import { NewProjectModal } from '../components/NewProjectModal';

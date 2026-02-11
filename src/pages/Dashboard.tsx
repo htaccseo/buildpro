@@ -9,11 +9,12 @@ import { Card } from '../components/ui/Card';
 import { NewMeetingModal } from '../components/NewMeetingModal';
 import { ReminderModal } from '../components/ReminderModal';
 import { UserAvatar } from '../components/UserAvatar';
-import type { Reminder, OtherMatter } from '../lib/types';
+import type { Reminder, OtherMatter, Meeting } from '../lib/types';
 
 export function Dashboard() {
     const navigate = useNavigate();
     const [isMeetingModalOpen, setIsMeetingModalOpen] = React.useState(false);
+    const [selectedMeeting, setSelectedMeeting] = React.useState<Meeting | null>(null);
     // Reminder State
     const [selectedReminder, setSelectedReminder] = React.useState<Reminder | null>(null);
     const [isReminderModalOpen, setIsReminderModalOpen] = React.useState(false);
@@ -60,6 +61,15 @@ export function Dashboard() {
     const upcomingMeetings = meetings.filter(m => new Date(m.date) >= new Date(new Date().setHours(0, 0, 0, 0))).slice(0, 3); // Today onwards
 
 
+
+    const openMeetingModal = (meeting?: Meeting) => {
+        if (meeting) {
+            setSelectedMeeting(meeting);
+        } else {
+            setSelectedMeeting(null);
+        }
+        setIsMeetingModalOpen(true);
+    };
 
     const handleAddOtherMatter = (e: React.FormEvent) => {
         e.preventDefault();
@@ -281,7 +291,7 @@ export function Dashboard() {
                         <div className="flex justify-between items-center pb-2 border-b border-slate-100">
                             <span className="text-sm font-medium text-text-muted">Schedule</span>
                             <button
-                                onClick={() => setIsMeetingModalOpen(true)}
+                                onClick={() => openMeetingModal()}
                                 className="text-xs font-bold text-emerald-600 hover:text-emerald-700"
                             >
                                 + Add Meeting
@@ -291,7 +301,11 @@ export function Dashboard() {
                             <div className="text-center py-6 text-sm text-text-muted">No upcoming meetings.</div>
                         ) : (
                             upcomingMeetings.map(meeting => (
-                                <div key={meeting.id} className="group relative flex items-center gap-4 p-3 rounded-xl bg-slate-50 border border-slate-100 pr-8">
+                                <div
+                                    key={meeting.id}
+                                    onClick={() => openMeetingModal(meeting)}
+                                    className="group relative flex items-center gap-4 p-3 rounded-xl bg-slate-50 border border-slate-100 pr-8 cursor-pointer hover:bg-slate-100 transition-colors"
+                                >
                                     <button
                                         onClick={(e) => {
                                             e.stopPropagation();
@@ -464,10 +478,11 @@ export function Dashboard() {
             </div >
 
             {/* New Meeting Modal */}
-            < NewMeetingModal
+            {/* New Meeting Modal */}
+            <NewMeetingModal
                 isOpen={isMeetingModalOpen}
-                onClose={() => setIsMeetingModalOpen(false)
-                }
+                onClose={() => setIsMeetingModalOpen(false)}
+                meeting={selectedMeeting}
             />
 
             {/* Reminder Modal (Add/Edit) */}

@@ -50,6 +50,7 @@ interface AppState {
     updateTask: (projectId: string, task: Task) => void;
     assignTask: (taskId: string, userId: string) => void;
     completeTask: (taskId: string, note?: string, image?: string) => void;
+    uncompleteTask: (taskId: string) => Promise<void>;
     deleteTask: (projectId: string, taskId: string) => Promise<void>;
     addProjectUpdate: (projectId: string, update: ProjectUpdate) => void;
     updateProjectUpdate: (projectId: string, update: ProjectUpdate) => Promise<void>;
@@ -387,6 +388,27 @@ export const useStore = create<AppState>((set, get) => ({
             } catch (e) {
                 console.error("Failed to complete task", e);
             }
+        }
+    },
+
+    uncompleteTask: async (taskId: string) => {
+        set((state) => ({
+            projects: state.projects.map((p) => ({
+                ...p,
+                tasks: (p.tasks || []).map((t) => t.id === taskId ? {
+                    ...t,
+                    status: 'pending' as const,
+                    completedAt: undefined,
+                    completionNote: undefined,
+                    completionImage: undefined
+                } : t)
+            }))
+        }));
+
+        try {
+            await apiRequest('/task/uncomplete', 'POST', { taskId });
+        } catch (e) {
+            console.error("Failed to un-complete task", e);
         }
     },
 

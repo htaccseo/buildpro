@@ -12,7 +12,7 @@ import type { Task } from '../lib/types';
 export function ProjectDetails() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { projects, users, currentUser, assignTask, completeTask, addTask, updateTask, addProjectUpdate, deleteProject, deleteTask } = useStore();
+    const { projects, users, currentUser, assignTask, completeTask, uncompleteTask, addTask, updateTask, addProjectUpdate, deleteProject, deleteTask } = useStore();
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     // Task Management State
@@ -497,6 +497,18 @@ export function ProjectDetails() {
                                                             title="Edit Report"
                                                         >
                                                             <Edit2 className="w-3.5 h-3.5" />
+                                                        </button>
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                if (confirm('Delete this completion report? The task will revert to pending status.')) {
+                                                                    uncompleteTask(task.id);
+                                                                }
+                                                            }}
+                                                            className="text-rose-400 hover:text-rose-600 opacity-0 group-hover/report:opacity-100 transition-opacity bg-white/50 hover:bg-white rounded-lg p-1.5 ml-2"
+                                                            title="Delete Report"
+                                                        >
+                                                            <Trash2 className="w-3.5 h-3.5" />
                                                         </button>
                                                     </div>
                                                     <p className="text-sm text-navy-700">{task.completionNote}</p>

@@ -301,6 +301,21 @@ export default {
                     }
                 }
 
+                // POST /api/task/uncomplete
+                if (url.pathname === '/api/task/uncomplete' && request.method === 'POST') {
+                    try {
+                        const data = await request.json();
+                        await env.DB.prepare(`
+                            UPDATE tasks 
+                            SET status = 'pending', completed_at = NULL, completion_note = NULL, completion_image = NULL
+                            WHERE id = ?
+                        `).bind(data.taskId).run();
+                        return withCors(Response.json({ success: true }));
+                    } catch (e: any) {
+                        return withCors(Response.json({ message: `Task Uncomplete Error: ${e.message}` }, { status: 500 }));
+                    }
+                }
+
                 // POST /api/invite
                 if (url.pathname === '/api/invite' && request.method === 'POST') {
                     try {

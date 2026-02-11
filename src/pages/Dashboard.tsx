@@ -4,7 +4,7 @@ import { useOrganizationData } from '../lib/hooks';
 import { isSameDay } from 'date-fns';
 import { Link, useNavigate } from 'react-router-dom';
 import { MOCK_USERS } from '../lib/mockData';
-import { Activity, Clock, MapPin, X, StickyNote, Edit2, Trash2 } from 'lucide-react';
+import { Activity, Clock, MapPin, X, StickyNote, Edit2 } from 'lucide-react';
 import { cn, formatDate } from '../lib/utils';
 import { Card } from '../components/ui/Card';
 import { NewMeetingModal } from '../components/NewMeetingModal';

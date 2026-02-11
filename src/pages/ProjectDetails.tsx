@@ -82,6 +82,7 @@ export function ProjectDetails() {
 
         addProjectUpdate(project.id, {
             id: Math.random().toString(36).substr(2, 9),
+            projectId: project.id,
             message: updateMessage,
             date: new Date().toISOString(),
             authorName: currentUser?.name || 'Admin'

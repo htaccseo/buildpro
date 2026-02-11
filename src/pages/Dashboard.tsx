@@ -3,7 +3,6 @@ import { useStore } from '../lib/store';
 import { useOrganizationData } from '../lib/hooks';
 import { isSameDay } from 'date-fns';
 import { Link, useNavigate } from 'react-router-dom';
-import { MOCK_USERS } from '../lib/mockData';
 import { Activity, Clock, MapPin, X, StickyNote, Edit2 } from 'lucide-react';
 import { cn, formatDate } from '../lib/utils';
 import { Card } from '../components/ui/Card';
@@ -234,19 +233,13 @@ export function Dashboard() {
                                             <p className="text-sm text-text-muted truncate">{project.address}</p>
                                         </div>
 
-                                        <div className="flex flex-col items-end gap-2 text-right">
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-sm font-medium text-navy-600">{project.progress}%</span>
-                                                <div className="w-24 h-2 bg-slate-100 rounded-full overflow-hidden">
-                                                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${project.progress}%` }} />
-                                                </div>
-                                            </div>
-                                            <div className="flex -space-x-2">
-                                                {MOCK_USERS.slice(1, 4).map(u => ( // Simulated assigned users
-                                                    <img key={u.id} src={u.avatar} alt={u.name} className="w-7 h-7 rounded-full border-2 border-white ring-1 ring-slate-100" />
-                                                ))}
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-sm font-medium text-navy-600">{project.progress}%</span>
+                                            <div className="w-24 h-2 bg-slate-100 rounded-full overflow-hidden">
+                                                <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${project.progress}%` }} />
                                             </div>
                                         </div>
+
                                     </Card>
                                 </Link>
                             ))}
@@ -409,61 +402,63 @@ export function Dashboard() {
             />
 
             {/* New Other Matter Modal */}
-            {isMatterModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl animate-in zoom-in-95 duration-200">
-                        <h3 className="text-xl font-bold text-navy-900 mb-4">{matterToEdit ? 'Edit Note' : 'New Note'}</h3>
-                        <form onSubmit={handleAddOtherMatter} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-navy-900 mb-1.5">Title</label>
-                                <input
-                                    type="text"
-                                    value={matterTitle}
-                                    onChange={(e) => setMatterTitle(e.target.value)}
-                                    className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-amber-500 outline-none"
-                                    placeholder="e.g., Brick Calculation"
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-navy-900 mb-1.5">Address (Optional)</label>
-                                <input
-                                    type="text"
-                                    value={matterAddress}
-                                    onChange={(e) => setMatterAddress(e.target.value)}
-                                    className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-amber-500 outline-none"
-                                    placeholder="e.g., 123 Site St"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-navy-900 mb-1.5">Note</label>
-                                <textarea
-                                    value={matterNote}
-                                    onChange={(e) => setMatterNote(e.target.value)}
-                                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-amber-500 outline-none min-h-[100px] resize-none"
-                                    placeholder="e.g., Need 5000 bricks..."
-                                    required
-                                />
-                            </div>
-                            <div className="flex gap-3 pt-2">
-                                <button
-                                    type="button"
-                                    onClick={() => setIsMatterModalOpen(false)}
-                                    className="flex-1 px-4 py-2 rounded-xl border border-slate-200 text-navy-900 hover:bg-slate-50"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="flex-1 px-4 py-2 rounded-xl bg-amber-500 text-white hover:bg-amber-600 shadow-lg shadow-amber-500/20"
-                                >
-                                    {matterToEdit ? 'Save Changes' : 'Add Note'}
-                                </button>
-                            </div>
-                        </form>
+            {
+                isMatterModalOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+                        <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl animate-in zoom-in-95 duration-200">
+                            <h3 className="text-xl font-bold text-navy-900 mb-4">{matterToEdit ? 'Edit Note' : 'New Note'}</h3>
+                            <form onSubmit={handleAddOtherMatter} className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-navy-900 mb-1.5">Title</label>
+                                    <input
+                                        type="text"
+                                        value={matterTitle}
+                                        onChange={(e) => setMatterTitle(e.target.value)}
+                                        className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-amber-500 outline-none"
+                                        placeholder="e.g., Brick Calculation"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-navy-900 mb-1.5">Address (Optional)</label>
+                                    <input
+                                        type="text"
+                                        value={matterAddress}
+                                        onChange={(e) => setMatterAddress(e.target.value)}
+                                        className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-amber-500 outline-none"
+                                        placeholder="e.g., 123 Site St"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-navy-900 mb-1.5">Note</label>
+                                    <textarea
+                                        value={matterNote}
+                                        onChange={(e) => setMatterNote(e.target.value)}
+                                        className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-amber-500 outline-none min-h-[100px] resize-none"
+                                        placeholder="e.g., Need 5000 bricks..."
+                                        required
+                                    />
+                                </div>
+                                <div className="flex gap-3 pt-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsMatterModalOpen(false)}
+                                        className="flex-1 px-4 py-2 rounded-xl border border-slate-200 text-navy-900 hover:bg-slate-50"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="flex-1 px-4 py-2 rounded-xl bg-amber-500 text-white hover:bg-amber-600 shadow-lg shadow-amber-500/20"
+                                    >
+                                        {matterToEdit ? 'Save Changes' : 'Add Note'}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 }

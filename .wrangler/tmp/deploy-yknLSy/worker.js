@@ -1,0 +1,580 @@
+var __defProp = Object.defineProperty;
+var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
+
+// src/worker.ts
+var corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+  "Pragma": "no-cache",
+  "Expires": "0"
+};
+var withCors = /* @__PURE__ */ __name((response) => {
+  if (!response) {
+    return new Response("Internal Router Error: No response", {
+      status: 500,
+      headers: corsHeaders
+    });
+  }
+  const newHeaders = new Headers(response.headers);
+  Object.entries(corsHeaders).forEach(([key, value]) => {
+    newHeaders.set(key, value);
+  });
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers: newHeaders
+  });
+}, "withCors");
+function generateUUID() {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+    var r = Math.random() * 16 | 0, v = c == "x" ? r : r & 3 | 8;
+    return v.toString(16);
+  });
+}
+__name(generateUUID, "generateUUID");
+var worker_default = {
+  fetch: /* @__PURE__ */ __name(async (request, env, ctx) => {
+    try {
+      if (request.method === "OPTIONS") {
+        return new Response(null, {
+          headers: corsHeaders
+        });
+      }
+      const url = new URL(request.url);
+      if (url.pathname.startsWith("/api/")) {
+        if (url.pathname === "/api/data" && request.method === "GET") {
+          const logs = [];
+          logs.push("Start /api/data");
+          try {
+            const email = url.searchParams.get("email");
+            logs.push(`Fetch user for email: ${email}`);
+            if (!email) {
+              return withCors(Response.json({ user: null }));
+            }
+            const user = await env.DB.prepare("SELECT * FROM users WHERE email = ?").bind(email).first();
+            logs.push(`User found: ${!!user}`);
+            if (!user) {
+              return withCors(Response.json({ user: null }));
+            }
+            const orgId = user.organization_id;
+            logs.push(`Org ID: ${orgId}`);
+            logs.push("Fetching organization");
+            const organization = await env.DB.prepare("SELECT * FROM organizations WHERE id = ?").bind(orgId).first();
+            logs.push(`Organization found: ${!!organization}`);
+            logs.push("Fetching projects");
+            const { results: projects } = await env.DB.prepare("SELECT * FROM projects WHERE organization_id = ?").bind(orgId).all();
+            logs.push(`Projects found: ${projects?.length}`);
+            const projectIds = (projects || []).map((p) => p.id);
+            let tasks = [];
+            let projectUpdates = [];
+            logs.push(`Project IDs: ${projectIds.join(",")}`);
+            if (projectIds.length > 0) {
+              const placeholders = projectIds.map(() => "?").join(",");
+              logs.push(`Fetching tasks with placeholders: ${placeholders}`);
+              const { results: taskResults } = await env.DB.prepare(`SELECT * FROM tasks WHERE project_id IN (${placeholders})`).bind(...projectIds).all();
+              tasks = taskResults || [];
+              logs.push(`Fetching project updates...`);
+              const { results: updateResults } = await env.DB.prepare(`SELECT * FROM project_updates WHERE project_id IN (${placeholders})`).bind(...projectIds).all();
+              projectUpdates = updateResults || [];
+            }
+            logs.push(`Tasks found: ${tasks.length}`);
+            logs.push(`Project Updates found: ${projectUpdates.length}`);
+            logs.push("Fetching other data");
+            const { results: users } = await env.DB.prepare("SELECT * FROM users WHERE organization_id = ?").bind(orgId).all();
+            const { results: meetings } = await env.DB.prepare("SELECT * FROM meetings WHERE organization_id = ?").bind(orgId).all();
+            const { results: invoices } = await env.DB.prepare("SELECT * FROM invoices WHERE organization_id = ?").bind(orgId).all();
+            const { results: notifications } = await env.DB.prepare("SELECT * FROM notifications WHERE organization_id = ?").bind(orgId).all();
+            const { results: reminders } = await env.DB.prepare("SELECT * FROM reminders WHERE organization_id = ?").bind(orgId).all();
+            const { results: otherMatters } = await env.DB.prepare("SELECT * FROM other_matters WHERE organization_id = ?").bind(orgId).all();
+            logs.push("All data fetched");
+            return withCors(Response.json({
+              user,
+              organization,
+              users,
+              projects,
+              tasks,
+              projectUpdates,
+              meetings,
+              invoices,
+              notifications,
+              reminders: reminders || [],
+              otherMatters: otherMatters || []
+            }));
+          } catch (e) {
+            return withCors(Response.json({
+              message: `Worker Error in /api/data: ${e.message}`,
+              logs
+            }, { status: 500 }));
+          }
+        }
+        if (url.pathname === "/api/signup" && request.method === "POST") {
+          const logs = [];
+          logs.push("Start /api/signup (Manual Handler)");
+          console.log("[Worker] Start /api/signup (Manual Handler)");
+          try {
+            let data;
+            try {
+              data = await request.json();
+              logs.push(`Payload received: ${JSON.stringify(data)}`);
+              console.log(`[Worker] Payload received: ${JSON.stringify(data)}`);
+            } catch (jsonErr) {
+              logs.push(`JSON Parse Error: ${jsonErr.message}`);
+              console.error(`[Worker] JSON Parse Error: ${jsonErr.message}`);
+              throw new Error(`Invalid JSON body: ${jsonErr.message}`);
+            }
+            const { name, email, password, company, role, phone } = data;
+            const orgId = generateUUID();
+            const userId = generateUUID();
+            logs.push(`Generated IDs: Org=${orgId}, User=${userId}`);
+            console.log(`[Worker] Generated IDs: Org=${orgId}, User=${userId}`);
+            logs.push(`Inserting Org: ${company}`);
+            console.log(`[Worker] Inserting Org: ${company} (ID: ${orgId})`);
+            try {
+              const orgResult = await env.DB.prepare(
+                "INSERT INTO organizations (id, name) VALUES (?, ?)"
+              ).bind(orgId, company || null).run();
+              console.log(`[Worker] Org Insert Result: ${JSON.stringify(orgResult)}`);
+            } catch (dbErr) {
+              console.error(`[Worker] DB Org Insert Error: ${dbErr.message}`);
+              logs.push(`DB Org Insert Error: ${dbErr.message}`);
+              throw dbErr;
+            }
+            logs.push("Org Inserted");
+            console.log("[Worker] Org Inserted");
+            logs.push(`Inserting User: ${email}, Role: ${role}`);
+            console.log(`[Worker] Inserting User: ${email} (ID: ${userId})`);
+            try {
+              const userResult = await env.DB.prepare(
+                "INSERT INTO users (id, organization_id, name, email, role, company, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?)"
+              ).bind(userId, orgId, name || null, email || null, role || null, company || null, 1).run();
+              console.log(`[Worker] User Insert Result: ${JSON.stringify(userResult)}`);
+            } catch (dbErr) {
+              console.error(`[Worker] DB User Insert Error: ${dbErr.message}`);
+              logs.push(`DB User Insert Error: ${dbErr.message}`);
+              throw dbErr;
+            }
+            logs.push("User Inserted");
+            console.log("[Worker] User Inserted");
+            return withCors(Response.json({ success: true, userId, orgId, logs }));
+          } catch (e) {
+            console.error(`[Worker] Signup Fatal Error: ${e.message}`, e.stack);
+            return withCors(Response.json({
+              message: `Signup Error: ${e.message}`,
+              stack: e.stack,
+              logs
+            }, { status: 500 }));
+          }
+        }
+        if (url.pathname === "/api/project" && request.method === "POST") {
+          try {
+            const project = await request.json();
+            await env.DB.prepare(`
+                            INSERT INTO projects (id, organization_id, name, address, client_name, client_email, client_phone, start_date, end_date, color, status, progress)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        `).bind(
+              project.id,
+              project.organizationId,
+              project.name,
+              project.address || null,
+              project.clientName || null,
+              project.clientEmail || null,
+              project.clientPhone || null,
+              project.startDate || null,
+              project.endDate || null,
+              project.color || null,
+              project.status || "active",
+              project.progress || 0
+            ).run();
+            return withCors(Response.json({ success: true }));
+          } catch (e) {
+            return withCors(Response.json({ message: `Project Error: ${e.message}` }, { status: 500 }));
+          }
+        }
+        if (url.pathname === "/api/task" && request.method === "POST") {
+          try {
+            const task = await request.json();
+            await env.DB.prepare(`
+                            INSERT INTO tasks (id, project_id, title, description, status, required_date, assigned_to)
+                            VALUES (?, ?, ?, ?, ?, ?, ?)
+                        `).bind(
+              task.id,
+              task.projectId,
+              task.title,
+              task.description || null,
+              task.status || "pending",
+              task.requiredDate || null,
+              task.assignedTo || null
+            ).run();
+            return withCors(Response.json({ success: true }));
+          } catch (e) {
+            return withCors(Response.json({ message: `Task Error: ${e.message}` }, { status: 500 }));
+          }
+        }
+        if (url.pathname === "/api/project/update" && request.method === "POST") {
+          try {
+            const project = await request.json();
+            await env.DB.prepare(`
+                            UPDATE projects 
+                            SET name = ?, address = ?, status = ?, progress = ?, start_date = ?, end_date = ?
+                            WHERE id = ?
+                        `).bind(
+              project.name,
+              project.address || null,
+              project.status || "active",
+              project.progress || 0,
+              project.startDate || null,
+              project.endDate || null,
+              project.id
+            ).run();
+            return withCors(Response.json({ success: true }));
+          } catch (e) {
+            return withCors(Response.json({ message: `Project Update Error: ${e.message}` }, { status: 500 }));
+          }
+        }
+        if (url.pathname === "/api/task/update" && request.method === "POST") {
+          try {
+            const task = await request.json();
+            await env.DB.prepare(`
+                            UPDATE tasks 
+                            SET title = ?, description = ?, status = ?, required_date = ?, assigned_to = ?
+                            WHERE id = ?
+                        `).bind(
+              task.title,
+              task.description || null,
+              task.status || "pending",
+              task.requiredDate || null,
+              task.assignedTo || null,
+              task.id
+            ).run();
+            return withCors(Response.json({ success: true }));
+          } catch (e) {
+            return withCors(Response.json({ message: `Task Update Error: ${e.message}` }, { status: 500 }));
+          }
+        }
+        if (url.pathname === "/api/task/complete" && request.method === "POST") {
+          try {
+            const data = await request.json();
+            await env.DB.prepare(`
+                            UPDATE tasks 
+                            SET status = 'completed', completed_at = ?, completion_note = ?, completion_image = ?
+                            WHERE id = ?
+                        `).bind(
+              (/* @__PURE__ */ new Date()).toISOString(),
+              data.note || null,
+              data.image || null,
+              data.taskId
+            ).run();
+            return withCors(Response.json({ success: true }));
+          } catch (e) {
+            return withCors(Response.json({ message: `Task Complete Error: ${e.message}` }, { status: 500 }));
+          }
+        }
+        if (url.pathname === "/api/invite" && request.method === "POST") {
+          try {
+            const data = await request.json();
+            const { email, role, organizationId } = data;
+            const existingUser = await env.DB.prepare("SELECT * FROM users WHERE email = ?").bind(email).first();
+            return withCors(Response.json({ success: true, link: `https://buildpro.old-dream-22e5.workers.dev/login?orgId=${organizationId}&email=${email}&role=${role}` }));
+          } catch (e) {
+            return withCors(Response.json({ message: `Invite Error: ${e.message}` }, { status: 500 }));
+          }
+        }
+        if (url.pathname === "/api/invoice" && request.method === "POST") {
+          try {
+            const invoice = await request.json();
+            await env.DB.prepare(`
+                            INSERT INTO invoices (id, organization_id, type, amount, client_name, due_date, status, date, description, project_id)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        `).bind(
+              invoice.id,
+              invoice.organizationId,
+              invoice.type,
+              invoice.amount,
+              invoice.clientName || null,
+              invoice.dueDate || null,
+              invoice.status || "pending",
+              invoice.date || null,
+              invoice.description || null,
+              invoice.projectId || null
+            ).run();
+            return withCors(Response.json({ success: true }));
+          } catch (e) {
+            return withCors(Response.json({ message: `Invoice Error: ${e.message}` }, { status: 500 }));
+          }
+        }
+        if (url.pathname === "/api/invoice" && request.method === "DELETE") {
+          try {
+            const { id } = await request.json();
+            await env.DB.prepare("DELETE FROM invoices WHERE id = ?").bind(id).run();
+            return withCors(Response.json({ success: true }));
+          } catch (e) {
+            return withCors(Response.json({ message: `Invoice Delete Error: ${e.message}` }, { status: 500 }));
+          }
+        }
+        if (url.pathname === "/api/meeting" && request.method === "POST") {
+          try {
+            const meeting = await request.json();
+            await env.DB.prepare(`
+                            INSERT INTO meetings (id, organization_id, title, date, time, project_id, attendees, address)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                        `).bind(
+              meeting.id,
+              meeting.organizationId,
+              meeting.title,
+              meeting.date,
+              meeting.time,
+              meeting.projectId || null,
+              meeting.attendees ? JSON.stringify(meeting.attendees) : "[]",
+              meeting.address || null
+            ).run();
+            return withCors(Response.json({ success: true }));
+          } catch (e) {
+            return withCors(Response.json({ message: `Meeting Error: ${e.message}` }, { status: 500 }));
+          }
+        }
+        if (url.pathname === "/api/meeting" && request.method === "DELETE") {
+          try {
+            const { id } = await request.json();
+            await env.DB.prepare("DELETE FROM meetings WHERE id = ?").bind(id).run();
+            return withCors(Response.json({ success: true }));
+          } catch (e) {
+            return withCors(Response.json({ message: `Meeting Delete Error: ${e.message}` }, { status: 500 }));
+          }
+        }
+        if (url.pathname === "/api/project/update-post" && request.method === "POST") {
+          try {
+            const update = await request.json();
+            console.log("Project Update Payload:", JSON.stringify(update));
+            await env.DB.prepare(`
+                            INSERT INTO project_updates (id, project_id, message, date, author_name)
+                            VALUES (?, ?, ?, ?, ?)
+                        `).bind(
+              update.id || null,
+              update.projectId || null,
+              update.message || null,
+              update.date || null,
+              update.authorName || "Admin"
+            ).run();
+            return withCors(Response.json({ success: true }));
+          } catch (e) {
+            return withCors(Response.json({ message: `Project Update Post Error: ${e.message}` }, { status: 500 }));
+          }
+        }
+        if (url.pathname === "/api/project/update" && request.method === "PUT") {
+          try {
+            const { id, message } = await request.json();
+            await env.DB.prepare("UPDATE project_updates SET message = ? WHERE id = ?").bind(message, id).run();
+            return withCors(Response.json({ success: true }));
+          } catch (e) {
+            return withCors(Response.json({ message: `Project Update Update Error: ${e.message}` }, { status: 500 }));
+          }
+        }
+        if (url.pathname === "/api/notification" && request.method === "POST") {
+          try {
+            const notification = await request.json();
+            await env.DB.prepare(`
+                            INSERT INTO notifications (id, organization_id, user_id, message, read, date, type, data)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                        `).bind(
+              notification.id,
+              notification.organizationId,
+              notification.userId,
+              notification.message,
+              notification.read ? 1 : 0,
+              notification.date || null,
+              notification.type || null,
+              notification.data ? JSON.stringify(notification.data) : "{}"
+            ).run();
+            return withCors(Response.json({ success: true }));
+          } catch (e) {
+            return withCors(Response.json({ message: `Notification Error: ${e.message}` }, { status: 500 }));
+          }
+        }
+        if (url.pathname === "/api/user/update" && request.method === "POST") {
+          try {
+            const user = await request.json();
+            await env.DB.prepare(`
+                            UPDATE users 
+                            SET name = ?, email = ?, phone = ?, company = ?, role = ?
+                            WHERE id = ?
+                        `).bind(
+              user.name,
+              user.email,
+              user.phone || null,
+              user.company || null,
+              user.role,
+              user.id
+            ).run();
+            return withCors(Response.json({ success: true }));
+          } catch (e) {
+            return withCors(Response.json({ message: `User Update Error: ${e.message}` }, { status: 500 }));
+          }
+        }
+        if (url.pathname === "/api/reminder" && request.method === "POST") {
+          try {
+            const reminder = await request.json();
+            await env.DB.prepare(`
+                            INSERT INTO reminders (id, organization_id, title, description, date, completed)
+                            VALUES (?, ?, ?, ?, ?, ?)
+                        `).bind(
+              reminder.id,
+              reminder.organizationId,
+              reminder.title,
+              reminder.description || null,
+              reminder.date || null,
+              reminder.completed ? 1 : 0
+            ).run();
+            return withCors(Response.json({ success: true }));
+          } catch (e) {
+            return withCors(Response.json({ message: `Reminder Error: ${e.message}` }, { status: 500 }));
+          }
+        }
+        if (url.pathname === "/api/reminder/update" && request.method === "POST") {
+          try {
+            const reminder = await request.json();
+            await env.DB.prepare(`
+                            UPDATE reminders 
+                            SET completed = ?
+                            WHERE id = ?
+                        `).bind(
+              reminder.completed ? 1 : 0,
+              reminder.id
+            ).run();
+            return withCors(Response.json({ success: true }));
+          } catch (e) {
+            return withCors(Response.json({ message: `Reminder Update Error: ${e.message}` }, { status: 500 }));
+          }
+        }
+        if (url.pathname === "/api/reminder" && request.method === "DELETE") {
+          try {
+            const { id } = await request.json();
+            await env.DB.prepare("DELETE FROM reminders WHERE id = ?").bind(id).run();
+            return withCors(Response.json({ success: true }));
+          } catch (e) {
+            return withCors(Response.json({ message: `Reminder Delete Error: ${e.message}` }, { status: 500 }));
+          }
+        }
+        if (url.pathname === "/api/other-matter" && request.method === "POST") {
+          try {
+            const matter = await request.json();
+            await env.DB.prepare(`
+                            INSERT INTO other_matters (id, organization_id, title, address, note, date)
+                            VALUES (?, ?, ?, ?, ?, ?)
+                        `).bind(
+              matter.id,
+              matter.organizationId,
+              matter.title,
+              matter.address || null,
+              matter.note || null,
+              matter.date || null
+            ).run();
+            return withCors(Response.json({ success: true }));
+          } catch (e) {
+            return withCors(Response.json({ message: `Other Matter Error: ${e.message}` }, { status: 500 }));
+          }
+        }
+        if (url.pathname === "/api/other-matter" && request.method === "DELETE") {
+          try {
+            const { id } = await request.json();
+            await env.DB.prepare("DELETE FROM other_matters WHERE id = ?").bind(id).run();
+            return withCors(Response.json({ success: true }));
+          } catch (e) {
+            return withCors(Response.json({ message: `Other Matter Delete Error: ${e.message}` }, { status: 500 }));
+          }
+        }
+        if (url.pathname === "/api/other-matter" && request.method === "PUT") {
+          try {
+            const { id, title, address, note } = await request.json();
+            await env.DB.prepare("UPDATE other_matters SET title = ?, address = ?, note = ? WHERE id = ?").bind(title, address, note, id).run();
+            return withCors(Response.json({ success: true }));
+          } catch (e) {
+            return withCors(Response.json({ message: `Other Matter Update Error: ${e.message}` }, { status: 500 }));
+          }
+        }
+        if (url.pathname === "/api/project" && request.method === "DELETE") {
+          try {
+            const { id } = await request.json();
+            await env.DB.batch([
+              env.DB.prepare("DELETE FROM tasks WHERE project_id = ?").bind(id),
+              env.DB.prepare("DELETE FROM project_updates WHERE project_id = ?").bind(id),
+              env.DB.prepare("DELETE FROM invoices WHERE project_id = ?").bind(id),
+              env.DB.prepare("DELETE FROM meetings WHERE project_id = ?").bind(id),
+              env.DB.prepare("DELETE FROM projects WHERE id = ?").bind(id)
+            ]);
+            return withCors(Response.json({ success: true }));
+          } catch (e) {
+            return withCors(Response.json({ message: `Destructive Project Delete Error: ${e.message}` }, { status: 500 }));
+          }
+        }
+        if (url.pathname === "/api/task" && request.method === "DELETE") {
+          try {
+            const { id } = await request.json();
+            await env.DB.prepare("DELETE FROM tasks WHERE id = ?").bind(id).run();
+            return withCors(Response.json({ success: true }));
+          } catch (e) {
+            return withCors(Response.json({ message: `Task Delete Error: ${e.message}` }, { status: 500 }));
+          }
+        }
+        if (url.pathname === "/api/project/update" && request.method === "DELETE") {
+          try {
+            const { id } = await request.json();
+            await env.DB.prepare("DELETE FROM project_updates WHERE id = ?").bind(id).run();
+            return withCors(Response.json({ success: true }));
+          } catch (e) {
+            return withCors(Response.json({ message: `Project Update Delete Error: ${e.message}` }, { status: 500 }));
+          }
+        }
+        return new Response("API Endpoint Not Found", { status: 404 });
+      }
+      if (request.url.endsWith("/debug")) {
+        const dbStatus = env.DB ? "Present" : "Missing";
+        const assetsStatus = env.ASSETS ? "Present" : "Missing";
+        let dbCheck = "Not attempted";
+        try {
+          const { results } = await env.DB.prepare("SELECT * FROM users LIMIT 1").all();
+          dbCheck = `Success (Found ${results.length} users). Sample: ${JSON.stringify(results[0] || {})}`;
+        } catch (e) {
+          dbCheck = `Failed: ${e.message}`;
+        }
+        let assetCheck = "Not attempted";
+        try {
+          const assetReq = new Request(new URL("/index.html", request.url));
+          const assetRes = await env.ASSETS.fetch(assetReq);
+          assetCheck = `Success (${assetRes.status})`;
+        } catch (e) {
+          assetCheck = `Failed: ${e.message}`;
+        }
+        return new Response(`Worker Status:
+- DB Binding: ${dbStatus}
+- DB Query: ${dbCheck}
+- ASSETS Binding: ${assetsStatus}
+- Index Asset Fetch: ${assetCheck}
+`);
+      }
+      try {
+        if (!url.pathname.startsWith("/api") && !url.pathname.includes(".")) {
+          const indexRequest = new Request(new URL("/", request.url), request);
+          return await env.ASSETS.fetch(indexRequest);
+        }
+        let response = await env.ASSETS.fetch(request);
+        if (response.status === 404 && !url.pathname.includes(".")) {
+          const indexRequest = new Request(new URL("/", request.url), request);
+          response = await env.ASSETS.fetch(indexRequest);
+        }
+        return response;
+      } catch (e) {
+        return new Response(`Worker Global Asset Error: ${e.message}
+${e.stack}`, { status: 500 });
+      }
+    } catch (globalError) {
+      return new Response(`CRITICAL WORKER FAILURE: ${globalError.message}
+${globalError.stack}`, { status: 500 });
+    }
+  }, "fetch")
+};
+export {
+  worker_default as default
+};
+//# sourceMappingURL=worker.js.map

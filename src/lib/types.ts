@@ -33,6 +33,8 @@ export interface Task {
     completedAt?: string;
     completionNote?: string;
     completionImage?: string;
+    createdBy?: string;
+    completedBy?: string;
 }
 
 export interface ProjectUpdate {
@@ -41,6 +43,7 @@ export interface ProjectUpdate {
     message: string;
     date: string; // ISO Date
     authorName: string;
+    userId?: string;
 }
 
 export interface Project {

@@ -386,9 +386,12 @@ export const useStore = create<AppState>((set, get) => ({
     })),
 
     addTask: async (projectId, task) => {
-        const newTask = { ...task, id: crypto.randomUUID(), projectId };
+        const currentOrgId = get().currentOrganization?.id;
+        const currentUserId = get().currentUser?.id;
+        if (!currentOrgId || !currentUserId) return;
 
-        // Optimistic
+        const newTask = { ...task, projectId, organizationId: currentOrgId, createdBy: currentUserId } as Task;
+        // Optimistic update
         set((state) => ({
             projects: state.projects.map((p) => p.id === projectId ? {
                 ...p,
@@ -445,6 +448,7 @@ export const useStore = create<AppState>((set, get) => ({
         const currentOrgId = get().currentOrganization?.id;
 
         if (task && project && currentOrgId) {
+            const completedBy = get().currentUser?.id;
             // Optimistic Update
             set((state) => {
                 const newNotification: Notification = {
@@ -461,14 +465,14 @@ export const useStore = create<AppState>((set, get) => ({
                 return {
                     projects: state.projects.map((p) => ({
                         ...p,
-                        tasks: (p.tasks || []).map((t) => t.id === taskId ? { ...t, status: 'completed' as const, completedAt: new Date().toISOString(), completionNote: note, completionImage: image } : t)
+                        tasks: (p.tasks || []).map((t) => t.id === taskId ? { ...t, status: 'completed' as const, completedAt: new Date().toISOString(), completionNote: note, completionImage: image, completedBy } : t)
                     })),
                     notifications: [newNotification, ...state.notifications]
                 };
             });
 
             try {
-                await apiRequest('/task/complete', 'POST', { taskId, note, image });
+                await apiRequest('/task/complete', 'POST', { taskId, note, image, completedBy });
             } catch (e) {
                 console.error("Failed to complete task", e);
             }
@@ -500,14 +504,14 @@ export const useStore = create<AppState>((set, get) => ({
         set((state) => ({
             projects: state.projects.map(p => p.id === projectId ? {
                 ...p,
-                updates: [...(p.updates || []), update]
+                updates: [update, ...(p.updates || [])]
             } : p)
         }));
 
         try {
-            await apiRequest('/project/update-post', 'POST', update);
+            await apiRequest('/project/update-post', 'POST', { ...update, projectId, userId: update.userId });
         } catch (e) {
-            console.error("Failed to add project update", e);
+            console.error("Failed to post project update", e);
         }
     },
 

@@ -57,6 +57,18 @@ CREATE TABLE tasks (
     completed_at TEXT,
     completion_note TEXT,
     completion_image TEXT,
+    created_by TEXT,
+    completed_by TEXT,
+    FOREIGN KEY (project_id) REFERENCES projects(id)
+);
+
+CREATE TABLE project_updates (
+    id TEXT PRIMARY KEY,
+    project_id TEXT NOT NULL,
+    message TEXT NOT NULL,
+    date TEXT NOT NULL,
+    author_name TEXT,
+    user_id TEXT,
     FOREIGN KEY (project_id) REFERENCES projects(id)
 );
 

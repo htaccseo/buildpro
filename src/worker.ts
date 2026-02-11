@@ -105,7 +105,11 @@ export default {
 
                             logs.push(`Fetching project updates...`);
                             const { results: updateResults } = await env.DB.prepare(`SELECT * FROM project_updates WHERE project_id IN (${placeholders})`).bind(...projectIds).all();
-                            projectUpdates = updateResults || [];
+                            projectUpdates = (updateResults || []).map((u: any) => ({
+                                ...u,
+                                userId: u.user_id,
+                                authorName: u.author_name
+                            }));
                         }
                         logs.push(`Tasks found: ${tasks.length}`);
                         logs.push(`Project Updates found: ${projectUpdates.length}`);
@@ -238,10 +242,10 @@ export default {
                     try {
                         const task = await request.json();
                         await env.DB.prepare(`
-                            INSERT INTO tasks (id, project_id, title, description, status, required_date, assigned_to)
-                            VALUES (?, ?, ?, ?, ?, ?, ?)
+                            INSERT INTO tasks (id, project_id, title, description, status, required_date, assigned_to, created_by)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                         `).bind(
-                            task.id, task.projectId, task.title, task.description || null, task.status || 'pending', task.requiredDate || null, task.assignedTo || null
+                            task.id, task.projectId, task.title, task.description || null, task.status || 'pending', task.requiredDate || null, task.assignedTo || null, task.createdBy || null
                         ).run();
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {
@@ -290,10 +294,10 @@ export default {
                         const data = await request.json();
                         await env.DB.prepare(`
                             UPDATE tasks 
-                            SET status = 'completed', completed_at = ?, completion_note = ?, completion_image = ?
+                            SET status = 'completed', completed_at = ?, completion_note = ?, completion_image = ?, completed_by = ?
                             WHERE id = ?
                         `).bind(
-                            new Date().toISOString(), data.note || null, data.image || null, data.taskId
+                            new Date().toISOString(), data.note || null, data.image || null, data.completedBy || null, data.taskId
                         ).run();
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {
@@ -396,10 +400,10 @@ export default {
                         console.log('Project Update Payload:', JSON.stringify(update));
 
                         await env.DB.prepare(`
-                            INSERT INTO project_updates (id, project_id, message, date, author_name)
-                            VALUES (?, ?, ?, ?, ?)
+                            INSERT INTO project_updates (id, project_id, message, date, author_name, user_id)
+                            VALUES (?, ?, ?, ?, ?, ?)
                         `).bind(
-                            update.id || null, update.projectId || null, update.message || null, update.date || null, update.authorName || 'Admin'
+                            update.id || null, update.projectId || null, update.message || null, update.date || null, update.authorName || 'Admin', update.userId || null
                         ).run();
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {

@@ -422,6 +422,7 @@ export function ProjectDetails() {
                                                         <h3 className={cn("text-lg font-medium", task.status === 'completed' ? "text-text-muted line-through" : "text-navy-900")}>
                                                             {task.title}
                                                         </h3>
+                                                        {task.createdBy && <UserAvatar userId={task.createdBy} className="h-5 w-5 text-[10px]" />}
                                                         <button
                                                             onClick={() => openTaskForm(task)}
                                                             className="text-slate-400 hover:text-navy-900 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -491,6 +492,7 @@ export function ProjectDetails() {
                                                         <div className="flex items-center gap-2 text-emerald-700 text-sm font-medium mb-1">
                                                             <FileText className="w-4 h-4" />
                                                             Completion Report
+                                                            {task.completedBy && <UserAvatar userId={task.completedBy} className="h-4 w-4 text-[8px] ml-1" />}
                                                         </div>
                                                         <div className="flex gap-1 opacity-0 group-hover/report:opacity-100 transition-opacity">
                                                             <button
@@ -660,7 +662,11 @@ const ProjectUpdateCard = ({ update, projectId }: { update: any, projectId: stri
     return (
         <Card className="p-5 border-none shadow-sm flex gap-4 bg-white">
             <div className="flex-shrink-0 mt-1">
-                <UserAvatar userId={update.userId} className="w-10 h-10 text-sm border-2 border-emerald-100" />
+                {(update.userId || update.authorName) ? (
+                    <UserAvatar userId={update.userId} className="w-10 h-10 text-sm border-2 border-emerald-100" />
+                ) : (
+                    <UserAvatar userId={update.userId} className="w-10 h-10 text-sm border-2 border-emerald-100" />
+                )}
             </div>
             <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-1">

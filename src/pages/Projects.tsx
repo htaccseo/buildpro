@@ -6,6 +6,7 @@ import { Search, Plus, Calendar, MapPin, User as UserIcon, CheckCircle, RotateCc
 import { cn, formatDate } from '../lib/utils';
 import { Card } from '../components/ui/Card';
 import { NewProjectModal } from '../components/NewProjectModal';
+import { UserAvatar } from '../components/UserAvatar';
 
 export function Projects() {
     const { projects } = useOrganizationData();
@@ -73,9 +74,7 @@ export function Projects() {
                 </div>
             )}
 
-            {/* Active Projects - Only show if there are active projects OR if not searching (to show empty state) OR if we have results but none are active (to keep structure, or maybe hide?) 
-                Let's hide the Active section entirely if searching and no active matches, but show Completed.
-            */}
+            {/* Active Projects */}
             {(activeProjects.length > 0 || (!query && activeProjects.length === 0)) && (
                 <div className="space-y-6">
                     <h2 className="text-xl font-bold text-navy-900 border-b border-slate-100 pb-2">Active Projects</h2>
@@ -88,6 +87,9 @@ export function Projects() {
                             >
                                 <Card className="p-0 overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1 border-none shadow-sm h-full flex flex-col">
                                     <div className={cn("h-48 relative shrink-0 flex items-center justify-center transition-all duration-700", project.color)}>
+                                        <div className="absolute top-4 right-4 z-10">
+                                            <UserAvatar userId={project.createdBy} className="h-8 w-8 text-xs border-2 border-white/50 shadow-sm" />
+                                        </div>
                                         <MapPin className="w-16 h-16 text-white/20 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
                                         <div className="absolute top-0 left-0 w-full h-full bg-black/10" />
                                         <div className="absolute bottom-4 left-4 right-4">
@@ -168,6 +170,9 @@ export function Projects() {
                             >
                                 <Card className="p-0 overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1 border-none shadow-sm h-full flex flex-col opacity-75 hover:opacity-100">
                                     <div className={cn("h-48 relative shrink-0 flex items-center justify-center bg-slate-800")}>
+                                        <div className="absolute top-4 right-4 z-10">
+                                            <UserAvatar userId={project.createdBy} className="h-8 w-8 text-xs border-2 border-white/50 shadow-sm" />
+                                        </div>
                                         <CheckCircle className="w-16 h-16 text-white/20 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
                                         <div className="absolute top-0 left-0 w-full h-full bg-black/10" />
                                         <div className="absolute bottom-4 left-4 right-4">

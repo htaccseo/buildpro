@@ -159,7 +159,8 @@ export const useStore = create<AppState>((set, get) => ({
                         ...m,
                         organizationId: m.organization_id,
                         projectId: m.project_id,
-                        attendees: JSON.parse(m.attendees || '[]')
+                        attendees: JSON.parse(m.attendees || '[]'),
+                        createdBy: m.created_by
                     })),
 
                     invoices: (data.invoices || []).map((i: any) => ({
@@ -167,7 +168,8 @@ export const useStore = create<AppState>((set, get) => ({
                         organizationId: i.organization_id,
                         clientName: i.client_name,
                         dueDate: i.due_date,
-                        projectId: i.project_id
+                        projectId: i.project_id,
+                        createdBy: i.created_by
                     })),
 
                     notifications: (data.notifications || []).map((n: any) => ({
@@ -181,12 +183,14 @@ export const useStore = create<AppState>((set, get) => ({
                     reminders: (data.reminders || []).map((r: any) => ({
                         ...r,
                         organizationId: r.organization_id,
-                        completed: !!r.completed
+                        completed: !!r.completed,
+                        createdBy: r.created_by
                     })),
 
                     otherMatters: (data.otherMatters || []).map((m: any) => ({
                         ...m,
-                        organizationId: m.organization_id
+                        organizationId: m.organization_id,
+                        createdBy: m.created_by
                     }))
                 });
             }
@@ -194,6 +198,101 @@ export const useStore = create<AppState>((set, get) => ({
             set({ error: e.message });
         } finally {
             set({ isLoading: false });
+        }
+    },
+
+    // ... (skipping some actions)
+
+    addProject: async (project) => {
+        const currentOrgId = get().currentOrganization?.id;
+        const currentUserId = get().currentUser?.id;
+        if (!currentOrgId || !currentUserId) return;
+
+        const newProject = { ...project, organizationId: currentOrgId, createdBy: currentUserId } as Project;
+        // Optimistic update
+        set((state) => ({
+            projects: [...state.projects, newProject]
+        }));
+
+        try {
+            await apiRequest('/project', 'POST', newProject);
+        } catch (e) {
+            console.error("Failed to add project", e);
+        }
+    },
+
+    // ...
+
+    addInvoice: async (invoice) => {
+        const currentOrgId = get().currentOrganization?.id;
+        const currentUserId = get().currentUser?.id;
+        if (!currentOrgId || !currentUserId) return;
+
+        const newInvoice = { ...invoice, organizationId: currentOrgId, createdBy: currentUserId } as Invoice;
+        set((state) => ({
+            invoices: [...state.invoices, newInvoice].sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
+        }));
+
+        try {
+            await apiRequest('/invoice', 'POST', newInvoice);
+        } catch (e) {
+            console.error("Failed to add invoice", e);
+        }
+    },
+
+    // ...
+
+    addMeeting: async (meeting) => {
+        const currentOrgId = get().currentOrganization?.id;
+        const currentUserId = get().currentUser?.id;
+        if (!currentOrgId || !currentUserId) return;
+
+        const newMeeting = { ...meeting, organizationId: currentOrgId, createdBy: currentUserId } as Meeting;
+        // Optimistic update
+        set((state) => ({
+            meetings: [...state.meetings, newMeeting].sort((a, b) => new Date(a.date + 'T' + a.time).getTime() - new Date(b.date + 'T' + b.time).getTime())
+        }));
+
+        try {
+            await apiRequest('/meeting', 'POST', newMeeting);
+        } catch (e) {
+            console.error("Failed to add meeting", e);
+        }
+    },
+
+    addReminder: async (reminder) => {
+        const currentOrgId = get().currentOrganization?.id;
+        const currentUserId = get().currentUser?.id;
+        if (!currentOrgId || !currentUserId) return;
+
+        const newReminder = { ...reminder, organizationId: currentOrgId, createdBy: currentUserId } as Reminder;
+        set((state) => ({
+            reminders: [...state.reminders, newReminder].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+        }));
+
+        try {
+            await apiRequest('/reminder', 'POST', newReminder);
+        } catch (e) {
+            console.error("Failed to add reminder", e);
+        }
+    },
+
+    // ...
+
+    addOtherMatter: async (matter) => {
+        const currentOrgId = get().currentOrganization?.id;
+        const currentUserId = get().currentUser?.id;
+        if (!currentOrgId || !currentUserId) return;
+
+        const newMatter = { ...matter, organizationId: currentOrgId, createdBy: currentUserId } as OtherMatter;
+        set((state) => ({
+            otherMatters: [newMatter, ...state.otherMatters]
+        }));
+
+        try {
+            await apiRequest('/other-matter', 'POST', newMatter);
+        } catch (e) {
+            console.error("Failed to add other matter", e);
         }
     },
 
@@ -268,22 +367,7 @@ export const useStore = create<AppState>((set, get) => ({
 
     logout: () => set({ currentUser: null, currentOrganization: null, projects: [], users: [] }),
 
-    addProject: async (project) => {
-        const currentOrgId = get().currentOrganization?.id;
-        if (!currentOrgId) return;
 
-        const newProject = { ...project, id: crypto.randomUUID(), organizationId: currentOrgId } as Project;
-
-        // Optimistic update
-        set((state) => ({ projects: [...state.projects, newProject] }));
-
-        try {
-            await apiRequest('/project', 'POST', newProject);
-        } catch (e) {
-            console.error("Failed to save project", e);
-            // Rollback?
-        }
-    },
 
     updateProject: async (updatedProject) => {
         set((state) => ({
@@ -432,21 +516,7 @@ export const useStore = create<AppState>((set, get) => ({
     })),
 
     // Invoice Actions
-    addInvoice: async (invoice) => {
-        const currentOrgId = get().currentOrganization?.id;
-        if (!currentOrgId) return;
 
-        const newInvoice = { ...invoice, organizationId: currentOrgId } as Invoice;
-        set((state) => ({
-            invoices: [newInvoice, ...state.invoices]
-        }));
-
-        try {
-            await apiRequest('/invoice', 'POST', newInvoice);
-        } catch (e) {
-            console.error("Failed to add invoice", e);
-        }
-    },
 
     updateInvoiceStatus: (id, status) => set((state) => ({
         invoices: state.invoices.map(inv => inv.id === id ? { ...inv, status } : inv)
@@ -464,41 +534,12 @@ export const useStore = create<AppState>((set, get) => ({
     },
 
     // Meeting Actions
-    addMeeting: async (meeting) => {
-        const currentOrgId = get().currentOrganization?.id;
-        if (!currentOrgId) return;
 
-        const newMeeting = { ...meeting, organizationId: currentOrgId } as Meeting;
-        // Optimistic update
-        set((state) => ({
-            meetings: [...state.meetings, newMeeting].sort((a, b) => new Date(a.date + 'T' + a.time).getTime() - new Date(b.date + 'T' + b.time).getTime())
-        }));
-
-        try {
-            await apiRequest('/meeting', 'POST', newMeeting);
-        } catch (e) {
-            console.error("Failed to add meeting", e);
-        }
-    },
 
 
 
     // Reminder Actions
-    addReminder: async (reminder) => {
-        const currentOrgId = get().currentOrganization?.id;
-        if (!currentOrgId) return;
 
-        const newReminder = { ...reminder, organizationId: currentOrgId } as Reminder;
-        set((state) => ({
-            reminders: [...state.reminders, newReminder].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-        }));
-
-        try {
-            await apiRequest('/reminder', 'POST', newReminder);
-        } catch (e) {
-            console.error("Failed to add reminder", e);
-        }
-    },
 
     updateReminder: (updatedReminder) => set((state) => ({
         reminders: state.reminders.map(r => r.id === updatedReminder.id ? updatedReminder : r).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
@@ -534,21 +575,7 @@ export const useStore = create<AppState>((set, get) => ({
     },
 
     // Other Matters Actions
-    addOtherMatter: async (matter) => {
-        const currentOrgId = get().currentOrganization?.id;
-        if (!currentOrgId) return;
 
-        const newMatter = { ...matter, organizationId: currentOrgId } as OtherMatter;
-        set((state) => ({
-            otherMatters: [newMatter, ...state.otherMatters]
-        }));
-
-        try {
-            await apiRequest('/other-matter', 'POST', newMatter);
-        } catch (e) {
-            console.error("Failed to add other matter", e);
-        }
-    },
 
     updateOtherMatter: async (id, updates) => {
         set((state) => ({

@@ -46,6 +46,8 @@ export interface ProjectUpdate {
 export interface Project {
     id: string;
     organizationId: string;
+    createdAt?: string;
+    createdBy?: string;
     name: string;
     address: string;
     clientName: string;
@@ -63,6 +65,7 @@ export interface Project {
 export interface Meeting {
     id: string;
     organizationId: string;
+    createdBy?: string;
     title: string;
     date: string; // ISO Date
     time: string;
@@ -85,6 +88,7 @@ export interface Notification {
 export interface Invoice {
     id: string;
     organizationId: string;
+    createdBy?: string;
     type: 'sent' | 'received'; // sent = receivable (from client), received = payable (to contractor)
     amount: number;
     clientName: string; // Client or Contractor Name
@@ -98,17 +102,21 @@ export interface Invoice {
 export interface Reminder {
     id: string;
     organizationId: string;
+    createdBy?: string;
+    text?: string;
+    date: string;
+    completed: boolean;
     title: string;
     description?: string;
-    date: string; // ISO Date
-    completed: boolean;
 }
 
 export interface OtherMatter {
     id: string;
     organizationId: string;
+    createdBy?: string;
     title: string;
-    address: string;
-    note: string;
-    date: string;
+    description?: string;
+    address?: string;
+    note?: string;
+    date?: string;
 }

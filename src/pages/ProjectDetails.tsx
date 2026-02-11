@@ -7,6 +7,7 @@ import { ArrowLeft, Calendar, Camera, CheckCircle, Clock, FileText, MapPin, Mess
 import { cn, resizeImage } from '../lib/utils';
 import { Card } from '../components/ui/Card';
 import { NewProjectModal } from '../components/NewProjectModal';
+import { UserAvatar } from '../components/UserAvatar';
 import type { Task } from '../lib/types';
 
 export function ProjectDetails() {
@@ -658,8 +659,8 @@ const ProjectUpdateCard = ({ update, projectId }: { update: any, projectId: stri
 
     return (
         <Card className="p-5 border-none shadow-sm flex gap-4 bg-white">
-            <div className="mt-1 w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
-                <span className="text-emerald-700 font-bold">{update.authorName.charAt(0)}</span>
+            <div className="flex-shrink-0 mt-1">
+                <UserAvatar userId={update.userId} className="w-10 h-10 text-sm border-2 border-emerald-100" />
             </div>
             <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-1">

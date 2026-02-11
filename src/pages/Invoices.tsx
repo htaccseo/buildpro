@@ -5,6 +5,7 @@ import { Card } from '../components/ui/Card';
 import { Plus, FileText, ArrowUpRight, ArrowDownLeft, Trash2 } from 'lucide-react';
 import { cn, formatDate } from '../lib/utils';
 import type { Invoice } from '../lib/types';
+import { UserAvatar } from '../components/UserAvatar';
 
 export function Invoices() {
     // Use Clean Data Hook (RLS)
@@ -132,7 +133,10 @@ export function Invoices() {
                                     <div className="flex-1 min-w-0">
                                         <div className="flex justify-between items-start mb-2">
                                             <div>
-                                                <h3 className="font-bold text-navy-900">{invoice.clientName}</h3>
+                                                <div className="flex items-center gap-2">
+                                                    <h3 className="font-bold text-navy-900">{invoice.clientName}</h3>
+                                                    <UserAvatar userId={invoice.createdBy} className="h-5 w-5 text-[10px]" />
+                                                </div>
                                                 <p className="text-sm text-text-muted">{invoice.description}</p>
                                             </div>
                                             <span className={cn(

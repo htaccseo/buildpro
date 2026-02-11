@@ -42,6 +42,7 @@ CREATE TABLE projects (
     start_date TEXT,
     end_date TEXT,
     color TEXT,
+    created_by TEXT,
     FOREIGN KEY (organization_id) REFERENCES organizations(id)
 );
 
@@ -67,6 +68,8 @@ CREATE TABLE meetings (
     time TEXT NOT NULL,
     project_id TEXT,
     attendees TEXT, -- JSON array of User IDs
+    address TEXT,
+    created_by TEXT,
     FOREIGN KEY (organization_id) REFERENCES organizations(id)
 );
 
@@ -81,6 +84,7 @@ CREATE TABLE invoices (
     date TEXT,
     description TEXT,
     project_id TEXT,
+    created_by TEXT,
     FOREIGN KEY (organization_id) REFERENCES organizations(id)
 );
 
@@ -93,6 +97,28 @@ CREATE TABLE notifications (
     date TEXT,
     type TEXT,
     data TEXT, -- JSON blob
+    FOREIGN KEY (organization_id) REFERENCES organizations(id)
+);
+
+CREATE TABLE reminders (
+    id TEXT PRIMARY KEY,
+    organization_id TEXT NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT,
+    date TEXT,
+    completed INTEGER DEFAULT 0,
+    created_by TEXT,
+    FOREIGN KEY (organization_id) REFERENCES organizations(id)
+);
+
+CREATE TABLE other_matters (
+    id TEXT PRIMARY KEY,
+    organization_id TEXT NOT NULL,
+    title TEXT NOT NULL,
+    address TEXT,
+    note TEXT,
+    date TEXT,
+    created_by TEXT,
     FOREIGN KEY (organization_id) REFERENCES organizations(id)
 );
 

@@ -7,6 +7,7 @@ import { format, startOfWeek, addDays, isSameDay } from 'date-fns';
 import { cn } from '../lib/utils';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, MapPin, Plus } from 'lucide-react';
 import { NewMeetingModal } from '../components/NewMeetingModal';
+import { UserAvatar } from '../components/UserAvatar';
 import { ReminderModal } from '../components/ReminderModal';
 import type { Reminder } from '../lib/types';
 
@@ -116,9 +117,12 @@ export function Schedule() {
                                                 key={meeting.id}
                                                 className="bg-emerald-50 border border-emerald-100 p-3 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-default group"
                                             >
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <Clock className="w-3 h-3 text-emerald-600" />
-                                                    <span className="text-xs font-bold text-emerald-700">{meeting.time}</span>
+                                                <div className="flex justify-between items-start mb-1">
+                                                    <div className="flex items-center gap-2">
+                                                        <Clock className="w-3 h-3 text-emerald-600" />
+                                                        <span className="text-xs font-bold text-emerald-700">{meeting.time}</span>
+                                                    </div>
+                                                    <UserAvatar userId={meeting.createdBy} className="h-4 w-4 text-[8px]" />
                                                 </div>
                                                 <h4 className="font-semibold text-sm text-navy-900 line-clamp-2">{meeting.title}</h4>
                                                 {meeting.address && (
@@ -145,18 +149,21 @@ export function Schedule() {
                                                     setIsReminderModalOpen(true);
                                                 }}
                                             >
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <div
-                                                        className={cn("w-2 h-2 rounded-full", reminder.completed ? "bg-slate-300" : "bg-indigo-500")}
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            toggleReminder(reminder.id);
-                                                        }}
-                                                        title={reminder.completed ? "Mark as incomplete" : "Mark as done"}
-                                                    />
-                                                    <span className={cn("text-xs font-bold", reminder.completed ? "text-text-muted" : "text-indigo-700")}>
-                                                        Reminder
-                                                    </span>
+                                                <div className="flex justify-between items-start mb-1">
+                                                    <div className="flex items-center gap-2">
+                                                        <div
+                                                            className={cn("w-2 h-2 rounded-full", reminder.completed ? "bg-slate-300" : "bg-indigo-500")}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                toggleReminder(reminder.id);
+                                                            }}
+                                                            title={reminder.completed ? "Mark as incomplete" : "Mark as done"}
+                                                        />
+                                                        <span className={cn("text-xs font-bold", reminder.completed ? "text-text-muted" : "text-indigo-700")}>
+                                                            Reminder
+                                                        </span>
+                                                    </div>
+                                                    <UserAvatar userId={reminder.createdBy} className="h-4 w-4 text-[8px]" />
                                                 </div>
                                                 <h4 className={cn("font-semibold text-sm line-clamp-2", reminder.completed ? "text-text-muted line-through" : "text-navy-900")}>
                                                     {reminder.title}

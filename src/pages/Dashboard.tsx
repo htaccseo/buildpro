@@ -8,6 +8,7 @@ import { cn, formatDate } from '../lib/utils';
 import { Card } from '../components/ui/Card';
 import { NewMeetingModal } from '../components/NewMeetingModal';
 import { ReminderModal } from '../components/ReminderModal';
+import { UserAvatar } from '../components/UserAvatar';
 import type { Reminder, OtherMatter } from '../lib/types';
 
 export function Dashboard() {
@@ -29,7 +30,7 @@ export function Dashboard() {
     // Use Store actions (actions are safe to use from store directly as they usually just dispatch)
     // Actually, our store actions need currentOrgId from store state, which is fine.
     // The previous code destructured methods from useStore. Let's keep doing that for actions.
-    const { toggleReminder, addOtherMatter, updateOtherMatter, deleteOtherMatter, deleteMeeting } = useStore();
+    const { toggleReminder, addOtherMatter, updateOtherMatter, deleteOtherMatter, deleteMeeting, currentUser } = useStore();
 
     const allTasks = projects.flatMap(p => p.tasks);
 
@@ -88,7 +89,7 @@ export function Dashboard() {
             setMatterToEdit(matter);
             setMatterTitle(matter.title);
             setMatterAddress(matter.address || '');
-            setMatterNote(matter.note);
+            setMatterNote(matter.note || '');
         } else {
             setMatterToEdit(null);
             setMatterTitle('');
@@ -99,7 +100,7 @@ export function Dashboard() {
     };
 
     // Get current user for greeting
-    const { currentUser } = useStore();
+    // const { currentUser } = useStore(); // This line is now redundant as currentUser is destructured above
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
@@ -163,12 +164,15 @@ export function Dashboard() {
                                                     <h4 className={cn("font-medium text-navy-900 truncate", reminder.completed && "line-through text-text-muted")}>
                                                         {reminder.title}
                                                     </h4>
-                                                    {reminder.description && (
-                                                        <p className={cn("text-sm mt-0.5 line-clamp-2", reminder.completed ? "text-text-muted" : "text-navy-600")}>
-                                                            {reminder.description}
-                                                        </p>
-                                                    )}
+                                                    <div className="flex items-center gap-2">
+                                                        <UserAvatar userId={reminder.createdBy} className="h-6 w-6 text-[10px]" />
+                                                    </div>
                                                 </div>
+                                                {reminder.description && (
+                                                    <p className={cn("text-sm mt-0.5 line-clamp-2", reminder.completed ? "text-text-muted" : "text-navy-600")}>
+                                                        {reminder.description}
+                                                    </p>
+                                                )}
                                                 <p className="text-sm text-text-muted mt-1">Personal Reminder • {formatDate(reminder.date, 'MMM d')}</p>
                                             </div>
                                         </div>
@@ -198,12 +202,13 @@ export function Dashboard() {
                                                     <h4 className={cn("font-medium text-navy-900 truncate", task.status === 'completed' && "line-through text-text-muted")}>
                                                         {task.title}
                                                     </h4>
-                                                    {task.description && (
-                                                        <p className={cn("text-sm mt-0.5 line-clamp-2", task.status === 'completed' ? "text-text-muted" : "text-navy-600")}>
-                                                            {task.description}
-                                                        </p>
-                                                    )}
+                                                    {/* Task assignment avatar handles the 'who' part naturally, createdBy not strictly needed here but could be added if requested for tasks too */}
                                                 </div>
+                                                {task.description && (
+                                                    <p className={cn("text-sm mt-0.5 line-clamp-2", task.status === 'completed' ? "text-text-muted" : "text-navy-600")}>
+                                                        {task.description}
+                                                    </p>
+                                                )}
                                                 <p className="text-sm text-text-muted mt-1">Project Task • Due: {formatDate(task.requiredDate, 'MMM d')}</p>
                                             </div>
                                         </div>
@@ -223,13 +228,16 @@ export function Dashboard() {
                         <div className="grid gap-4">
                             {projects.filter(p => p.status === 'active').map(project => (
                                 <Link key={project.id} to={`/projects/${project.id}`} className="block">
-                                    <Card className="p-5 flex items-center gap-6 hover:shadow-md transition-all cursor-pointer group border-none shadow-sm h-full">
+                                    <Card className="p-5 flex items-center gap-6 hover:shadow-md transition-all cursor-pointer group border-none shadow-sm h-full relative">
+                                        <div className="absolute top-4 right-4">
+                                            <UserAvatar userId={project.createdBy} className="h-6 w-6 text-[10px]" />
+                                        </div>
                                         <div className={cn("w-16 h-16 rounded-xl flex items-center justify-center text-white shadow-inner", project.color)}>
                                             <Activity className="w-8 h-8 opacity-80" />
                                         </div>
 
                                         <div className="flex-1 min-w-0">
-                                            <h3 className="text-lg font-semibold text-navy-900 truncate mb-1">{project.name}</h3>
+                                            <h3 className="text-lg font-semibold text-navy-900 truncate mb-1 pr-6">{project.name}</h3>
                                             <p className="text-sm text-text-muted truncate">{project.address}</p>
                                         </div>
 
@@ -283,7 +291,10 @@ export function Dashboard() {
                                         <span className="text-lg font-bold text-navy-900 leading-none">{formatDate(meeting.date, 'd')}</span>
                                     </div>
                                     <div className="min-w-0 flex-1">
-                                        <h4 className="font-bold text-navy-900 truncate">{meeting.title}</h4>
+                                        <div className="flex justify-between items-start">
+                                            <h4 className="font-bold text-navy-900 truncate pr-4">{meeting.title}</h4>
+                                            <UserAvatar userId={meeting.createdBy} className="h-5 w-5 text-[8px]" />
+                                        </div>
                                         <p className="text-xs text-text-muted flex items-center gap-1.5 mt-0.5">
                                             <Clock className="w-3 h-3" />
                                             {meeting.time}
@@ -316,7 +327,10 @@ export function Dashboard() {
                                 <div className="flex gap-3 items-center">
                                     <div className={cn("w-1.5 h-10 rounded-full", inv.type === 'sent' ? "bg-emerald-500" : "bg-amber-500")} />
                                     <div>
-                                        <p className="font-bold text-navy-900 text-sm truncate w-32">{inv.clientName}</p>
+                                        <div className="flex items-center gap-2">
+                                            <p className="font-bold text-navy-900 text-sm truncate w-24">{inv.clientName}</p>
+                                            <UserAvatar userId={inv.createdBy} className="h-4 w-4 text-[8px]" />
+                                        </div>
                                         <p className="text-xs text-text-muted">{formatDate(inv.dueDate, 'MMM d')}</p>
                                     </div>
                                 </div>
@@ -366,10 +380,13 @@ export function Dashboard() {
                                             <X className="w-4 h-4" />
                                         </button>
                                     </div>
-                                    <h4 className="font-bold text-navy-900 flex items-center gap-2">
-                                        <StickyNote className="w-4 h-4 text-amber-500" />
-                                        {matter.title}
-                                    </h4>
+                                    <div className="flex justify-between items-start pr-12">
+                                        <h4 className="font-bold text-navy-900 flex items-center gap-2">
+                                            <StickyNote className="w-4 h-4 text-amber-500" />
+                                            {matter.title}
+                                        </h4>
+                                        <UserAvatar userId={matter.createdBy} className="h-5 w-5 text-[8px]" />
+                                    </div>
                                     {matter.address && (
                                         <div className="flex items-center gap-1.5 text-sm text-navy-700">
                                             <MapPin className="w-3.5 h-3.5 text-amber-500/70" />

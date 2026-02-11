@@ -220,12 +220,12 @@ export default {
                     try {
                         const project = await request.json();
                         await env.DB.prepare(`
-                            INSERT INTO projects (id, organization_id, name, address, client_name, client_email, client_phone, start_date, end_date, color, status, progress)
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            INSERT INTO projects (id, organization_id, name, address, client_name, client_email, client_phone, start_date, end_date, color, status, progress, created_by)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                         `).bind(
                             project.id, project.organizationId, project.name, project.address || null, project.clientName || null,
                             project.clientEmail || null, project.clientPhone || null, project.startDate || null, project.endDate || null, project.color || null,
-                            project.status || 'active', project.progress || 0
+                            project.status || 'active', project.progress || 0, project.createdBy || null
                         ).run();
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {
@@ -339,10 +339,10 @@ export default {
                     try {
                         const invoice = await request.json();
                         await env.DB.prepare(`
-                            INSERT INTO invoices (id, organization_id, type, amount, client_name, due_date, status, date, description, project_id)
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            INSERT INTO invoices (id, organization_id, type, amount, client_name, due_date, status, date, description, project_id, created_by)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                         `).bind(
-                            invoice.id, invoice.organizationId, invoice.type, invoice.amount, invoice.clientName || null, invoice.dueDate || null, invoice.status || 'pending', invoice.date || null, invoice.description || null, invoice.projectId || null
+                            invoice.id, invoice.organizationId, invoice.type, invoice.amount, invoice.clientName || null, invoice.dueDate || null, invoice.status || 'pending', invoice.date || null, invoice.description || null, invoice.projectId || null, invoice.createdBy || null
                         ).run();
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {
@@ -366,10 +366,10 @@ export default {
                     try {
                         const meeting = await request.json();
                         await env.DB.prepare(`
-                            INSERT INTO meetings (id, organization_id, title, date, time, project_id, attendees, address)
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                            INSERT INTO meetings (id, organization_id, title, date, time, project_id, attendees, address, created_by)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                         `).bind(
-                            meeting.id, meeting.organizationId, meeting.title, meeting.date, meeting.time, meeting.projectId || null, meeting.attendees ? JSON.stringify(meeting.attendees) : '[]', meeting.address || null
+                            meeting.id, meeting.organizationId, meeting.title, meeting.date, meeting.time, meeting.projectId || null, meeting.attendees ? JSON.stringify(meeting.attendees) : '[]', meeting.address || null, meeting.createdBy || null
                         ).run();
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {
@@ -456,10 +456,10 @@ export default {
                     try {
                         const reminder = await request.json();
                         await env.DB.prepare(`
-                            INSERT INTO reminders (id, organization_id, title, description, date, completed)
-                            VALUES (?, ?, ?, ?, ?, ?)
+                            INSERT INTO reminders (id, organization_id, title, description, date, completed, created_by)
+                            VALUES (?, ?, ?, ?, ?, ?, ?)
                         `).bind(
-                            reminder.id, reminder.organizationId, reminder.title, reminder.description || null, reminder.date || null, reminder.completed ? 1 : 0
+                            reminder.id, reminder.organizationId, reminder.title, reminder.description || null, reminder.date || null, reminder.completed ? 1 : 0, reminder.createdBy || null
                         ).run();
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {
@@ -500,10 +500,10 @@ export default {
                     try {
                         const matter = await request.json();
                         await env.DB.prepare(`
-                            INSERT INTO other_matters (id, organization_id, title, address, note, date)
-                            VALUES (?, ?, ?, ?, ?, ?)
+                            INSERT INTO other_matters (id, organization_id, title, address, note, date, created_by)
+                            VALUES (?, ?, ?, ?, ?, ?, ?)
                         `).bind(
-                            matter.id, matter.organizationId, matter.title, matter.address || null, matter.note || null, matter.date || null
+                            matter.id, matter.organizationId, matter.title, matter.address || null, matter.note || null, matter.date || null, matter.createdBy || null
                         ).run();
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {

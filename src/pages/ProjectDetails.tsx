@@ -93,8 +93,10 @@ export function ProjectDetails() {
     const handleDeleteProject = async () => {
         if (confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
             if (project) {
-                await deleteProject(project.id);
+                const projectId = project.id;
                 navigate('/projects');
+                // Give navigation a moment to start before tearing down state
+                setTimeout(() => deleteProject(projectId), 0);
             }
         }
     };

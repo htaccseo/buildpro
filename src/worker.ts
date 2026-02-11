@@ -504,6 +504,19 @@ export default {
                     }
                 }
 
+                // PUT /api/other-matter
+                if (url.pathname === '/api/other-matter' && request.method === 'PUT') {
+                    try {
+                        const { id, title, address, note } = await request.json();
+                        await env.DB.prepare('UPDATE other_matters SET title = ?, address = ?, note = ? WHERE id = ?')
+                            .bind(title, address, note, id)
+                            .run();
+                        return withCors(Response.json({ success: true }));
+                    } catch (e: any) {
+                        return withCors(Response.json({ message: `Other Matter Update Error: ${e.message}` }, { status: 500 }));
+                    }
+                }
+
                 // DELETE /api/project
                 if (url.pathname === '/api/project' && request.method === 'DELETE') {
                     try {

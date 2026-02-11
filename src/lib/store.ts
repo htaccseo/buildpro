@@ -526,6 +526,17 @@ export const useStore = create<AppState>((set, get) => ({
         }
     },
 
+    updateOtherMatter: async (id, updates) => {
+        set((state) => ({
+            otherMatters: state.otherMatters.map(om => om.id === id ? { ...om, ...updates } : om)
+        }));
+        try {
+            await apiRequest('/other-matter', 'PUT', { id, ...updates });
+        } catch (e) {
+            console.error("Failed to update other matter", e);
+        }
+    },
+
     deleteOtherMatter: async (id) => {
         set((state) => ({
             otherMatters: state.otherMatters.filter(om => om.id !== id)

@@ -377,7 +377,7 @@ export function Dashboard() {
             {isMatterModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
                     <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl animate-in zoom-in-95 duration-200">
-                        <h3 className="text-xl font-bold text-navy-900 mb-4">New Notes</h3>
+                        <h3 className="text-xl font-bold text-navy-900 mb-4">{matterToEdit ? 'Edit Note' : 'New Note'}</h3>
                         <form onSubmit={handleAddOtherMatter} className="space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-navy-900 mb-1.5">Title</label>
@@ -422,7 +422,7 @@ export function Dashboard() {
                                     type="submit"
                                     className="flex-1 px-4 py-2 rounded-xl bg-amber-500 text-white hover:bg-amber-600 shadow-lg shadow-amber-500/20"
                                 >
-                                    Add Note
+                                    {matterToEdit ? 'Save Changes' : 'Add Note'}
                                 </button>
                             </div>
                         </form>

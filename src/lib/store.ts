@@ -168,6 +168,17 @@ export const useStore = create<AppState>((set, get) => ({
                         userId: n.user_id,
                         read: !!n.read,
                         data: JSON.parse(n.data || '{}')
+                    })),
+
+                    reminders: (data.reminders || []).map((r: any) => ({
+                        ...r,
+                        organizationId: r.organization_id,
+                        completed: !!r.completed
+                    })),
+
+                    otherMatters: (data.otherMatters || []).map((m: any) => ({
+                        ...m,
+                        organizationId: m.organization_id
                     }))
                 });
             }
@@ -438,12 +449,20 @@ export const useStore = create<AppState>((set, get) => ({
     })),
 
     // Reminder Actions
-    addReminder: (reminder) => {
+    addReminder: async (reminder) => {
         const currentOrgId = get().currentOrganization?.id;
         if (!currentOrgId) return;
+
+        const newReminder = { ...reminder, organizationId: currentOrgId } as Reminder;
         set((state) => ({
-            reminders: [...state.reminders, { ...reminder, organizationId: currentOrgId } as Reminder].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+            reminders: [...state.reminders, newReminder].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
         }));
+
+        try {
+            await apiRequest('/reminder', 'POST', newReminder);
+        } catch (e) {
+            console.error("Failed to add reminder", e);
+        }
     },
 
     updateReminder: (updatedReminder) => set((state) => ({
@@ -454,17 +473,38 @@ export const useStore = create<AppState>((set, get) => ({
         reminders: state.reminders.filter(r => r.id !== id)
     })),
 
-    toggleReminder: (id) => set((state) => ({
-        reminders: state.reminders.map(r => r.id === id ? { ...r, completed: !r.completed } : r)
-    })),
+    toggleReminder: async (id) => {
+        const reminder = get().reminders.find(r => r.id === id);
+        if (!reminder) return;
+
+        const updatedCompleted = !reminder.completed;
+
+        set((state) => ({
+            reminders: state.reminders.map(r => r.id === id ? { ...r, completed: updatedCompleted } : r)
+        }));
+
+        try {
+            await apiRequest('/reminder/update', 'POST', { id, completed: updatedCompleted });
+        } catch (e) {
+            console.error("Failed to toggle reminder", e);
+        }
+    },
 
     // Other Matters Actions
-    addOtherMatter: (matter) => {
+    addOtherMatter: async (matter) => {
         const currentOrgId = get().currentOrganization?.id;
         if (!currentOrgId) return;
+
+        const newMatter = { ...matter, organizationId: currentOrgId } as OtherMatter;
         set((state) => ({
-            otherMatters: [{ ...matter, organizationId: currentOrgId } as OtherMatter, ...state.otherMatters]
+            otherMatters: [newMatter, ...state.otherMatters]
         }));
+
+        try {
+            await apiRequest('/other-matter', 'POST', newMatter);
+        } catch (e) {
+            console.error("Failed to add other matter", e);
+        }
     },
 
     deleteOtherMatter: (id) => set((state) => ({

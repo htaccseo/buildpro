@@ -112,6 +112,8 @@ export default {
                         const { results: meetings } = await env.DB.prepare('SELECT * FROM meetings WHERE organization_id = ?').bind(orgId).all();
                         const { results: invoices } = await env.DB.prepare('SELECT * FROM invoices WHERE organization_id = ?').bind(orgId).all();
                         const { results: notifications } = await env.DB.prepare('SELECT * FROM notifications WHERE organization_id = ?').bind(orgId).all();
+                        const { results: reminders } = await env.DB.prepare('SELECT * FROM reminders WHERE organization_id = ?').bind(orgId).all();
+                        const { results: otherMatters } = await env.DB.prepare('SELECT * FROM other_matters WHERE organization_id = ?').bind(orgId).all();
                         logs.push('All data fetched');
 
                         return withCors(Response.json({
@@ -123,7 +125,9 @@ export default {
                             projectUpdates,
                             meetings,
                             invoices,
-                            notifications
+                            notifications,
+                            reminders: reminders || [],
+                            otherMatters: otherMatters || []
                         }));
 
                     } catch (e: any) {
@@ -390,7 +394,57 @@ export default {
                     }
                 }
 
+                // POST /api/reminder
+                if (url.pathname === '/api/reminder' && request.method === 'POST') {
+                    try {
+                        const reminder = await request.json();
+                        await env.DB.prepare(`
+                            INSERT INTO reminders (id, organization_id, title, description, date, completed)
+                            VALUES (?, ?, ?, ?, ?, ?)
+                        `).bind(
+                            reminder.id, reminder.organizationId, reminder.title, reminder.description || null, reminder.date || null, reminder.completed ? 1 : 0
+                        ).run();
+                        return withCors(Response.json({ success: true }));
+                    } catch (e: any) {
+                        return withCors(Response.json({ message: `Reminder Error: ${e.message}` }, { status: 500 }));
+                    }
+                }
+
+                // POST /api/reminder/update
+                if (url.pathname === '/api/reminder/update' && request.method === 'POST') {
+                    try {
+                        const reminder = await request.json();
+                        await env.DB.prepare(`
+                            UPDATE reminders 
+                            SET completed = ?
+                            WHERE id = ?
+                        `).bind(
+                            reminder.completed ? 1 : 0, reminder.id
+                        ).run();
+                        return withCors(Response.json({ success: true }));
+                    } catch (e: any) {
+                        return withCors(Response.json({ message: `Reminder Update Error: ${e.message}` }, { status: 500 }));
+                    }
+                }
+
+                // POST /api/other-matter
+                if (url.pathname === '/api/other-matter' && request.method === 'POST') {
+                    try {
+                        const matter = await request.json();
+                        await env.DB.prepare(`
+                            INSERT INTO other_matters (id, organization_id, title, address, note, date)
+                            VALUES (?, ?, ?, ?, ?, ?)
+                        `).bind(
+                            matter.id, matter.organizationId, matter.title, matter.address || null, matter.note || null, matter.date || null
+                        ).run();
+                        return withCors(Response.json({ success: true }));
+                    } catch (e: any) {
+                        return withCors(Response.json({ message: `Other Matter Error: ${e.message}` }, { status: 500 }));
+                    }
+                }
+
                 // 404 for unknown API
+
                 return new Response('API Endpoint Not Found', { status: 404 });
             }
 
@@ -426,10 +480,16 @@ export default {
 
             // Asset Handling (Bypassing Router for performance and safety)
             try {
+                // explicit SPA routing: if path is not API and not a file, serve index.html (via root / to avoid 307)
+                if (!url.pathname.startsWith('/api') && !url.pathname.includes('.')) {
+                    const indexRequest = new Request(new URL('/', request.url), request);
+                    return await env.ASSETS.fetch(indexRequest);
+                }
+
                 let response = await env.ASSETS.fetch(request);
 
                 if (response.status === 404 && !url.pathname.includes('.')) {
-                    const indexRequest = new Request(new URL('/index.html', request.url), request);
+                    const indexRequest = new Request(new URL('/', request.url), request);
                     response = await env.ASSETS.fetch(indexRequest);
                 }
                 return response;

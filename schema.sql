@@ -81,7 +81,11 @@ CREATE TABLE meetings (
     project_id TEXT,
     attendees TEXT, -- JSON array of User IDs
     address TEXT,
+    description TEXT,
     created_by TEXT,
+    assigned_to TEXT,
+    completed INTEGER DEFAULT 0,
+    completed_by TEXT,
     FOREIGN KEY (organization_id) REFERENCES organizations(id)
 );
 
@@ -133,6 +137,7 @@ CREATE TABLE other_matters (
     note TEXT,
     date TEXT,
     created_by TEXT,
+    assigned_to TEXT,
     FOREIGN KEY (organization_id) REFERENCES organizations(id)
 );
 

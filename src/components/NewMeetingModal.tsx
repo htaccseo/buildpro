@@ -12,7 +12,9 @@ export function NewMeetingModal({ isOpen, onClose, initialDate }: NewMeetingModa
     const [date, setDate] = React.useState('');
     const [time, setTime] = React.useState('');
     const [address, setAddress] = React.useState('');
-    const { addMeeting } = useStore();
+    const [description, setDescription] = React.useState('');
+    const [assignedTo, setAssignedTo] = React.useState('');
+    const { addMeeting, users, currentUser } = useStore();
 
     React.useEffect(() => {
         if (isOpen) {
@@ -20,8 +22,10 @@ export function NewMeetingModal({ isOpen, onClose, initialDate }: NewMeetingModa
             setDate(initialDate ? initialDate.toISOString().split('T')[0] : '');
             setTime('');
             setAddress('');
+            setDescription('');
+            setAssignedTo(currentUser?.id || '');
         }
-    }, [isOpen, initialDate]);
+    }, [isOpen, initialDate, currentUser]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -31,6 +35,9 @@ export function NewMeetingModal({ isOpen, onClose, initialDate }: NewMeetingModa
             date,
             time,
             address,
+            description,
+            assignedTo,
+            completed: false,
             attendees: []
         });
         onClose();
@@ -85,6 +92,30 @@ export function NewMeetingModal({ isOpen, onClose, initialDate }: NewMeetingModa
                             className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none"
                             placeholder="e.g., 123 Construction Ave"
                         />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-navy-900 mb-1.5">Description (Optional)</label>
+                        <textarea
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none h-24 resize-none"
+                            placeholder="Details..."
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-navy-900 mb-1.5">Assign To</label>
+                        <select
+                            value={assignedTo}
+                            onChange={(e) => setAssignedTo(e.target.value)}
+                            className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none"
+                        >
+                            <option value="">Select User...</option>
+                            {users.map(u => (
+                                <option key={u.id} value={u.id}>
+                                    {u.id === currentUser?.id ? `${u.name} (Me)` : u.name}
+                                </option>
+                            ))}
+                        </select>
                     </div>
                     <div className="flex gap-3 pt-2">
                         <button

@@ -3,7 +3,7 @@ import { useStore } from '../lib/store';
 import { useOrganizationData } from '../lib/hooks';
 import { isSameDay } from 'date-fns';
 import { Link, useNavigate } from 'react-router-dom';
-import { Activity, Clock, MapPin, X, StickyNote, Edit2 } from 'lucide-react';
+import { Activity, Clock, MapPin, X, StickyNote, Edit2, Check } from 'lucide-react';
 import { cn, formatDate } from '../lib/utils';
 import { Card } from '../components/ui/Card';
 import { NewMeetingModal } from '../components/NewMeetingModal';
@@ -24,13 +24,14 @@ export function Dashboard() {
     const [matterTitle, setMatterTitle] = React.useState('');
     const [matterAddress, setMatterAddress] = React.useState('');
     const [matterNote, setMatterNote] = React.useState('');
+    const [matterAssignedTo, setMatterAssignedTo] = React.useState('');
 
     // Use Clean Data Hook (RLS)
-    const { projects, invoices, meetings, reminders, otherMatters } = useOrganizationData();
+    const { projects, invoices, meetings, reminders, otherMatters, users } = useOrganizationData();
     // Use Store actions (actions are safe to use from store directly as they usually just dispatch)
     // Actually, our store actions need currentOrgId from store state, which is fine.
     // The previous code destructured methods from useStore. Let's keep doing that for actions.
-    const { toggleReminder, addOtherMatter, updateOtherMatter, deleteOtherMatter, deleteMeeting, currentUser } = useStore();
+    const { toggleReminder, addOtherMatter, updateOtherMatter, deleteOtherMatter, deleteMeeting, updateMeeting, currentUser } = useStore();
 
     const allTasks = projects.flatMap(p => p.tasks);
 
@@ -62,11 +63,14 @@ export function Dashboard() {
 
     const handleAddOtherMatter = (e: React.FormEvent) => {
         e.preventDefault();
+
         if (matterToEdit) {
-            updateOtherMatter(matterToEdit.id, {
+            updateOtherMatter({
+                ...matterToEdit,
                 title: matterTitle,
                 address: matterAddress,
-                note: matterNote
+                note: matterNote,
+                assignedTo: matterAssignedTo || undefined
             });
         } else {
             addOtherMatter({
@@ -74,7 +78,9 @@ export function Dashboard() {
                 title: matterTitle,
                 address: matterAddress,
                 note: matterNote,
-                date: new Date().toISOString()
+                assignedTo: matterAssignedTo || undefined,
+                date: new Date().toISOString(),
+                createdBy: currentUser?.id || 'unknown'
             });
         }
         setIsMatterModalOpen(false);
@@ -82,6 +88,7 @@ export function Dashboard() {
         setMatterTitle('');
         setMatterAddress('');
         setMatterNote('');
+        setMatterAssignedTo('');
     };
 
     const openMatterModal = (matter?: OtherMatter) => {
@@ -90,11 +97,13 @@ export function Dashboard() {
             setMatterTitle(matter.title);
             setMatterAddress(matter.address || '');
             setMatterNote(matter.note || '');
+            setMatterAssignedTo(matter.assignedTo || '');
         } else {
             setMatterToEdit(null);
             setMatterTitle('');
             setMatterAddress('');
             setMatterNote('');
+            setMatterAssignedTo('');
         }
         setIsMatterModalOpen(true);
     };
@@ -301,10 +310,42 @@ export function Dashboard() {
                                     </div>
                                     <div className="min-w-0 flex-1 group/title relative">
                                         <div className="flex justify-between items-start">
-                                            <h4 className="font-bold text-navy-900 truncate pr-4 cursor-help" title={meeting.title}>{meeting.title}</h4>
-                                            <UserAvatar userId={meeting.createdBy} className="h-5 w-5 text-[8px]" />
+                                            <div className="flex items-center gap-2">
+                                                <div
+                                                    className={cn(
+                                                        "w-4 h-4 rounded-full border-2 cursor-pointer transition-colors flex items-center justify-center",
+                                                        meeting.completed ? "bg-emerald-500 border-emerald-500" : "border-slate-300 hover:border-emerald-500"
+                                                    )}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        updateMeeting({ ...meeting, completed: !meeting.completed, completedBy: !meeting.completed ? currentUser?.id : undefined });
+                                                    }}
+                                                    title={meeting.completed ? "Mark as incomplete" : "Mark as done"}
+                                                >
+                                                    {meeting.completed && <Check className="w-2.5 h-2.5 text-white" />}
+                                                </div>
+                                                <h4 className={cn("font-bold text-navy-900 truncate pr-4 cursor-help", meeting.completed && "line-through text-text-muted")} title={meeting.title}>
+                                                    {meeting.title}
+                                                </h4>
+                                            </div>
+                                            <div className="flex items-center gap-1">
+                                                {meeting.assignedTo && (
+                                                    <UserAvatar userId={meeting.assignedTo} className="h-5 w-5 text-[8px] ring-1 ring-white" />
+                                                )}
+                                                {meeting.completed && meeting.completedBy && (
+                                                    <UserAvatar userId={meeting.completedBy} className="h-5 w-5 text-[8px] ring-1 ring-white opacity-50" />
+                                                )}
+                                                {!meeting.assignedTo && !meeting.completed && (
+                                                    <UserAvatar userId={meeting.createdBy} className="h-5 w-5 text-[8px]" />
+                                                )}
+                                            </div>
                                         </div>
-                                        <p className="text-xs text-text-muted flex items-center gap-1.5 mt-0.5">
+                                        {meeting.description && (
+                                            <p className={cn("text-xs mt-1 line-clamp-2 cursor-help", meeting.completed ? "text-text-muted" : "text-navy-600")} title={meeting.description}>
+                                                {meeting.description}
+                                            </p>
+                                        )}
+                                        <p className="text-xs text-text-muted flex items-center gap-1.5 mt-1">
                                             <Clock className="w-3 h-3" />
                                             {meeting.time}
                                             {meeting.address && (
@@ -334,7 +375,7 @@ export function Dashboard() {
                         {invoices.filter(i => i.status === 'pending' || i.status === 'overdue').slice(0, 3).map(inv => (
                             <div key={inv.id} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
                                 <div className="flex gap-3 items-center">
-                                    <div className={cn("w-1.5 h-10 rounded-full", inv.type === 'sent' ? "bg-emerald-500" : "bg-amber-500")} />
+                                    <div className="w-1.5 h-10 rounded-full bg-emerald-500" />
                                     <div>
                                         <p className="font-bold text-navy-900 text-sm truncate w-24">{inv.clientName}</p>
                                         <p className="text-xs text-text-muted">{formatDate(inv.dueDate, 'MMM d')}</p>
@@ -360,7 +401,7 @@ export function Dashboard() {
                         <div className="flex justify-between items-center pb-2 border-b border-slate-100">
                             <span className="text-sm font-medium text-text-muted">Notes</span>
                             <button
-                                onClick={() => setIsMatterModalOpen(true)}
+                                onClick={() => openMatterModal()}
                                 className="text-xs font-bold text-emerald-600 hover:text-emerald-700"
                             >
                                 + Add Note
@@ -391,7 +432,18 @@ export function Dashboard() {
                                             <StickyNote className="w-4 h-4 text-amber-500" />
                                             {matter.title}
                                         </h4>
-                                        <UserAvatar userId={matter.createdBy} className="h-5 w-5 text-[8px]" />
+                                        <div className="flex items-center gap-1">
+                                            {/* Creator */}
+                                            <UserAvatar userId={matter.createdBy} className="h-5 w-5 text-[8px]" />
+
+                                            {/* Assignee Arrow */}
+                                            {matter.assignedTo && matter.assignedTo !== matter.createdBy && (
+                                                <>
+                                                    <span className="text-slate-300 text-[10px]">→</span>
+                                                    <UserAvatar userId={matter.assignedTo} className="h-5 w-5 text-[8px] ring-1 ring-white" />
+                                                </>
+                                            )}
+                                        </div>
                                     </div>
                                     {matter.address && (
                                         <div className="flex items-center gap-1.5 text-sm text-navy-700">
@@ -442,6 +494,21 @@ export function Dashboard() {
                                         placeholder="e.g., Brick Calculation"
                                         required
                                     />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-navy-900 mb-1.5">Assign To</label>
+                                    <select
+                                        value={matterAssignedTo}
+                                        onChange={(e) => setMatterAssignedTo(e.target.value)}
+                                        className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-amber-500 outline-none"
+                                    >
+                                        <option value="">Select User...</option>
+                                        {users.map(u => (
+                                            <option key={u.id} value={u.id}>
+                                                {u.id === currentUser?.id ? `${u.name} (Me)` : u.name}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-navy-900 mb-1.5">Address (Optional)</label>

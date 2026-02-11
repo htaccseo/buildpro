@@ -370,14 +370,33 @@ export default {
                     try {
                         const meeting = await request.json();
                         await env.DB.prepare(`
-                            INSERT INTO meetings (id, organization_id, title, date, time, project_id, attendees, address, created_by)
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            INSERT INTO meetings (id, organization_id, title, date, time, project_id, attendees, address, description, created_by, assigned_to, completed)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                         `).bind(
-                            meeting.id, meeting.organizationId, meeting.title, meeting.date, meeting.time, meeting.projectId || null, meeting.attendees ? JSON.stringify(meeting.attendees) : '[]', meeting.address || null, meeting.createdBy || null
+                            meeting.id, meeting.organizationId, meeting.title, meeting.date, meeting.time, meeting.projectId || null, JSON.stringify(meeting.attendees || []), meeting.address || null, meeting.description || null, meeting.createdBy || null, meeting.assignedTo || null, meeting.completed ? 1 : 0
                         ).run();
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {
                         return withCors(Response.json({ message: `Meeting Error: ${e.message}` }, { status: 500 }));
+                    }
+                }
+
+                // POST /api/meeting/update
+                if (url.pathname === '/api/meeting/update' && request.method === 'POST') {
+                    try {
+                        const meeting = await request.json();
+                        // This handles both content updates and completion toggles
+                        // We update all fields to be safe, but primarily used for completion and basic edits
+                        await env.DB.prepare(`
+                            UPDATE meetings 
+                            SET title = ?, date = ?, time = ?, address = ?, description = ?, assigned_to = ?, completed = ?, completed_by = ?
+                            WHERE id = ?
+                        `).bind(
+                            meeting.title, meeting.date, meeting.time, meeting.address || null, meeting.description || null, meeting.assignedTo || null, meeting.completed ? 1 : 0, meeting.completedBy || null, meeting.id
+                        ).run();
+                        return withCors(Response.json({ success: true }));
+                    } catch (e: any) {
+                        return withCors(Response.json({ message: `Meeting Update Error: ${e.message}` }, { status: 500 }));
                     }
                 }
 
@@ -504,10 +523,10 @@ export default {
                     try {
                         const matter = await request.json();
                         await env.DB.prepare(`
-                            INSERT INTO other_matters (id, organization_id, title, address, note, date, created_by)
-                            VALUES (?, ?, ?, ?, ?, ?, ?)
+                            INSERT INTO other_matters (id, organization_id, title, address, note, date, created_by, assigned_to)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                         `).bind(
-                            matter.id, matter.organizationId, matter.title, matter.address || null, matter.note || null, matter.date || null, matter.createdBy || null
+                            matter.id, matter.organizationId, matter.title, matter.address || null, matter.note || null, matter.date || null, matter.createdBy || null, matter.assignedTo || null
                         ).run();
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {
@@ -529,9 +548,9 @@ export default {
                 // PUT /api/other-matter
                 if (url.pathname === '/api/other-matter' && request.method === 'PUT') {
                     try {
-                        const { id, title, address, note } = await request.json();
-                        await env.DB.prepare('UPDATE other_matters SET title = ?, address = ?, note = ? WHERE id = ?')
-                            .bind(title, address, note, id)
+                        const { id, title, address, note, assignedTo } = await request.json();
+                        await env.DB.prepare('UPDATE other_matters SET title = ?, address = ?, note = ?, assigned_to = ? WHERE id = ?')
+                            .bind(title, address, note, assignedTo || null, id)
                             .run();
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {

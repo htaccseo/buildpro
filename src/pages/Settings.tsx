@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useStore } from '../lib/store';
 import { Card } from '../components/ui/Card';
 import { User, Mail, Shield, Camera, Phone, Save, Briefcase } from 'lucide-react';
+import { UserAvatar } from '../components/UserAvatar';
 import type { UserRole } from '../lib/types';
 
 export function Settings() {
@@ -72,11 +73,7 @@ export function Settings() {
 
                     <div className="flex items-center gap-6 mb-8">
                         <div className="relative group cursor-pointer">
-                            <img
-                                src={currentUser.avatar}
-                                alt={currentUser.name}
-                                className="w-24 h-24 rounded-full object-cover ring-4 ring-slate-50 group-hover:opacity-75 transition-opacity"
-                            />
+                            <UserAvatar userId={currentUser.id} className="w-24 h-24 text-2xl ring-4 ring-slate-50 group-hover:opacity-75 transition-opacity" />
                             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                 <Camera className="w-8 h-8 text-white drop-shadow-lg" />
                             </div>

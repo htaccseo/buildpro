@@ -73,8 +73,8 @@ export const MOCK_PROJECTS: Project[] = [
 ];
 
 export const MOCK_MEETINGS: Meeting[] = [
-    { id: 'm1', organizationId: ORG_ID, title: 'Site Inspection', date: format(new Date(), 'yyyy-MM-dd'), time: '09:00', projectId: 'p1', attendees: ['u1', 'u2'] },
-    { id: 'm2', organizationId: ORG_ID, title: 'Client Briefing', date: format(addDays(new Date(), 1), 'yyyy-MM-dd'), time: '14:00', projectId: 'p2', attendees: ['u1'] },
+    { id: 'm1', organizationId: ORG_ID, title: 'Site Inspection', date: format(new Date(), 'yyyy-MM-dd'), time: '09:00', projectId: 'p1', attendees: ['u1', 'u2'], completed: false, createdBy: 'u1' },
+    { id: 'm2', organizationId: ORG_ID, title: 'Client Briefing', date: format(addDays(new Date(), 1), 'yyyy-MM-dd'), time: '14:00', projectId: 'p2', attendees: ['u1'], completed: false, createdBy: 'u1' },
 ];
 
 export const MOCK_NOTIFICATIONS: Notification[] = [

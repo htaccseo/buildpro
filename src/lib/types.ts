@@ -75,6 +75,10 @@ export interface Meeting {
     projectId?: string;
     attendees: string[]; // User IDs
     address?: string;
+    description?: string;
+    assignedTo?: string;
+    completed: boolean;
+    completedBy?: string;
 }
 
 export interface Notification {
@@ -124,4 +128,5 @@ export interface OtherMatter {
     address?: string;
     note?: string;
     date?: string;
+    assignedTo?: string;
 }

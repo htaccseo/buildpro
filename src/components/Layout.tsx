@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-do
 import { LayoutDashboard, Calendar, Users, Briefcase, Bell, Settings, Search, Hexagon, Menu, X, FileText } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useStore } from '../lib/store';
+import { UserAvatar } from '../components/UserAvatar';
 
 export function Layout({ children }: { children: React.ReactNode }) {
     const { notifications, currentUser, currentOrganization } = useStore();
@@ -36,10 +37,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         { icon: Users, label: 'Team', path: '/team' },
     ].filter(item => !item.hidden);
 
-    // Get initials
-    const initials = currentUser?.name
-        ? currentUser.name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()
-        : 'U';
+
 
     return (
         <div className="flex min-h-screen bg-bg-app font-sans">
@@ -132,9 +130,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                         <span>Settings</span>
                     </Link>
                     <div className="mt-4 flex items-center gap-3 px-4 py-2 rounded-xl bg-slate-50">
-                        <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-xs border border-emerald-200">
-                            {initials}
-                        </div>
+                        <UserAvatar userId={currentUser?.id || ''} className="w-8 h-8 text-xs border border-emerald-200" />
                         <div className="flex-1 overflow-hidden">
                             <p className="text-sm font-medium truncate text-navy-900">{currentUser?.name || 'Guest'}</p>
                             <p className="text-xs text-slate-500 truncate capitalize">{currentUser?.role || 'Visitor'}</p>

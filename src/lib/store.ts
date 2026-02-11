@@ -67,6 +67,7 @@ interface AppState {
 
     // Meeting Actions
     addMeeting: (meeting: Omit<Meeting, 'organizationId'>) => void;
+    updateMeeting: (meeting: Meeting) => Promise<void>;
     deleteMeeting: (id: string) => void;
 
     // Reminder Actions
@@ -79,7 +80,7 @@ interface AppState {
     // Other Matters Actions
     otherMatters: OtherMatter[];
     addOtherMatter: (matter: Omit<OtherMatter, 'organizationId'>) => void;
-    updateOtherMatter: (id: string, updates: Partial<OtherMatter>) => void;
+    updateOtherMatter: (matter: OtherMatter) => Promise<void>;
     deleteOtherMatter: (id: string) => void;
 
     // Debug
@@ -163,7 +164,11 @@ export const useStore = create<AppState>((set, get) => ({
                         organizationId: m.organization_id,
                         projectId: m.project_id,
                         attendees: JSON.parse(m.attendees || '[]'),
-                        createdBy: m.created_by
+                        createdBy: m.created_by,
+                        description: m.description,
+                        assignedTo: m.assigned_to,
+                        completed: !!m.completed,
+                        completedBy: m.completed_by
                     })),
 
                     invoices: (data.invoices || []).map((i: any) => ({
@@ -195,7 +200,8 @@ export const useStore = create<AppState>((set, get) => ({
                     otherMatters: (data.otherMatters || []).map((m: any) => ({
                         ...m,
                         organizationId: m.organization_id,
-                        createdBy: m.created_by
+                        createdBy: m.created_by,
+                        assignedTo: m.assigned_to
                     }))
                 });
             }
@@ -262,6 +268,20 @@ export const useStore = create<AppState>((set, get) => ({
             await apiRequest('/meeting', 'POST', newMeeting);
         } catch (e) {
             console.error("Failed to add meeting", e);
+        }
+    },
+
+    updateMeeting: async (meeting) => {
+        // Optimistic update
+        set((state) => ({
+            meetings: state.meetings.map(m => m.id === meeting.id ? meeting : m)
+                .sort((a, b) => new Date(a.date + 'T' + a.time).getTime() - new Date(b.date + 'T' + b.time).getTime())
+        }));
+
+        try {
+            await apiRequest('/meeting/update', 'POST', meeting);
+        } catch (e) {
+            console.error("Failed to update meeting", e);
         }
     },
 
@@ -586,12 +606,19 @@ export const useStore = create<AppState>((set, get) => ({
     // Other Matters Actions
 
 
-    updateOtherMatter: async (id, updates) => {
+    updateOtherMatter: async (matter) => {
         set((state) => ({
-            otherMatters: state.otherMatters.map(om => om.id === id ? { ...om, ...updates } : om)
+            otherMatters: state.otherMatters.map(m => m.id === matter.id ? matter : m)
         }));
+
         try {
-            await apiRequest('/other-matter', 'PUT', { id, ...updates });
+            await apiRequest('/other-matter', 'PUT', {
+                id: matter.id,
+                title: matter.title,
+                address: matter.address,
+                note: matter.note,
+                assignedTo: matter.assignedTo
+            });
         } catch (e) {
             console.error("Failed to update other matter", e);
         }

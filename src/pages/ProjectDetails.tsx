@@ -120,10 +120,12 @@ export function ProjectDetails() {
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const openCompletionModal = (taskId: string) => {
+    const [expandedImage, setExpandedImage] = useState<string | null>(null);
+
+    const openCompletionModal = (taskId: string, currentNote?: string, currentImage?: string) => {
         setCompletionTaskId(taskId);
-        setCompletionNote('');
-        setCompletionImage('');
+        setCompletionNote(currentNote || '');
+        setCompletionImage(currentImage || '');
         setIsCompleteModalOpen(true);
     };
 
@@ -161,6 +163,36 @@ export function ProjectDetails() {
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
+            {/* Image Preview Modal */}
+            {expandedImage && (
+                <div
+                    className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200"
+                    onClick={() => setExpandedImage(null)}
+                >
+                    <button
+                        onClick={() => setExpandedImage(null)}
+                        className="absolute top-4 right-4 text-white/70 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors"
+                    >
+                        <X className="w-8 h-8" />
+                    </button>
+
+                    <div className="relative max-w-5xl w-full max-h-screen flex flex-col items-center gap-4" onClick={e => e.stopPropagation()}>
+                        <img
+                            src={expandedImage}
+                            alt="Full size"
+                            className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl"
+                        />
+                        <a
+                            href={expandedImage}
+                            download={`report-image-${new Date().getTime()}.jpg`}
+                            className="flex items-center gap-2 px-6 py-3 bg-white text-navy-900 rounded-full font-bold hover:bg-emerald-50 transition-colors shadow-lg"
+                        >
+                            <span className="text-xl">⬇</span> Download Image
+                        </a>
+                    </div>
+                </div>
+            )}
+
             {/* ... Header and other parts ... */}
             <div className="flex items-center justify-between">
                 <button onClick={() => navigate('/projects')} className="flex items-center gap-2 text-text-muted hover:text-navy-900 transition-colors">
@@ -453,15 +485,24 @@ export function ProjectDetails() {
                                             )}
 
                                             {task.status === 'completed' && task.completionNote && (
-                                                <div className="mt-4 bg-emerald-50 border border-emerald-100 p-3 rounded-lg">
-                                                    <div className="flex items-center gap-2 text-emerald-700 text-sm font-medium mb-1">
-                                                        <FileText className="w-4 h-4" />
-                                                        Completion Report
+                                                <div className="mt-4 bg-emerald-50 border border-emerald-100 p-3 rounded-lg relative group/report">
+                                                    <div className="flex justify-between items-start">
+                                                        <div className="flex items-center gap-2 text-emerald-700 text-sm font-medium mb-1">
+                                                            <FileText className="w-4 h-4" />
+                                                            Completion Report
+                                                        </div>
+                                                        <button
+                                                            onClick={() => openCompletionModal(task.id, task.completionNote, task.completionImage)}
+                                                            className="text-emerald-600 hover:text-emerald-800 opacity-0 group-hover/report:opacity-100 transition-opacity bg-white/50 hover:bg-white rounded-lg p-1.5"
+                                                            title="Edit Report"
+                                                        >
+                                                            <Edit2 className="w-3.5 h-3.5" />
+                                                        </button>
                                                     </div>
                                                     <p className="text-sm text-navy-700">{task.completionNote}</p>
                                                     {task.completionImage && (
-                                                        <div className="mt-2 relative group/img w-fit">
-                                                            <img src={task.completionImage} alt="Proof" className="w-24 h-16 object-cover rounded-lg border border-slate-200" />
+                                                        <div className="mt-2 relative group/img w-fit cursor-pointer" onClick={() => setExpandedImage(task.completionImage!)}>
+                                                            <img src={task.completionImage} alt="Proof" className="w-24 h-16 object-cover rounded-lg border border-slate-200 hover:ring-2 hover:ring-emerald-400 transition-all" />
                                                             <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover/img:opacity-100 transition-opacity rounded-lg">
                                                                 <Camera className="w-4 h-4 text-white" />
                                                             </div>

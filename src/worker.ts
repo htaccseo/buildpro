@@ -373,6 +373,23 @@ export default {
                     }
                 }
 
+                // POST /api/user/update
+                if (url.pathname === '/api/user/update' && request.method === 'POST') {
+                    try {
+                        const user = await request.json();
+                        await env.DB.prepare(`
+                            UPDATE users 
+                            SET name = ?, email = ?, phone = ?, company = ?, role = ?
+                            WHERE id = ?
+                        `).bind(
+                            user.name, user.email, user.phone || null, user.company || null, user.role, user.id
+                        ).run();
+                        return withCors(Response.json({ success: true }));
+                    } catch (e: any) {
+                        return withCors(Response.json({ message: `User Update Error: ${e.message}` }, { status: 500 }));
+                    }
+                }
+
                 // 404 for unknown API
                 return new Response('API Endpoint Not Found', { status: 404 });
             }

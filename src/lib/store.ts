@@ -233,11 +233,17 @@ export const useStore = create<AppState>((set, get) => ({
         }));
     },
 
-    updateUser: (updatedUser) => {
+    updateUser: async (updatedUser) => {
         set((state) => ({
             currentUser: updatedUser,
             users: state.users.map(u => u.id === updatedUser.id ? updatedUser : u)
         }));
+
+        try {
+            await apiRequest('/user/update', 'POST', updatedUser);
+        } catch (e) {
+            console.error("Failed to update user", e);
+        }
     },
 
     logout: () => set({ currentUser: null, currentOrganization: null, projects: [], users: [] }),

@@ -144,14 +144,17 @@ export const useStore = create<AppState>((set, get) => ({
                                 assignedTo: t.assigned_to,
                                 completedAt: t.completed_at,
                                 completionNote: t.completion_note,
-                                completionImage: t.completion_image
+                                completionImage: t.completion_image,
+                                createdBy: t.created_by,
+                                completedBy: t.completed_by
                             })),
                         updates: (data.projectUpdates || [])
                             .filter((u: any) => u.project_id === p.id)
                             .map((u: any) => ({
                                 ...u,
                                 projectId: u.project_id,
-                                authorName: u.author_name
+                                authorName: u.author_name,
+                                userId: u.user_id
                             }))
                     })),
 

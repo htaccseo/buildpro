@@ -160,11 +160,12 @@ export function Dashboard() {
                             ) : (
                                 <div className="space-y-4">
                                     {/* Manual Reminders */}
+                                    {/* Manual Reminders */}
                                     {dueReminders.map(reminder => (
                                         <div
                                             key={reminder.id}
                                             className={cn(
-                                                "p-4 rounded-xl border flex gap-4 hover:shadow-sm transition-all group cursor-pointer relative pr-12",
+                                                "p-4 rounded-xl border flex gap-4 hover:shadow-sm transition-all group cursor-pointer items-start",
                                                 reminder.completed
                                                     ? "bg-slate-50 border-slate-100 opacity-75"
                                                     : "bg-indigo-50 border-indigo-100"
@@ -174,12 +175,23 @@ export function Dashboard() {
                                                 setIsReminderModalOpen(true);
                                             }}
                                         >
-                                            <div
+                                            {/* Completion Checkbox (Left Side) */}
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    toggleReminder(reminder.id);
+                                                }}
                                                 className={cn(
-                                                    "w-1 h-12 rounded-full transition-colors shrink-0",
-                                                    reminder.completed ? "bg-slate-300" : "bg-indigo-500"
+                                                    "w-6 h-6 rounded-full flex items-center justify-center transition-all border-2 shrink-0 mt-0.5",
+                                                    reminder.completed
+                                                        ? "bg-emerald-500 border-emerald-500 text-white"
+                                                        : "bg-white border-slate-300 text-transparent hover:border-emerald-500 hover:text-emerald-500/50"
                                                 )}
-                                            />
+                                                title={reminder.completed ? "Mark as incomplete" : "Mark as done"}
+                                            >
+                                                <Check className="w-4 h-4" />
+                                            </button>
+
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex justify-between items-start">
                                                     <h4 className={cn("font-medium text-navy-900 truncate", reminder.completed && "line-through text-text-muted")} title={reminder.title}>
@@ -205,23 +217,6 @@ export function Dashboard() {
                                                     <p className="text-sm text-text-muted">Personal Reminder • {formatDate(reminder.date, 'MMM d')}</p>
                                                 </div>
                                             </div>
-
-                                            {/* Completion Checkbox/Button */}
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    toggleReminder(reminder.id);
-                                                }}
-                                                className={cn(
-                                                    "absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center transition-all border-2",
-                                                    reminder.completed
-                                                        ? "bg-emerald-500 border-emerald-500 text-white"
-                                                        : "bg-white border-slate-200 text-transparent hover:border-emerald-500 hover:text-emerald-500/50"
-                                                )}
-                                                title={reminder.completed ? "Mark as incomplete" : "Mark as done"}
-                                            >
-                                                <Check className="w-5 h-5" />
-                                            </button>
                                         </div>
                                     ))}
 

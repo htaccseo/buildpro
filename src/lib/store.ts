@@ -180,13 +180,15 @@ export const useStore = create<AppState>((set, get) => ({
                         createdBy: i.created_by
                     })),
 
-                    notifications: (data.notifications || []).map((n: any) => ({
-                        ...n,
-                        organizationId: n.organization_id,
-                        userId: n.user_id,
-                        read: !!n.read,
-                        data: JSON.parse(n.data || '{}')
-                    })),
+                    notifications: (data.notifications || [])
+                        .filter((n: any) => n.user_id === data.user.id) // Only show my notifications
+                        .map((n: any) => ({
+                            ...n,
+                            organizationId: n.organization_id,
+                            userId: n.user_id,
+                            read: !!n.read,
+                            data: JSON.parse(n.data || '{}')
+                        })),
 
                     reminders: (data.reminders || []).map((r: any) => ({
                         ...r,
@@ -476,23 +478,34 @@ export const useStore = create<AppState>((set, get) => ({
             const completedBy = get().currentUser?.id;
             // Optimistic Update
             set((state) => {
-                const newNotification: Notification = {
-                    id: Math.random().toString(36).substr(2, 9),
-                    organizationId: currentOrgId,
-                    userId: get().currentUser?.id || 'unknown',
-                    message: `Task "${task.title}" completed in ${project.name}`,
-                    read: false,
-                    date: new Date().toISOString(),
-                    type: 'task_completed',
-                    data: { taskId, note, image }
-                };
+                // Only show notification if I am the creator (assigner) completing my own task?
+                // No, usually if I complete a task, the notification goes to the assigner.
+                // If I am the creator, and I complete it, I don't need a notification.
+                // If SOMEONE ELSE assigned it to me, THEY should get a notification (backend handles this).
+                // This optimistic update puts a notification in MY list.
+                // So I should only add it here if *I* am the target of the notification.
+                // But if I just completed it, I know I completed it.
+                // So actually, we should probably REMOVE the optimistic notification logic entirely for the completer,
+                // unless we want to confirm "Action Recorded".
+                // But the requirement is "notify to member who gave a task".
+                // The member who gave the task is NOT the one clicking "Complete" (usually).
+                // If I am the one clicking complete, I am the assignee. The assigner is someone else.
+                // So I (Assignee) should NOT seeing a notification.
+                // Therefore, we should REMOVE the optimistic notification creation here, 
+                // because the notification is for the *other* person.
+                // However, if I assigned it to myself, maybe? But even then, I just clicked it.
+
+                // Let's remove the optimistic notification creation to avoid confusion.
+                // The backend will create it, and the Assigner will see it on next refresh/poll.
+                // Or if we want real-time, we'd need websockets/polling.
+                // For now, removing it from here solves the "Assignee sees notification" issue.
 
                 return {
                     projects: state.projects.map((p) => ({
                         ...p,
                         tasks: (p.tasks || []).map((t) => t.id === taskId ? { ...t, status: 'completed' as const, completedAt: new Date().toISOString(), completionNote: note, completionImage: image, completedBy } : t)
                     })),
-                    notifications: [newNotification, ...state.notifications]
+                    // notifications: [newNotification, ...state.notifications] // Removed
                 };
             });
 

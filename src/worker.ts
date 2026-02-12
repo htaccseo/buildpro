@@ -292,13 +292,36 @@ export default {
                 if (url.pathname === '/api/task/complete' && request.method === 'POST') {
                     try {
                         const data = await request.json();
+
+                        // Fetch task to get created_by and project name
+                        const task: any = await env.DB.prepare('SELECT * FROM tasks WHERE id = ?').bind(data.taskId).first();
+                        const project: any = await env.DB.prepare('SELECT * FROM projects WHERE id = ?').bind(task.project_id).first();
+                        const completedByUser: any = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(data.completedBy).first();
+
+                        const now = new Date().toISOString();
+
                         await env.DB.prepare(`
                             UPDATE tasks 
                             SET status = 'completed', completed_at = ?, completion_note = ?, completion_image = ?, completed_by = ?
                             WHERE id = ?
                         `).bind(
-                            new Date().toISOString(), data.note || null, data.image || null, data.completedBy || null, data.taskId
+                            now, data.note || null, data.image || null, data.completedBy || null, data.taskId
                         ).run();
+
+                        // Create Notification for the Task Creator (if they didn't complete it themselves)
+                        // If I complete my own task, I don't need a notification.
+                        if (task && task.created_by && task.created_by !== data.completedBy) {
+                            const notificationId = crypto.randomUUID();
+                            const message = `Task "${task.title}" in ${project ? project.name : 'Project'} completed by ${completedByUser ? completedByUser.name : 'Assignee'}`;
+
+                            await env.DB.prepare(`
+                                INSERT INTO notifications (id, organization_id, user_id, message, read, date, type, data)
+                                VALUES (?, ?, ?, ?, 0, ?, 'task_completed', ?)
+                             `).bind(
+                                notificationId, task.organization_id || project.organization_id, task.created_by, message, now, JSON.stringify({ taskId: data.taskId })
+                            ).run();
+                        }
+
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {
                         return withCors(Response.json({ message: `Task Complete Error: ${e.message}` }, { status: 500 }));

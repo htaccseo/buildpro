@@ -583,9 +583,16 @@ export const useStore = create<AppState>((set, get) => ({
     // Reminder Actions
 
 
-    updateReminder: (updatedReminder) => set((state) => ({
-        reminders: state.reminders.map(r => r.id === updatedReminder.id ? updatedReminder : r).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-    })),
+    updateReminder: async (updatedReminder) => {
+        set((state) => ({
+            reminders: state.reminders.map(r => r.id === updatedReminder.id ? updatedReminder : r).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+        }));
+        try {
+            await apiRequest('/reminder/update', 'POST', updatedReminder);
+        } catch (e) {
+            console.error("Failed to update reminder", e);
+        }
+    },
 
     deleteReminder: async (id) => {
         set((state) => ({

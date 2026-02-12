@@ -525,14 +525,18 @@ export default {
                 if (url.pathname === '/api/reminder/update' && request.method === 'POST') {
                     try {
                         const reminder = await request.json();
-                        await env.DB.prepare(`
+                        console.log('Updating Reminder:', JSON.stringify(reminder, null, 2));
+
+                        const result = await env.DB.prepare(`
                             UPDATE reminders 
                             SET title = ?, description = ?, date = ?, assigned_to = ?, completed = ?, completed_by = ?
                             WHERE id = ?
                         `).bind(
                             reminder.title, reminder.description || null, reminder.date || null, reminder.assignedTo || null, reminder.completed ? 1 : 0, reminder.completedBy || null, reminder.id
                         ).run();
-                        return withCors(Response.json({ success: true }));
+
+                        console.log('Reminder Update Result:', JSON.stringify(result));
+                        return withCors(Response.json({ success: true, result }));
                     } catch (e: any) {
                         return withCors(Response.json({ message: `Reminder Update Error: ${e.message}` }, { status: 500 }));
                     }

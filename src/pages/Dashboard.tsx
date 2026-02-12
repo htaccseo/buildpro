@@ -32,7 +32,7 @@ export function Dashboard() {
     // Use Store actions (actions are safe to use from store directly as they usually just dispatch)
     // Actually, our store actions need currentOrgId from store state, which is fine.
     // The previous code destructured methods from useStore. Let's keep doing that for actions.
-    const { toggleReminder, addOtherMatter, updateOtherMatter, deleteOtherMatter, deleteMeeting, updateMeeting, currentUser } = useStore();
+    const { addOtherMatter, updateOtherMatter, deleteOtherMatter, deleteMeeting, updateMeeting, currentUser } = useStore();
 
     const allTasks = projects.flatMap(p => p.tasks);
 
@@ -165,7 +165,7 @@ export function Dashboard() {
                                         <div
                                             key={reminder.id}
                                             className={cn(
-                                                "p-4 rounded-xl border flex gap-4 hover:shadow-sm transition-all group cursor-pointer items-start",
+                                                "p-4 rounded-xl border flex gap-4 hover:shadow-sm transition-all group cursor-pointer",
                                                 reminder.completed
                                                     ? "bg-slate-50 border-slate-100 opacity-75"
                                                     : "bg-indigo-50 border-indigo-100"
@@ -175,23 +175,12 @@ export function Dashboard() {
                                                 setIsReminderModalOpen(true);
                                             }}
                                         >
-                                            {/* Completion Checkbox (Left Side) */}
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    toggleReminder(reminder.id);
-                                                }}
+                                            <div
                                                 className={cn(
-                                                    "w-6 h-6 rounded-full flex items-center justify-center transition-all border-2 shrink-0 mt-0.5",
-                                                    reminder.completed
-                                                        ? "bg-emerald-500 border-emerald-500 text-white"
-                                                        : "bg-white border-slate-300 text-transparent hover:border-emerald-500 hover:text-emerald-500/50"
+                                                    "w-1 h-12 rounded-full transition-colors shrink-0",
+                                                    reminder.completed ? "bg-slate-300" : "bg-indigo-500"
                                                 )}
-                                                title={reminder.completed ? "Mark as incomplete" : "Mark as done"}
-                                            >
-                                                <Check className="w-4 h-4" />
-                                            </button>
-
+                                            />
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex justify-between items-start">
                                                     <h4 className={cn("font-medium text-navy-900 truncate", reminder.completed && "line-through text-text-muted")} title={reminder.title}>
@@ -199,10 +188,10 @@ export function Dashboard() {
                                                     </h4>
                                                     <div className="flex items-center gap-1">
                                                         {reminder.assignedTo && (
-                                                            <UserAvatar userId={reminder.assignedTo} className="h-5 w-5 text-[8px] ring-1 ring-white" />
+                                                            <UserAvatar userId={reminder.assignedTo} className="h-8 w-8 text-xs ring-2 ring-white" />
                                                         )}
                                                         {reminder.completed && reminder.completedBy && (
-                                                            <UserAvatar userId={reminder.completedBy} className="h-5 w-5 text-[8px] ring-1 ring-white opacity-50" />
+                                                            <UserAvatar userId={reminder.completedBy} className="h-8 w-8 text-xs ring-2 ring-white opacity-50" />
                                                         )}
                                                     </div>
                                                 </div>

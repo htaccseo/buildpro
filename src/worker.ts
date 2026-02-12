@@ -501,15 +501,23 @@ export default {
                 if (url.pathname === '/api/reminder' && request.method === 'POST') {
                     try {
                         const reminder = await request.json();
-                        await env.DB.prepare(`
+                        console.log('Creating Reminder:', JSON.stringify(reminder, null, 2));
+
+                        const query = `
                             INSERT INTO reminders (id, organization_id, title, description, date, completed, created_by, assigned_to)
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                        `).bind(
+                        `;
+
+                        await env.DB.prepare(query).bind(
                             reminder.id, reminder.organizationId, reminder.title, reminder.description || null, reminder.date || null, reminder.completed ? 1 : 0, reminder.createdBy || null, reminder.assignedTo || null
                         ).run();
+
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {
-                        return withCors(Response.json({ message: `Reminder Error: ${e.message}` }, { status: 500 }));
+                        console.error('Reminder Creation Failed:', e);
+                        console.error('Error Message:', e.message);
+                        console.error('Stack:', e.stack);
+                        return withCors(Response.json({ message: `Reminder Error: ${e.message}`, stack: e.stack }, { status: 500 }));
                     }
                 }
 

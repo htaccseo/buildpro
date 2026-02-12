@@ -45,7 +45,8 @@ export function ReminderModal({ isOpen, onClose, initialDate, existingReminder }
                 description,
                 date,
                 assignedTo,
-                completed: existingReminder.completed
+                completed,
+                completedBy: completed ? (existingReminder.completedBy || currentUser?.id) : undefined
             });
         } else {
             addReminder({
@@ -135,7 +136,14 @@ export function ReminderModal({ isOpen, onClose, initialDate, existingReminder }
                     </div>
 
                     {existingReminder && (
-                        <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100 cursor-pointer" onClick={() => setCompleted(!completed)}>
+                        <div
+                            className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100 cursor-pointer"
+                            onClick={() => {
+                                const newCompleted = !completed;
+                                setCompleted(newCompleted);
+                                // We don't have direct access to setCompletedBy here, but we pass it effectively on submit
+                            }}
+                        >
                             <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${completed ? 'bg-emerald-500 border-emerald-500' : 'border-slate-300'}`}>
                                 {completed && <div className="w-2.5 h-2.5 bg-white rounded-full" />}
                             </div>

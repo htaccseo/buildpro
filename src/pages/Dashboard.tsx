@@ -400,7 +400,7 @@ export function Dashboard() {
                     </Card>
 
                     {/* Other Matters Widget */}
-                    <h2 className="text-xl font-bold text-navy-900 pt-2">Other Matters</h2>
+                    <h2 className="text-xl font-bold text-navy-900 pt-2">General Notes</h2>
                     <Card className="p-5 border-none shadow-sm space-y-4">
                         <div className="flex justify-between items-center pb-2 border-b border-slate-100">
                             <span className="text-sm font-medium text-text-muted">Notes</span>

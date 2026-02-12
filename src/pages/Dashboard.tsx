@@ -48,7 +48,14 @@ export function Dashboard() {
     // Show reminders if they are not completed OR if they are completed but were due today/recently (so they don't disappear immediately)
     // Actually, user wants them to NOT disappear. Let's show all due/past reminders, sorted by status (pending first).
     const dueReminders = reminders
-        .filter(r => new Date(r.date) <= new Date())
+        .filter(r => {
+            // Fix: Compare dates string-wise to avoid timezone issues.
+            // If reminder date is YYYY-MM-DD, new Date(r.date) is UTC midnight.
+            // new Date() is local time.
+            // Safe comparison: r.date <= new Date().toISOString().split('T')[0]
+            const todayStr = new Date().toISOString().split('T')[0];
+            return r.date <= todayStr || r.completed; // Show past/today due OR completed
+        })
         .sort((a, b) => {
             if (a.completed === b.completed) return 0;
             return a.completed ? 1 : -1; // Pending first
@@ -157,7 +164,7 @@ export function Dashboard() {
                                         <div
                                             key={reminder.id}
                                             className={cn(
-                                                "p-4 rounded-xl border flex gap-4 hover:shadow-sm transition-all group cursor-pointer",
+                                                "p-4 rounded-xl border flex gap-4 hover:shadow-sm transition-all group cursor-pointer relative pr-12",
                                                 reminder.completed
                                                     ? "bg-slate-50 border-slate-100 opacity-75"
                                                     : "bg-indigo-50 border-indigo-100"
@@ -170,17 +177,12 @@ export function Dashboard() {
                                             <div
                                                 className={cn(
                                                     "w-1 h-12 rounded-full transition-colors shrink-0",
-                                                    reminder.completed ? "bg-slate-300" : "bg-indigo-500 hover:bg-indigo-600"
+                                                    reminder.completed ? "bg-slate-300" : "bg-indigo-500"
                                                 )}
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    toggleReminder(reminder.id);
-                                                }}
-                                                title={reminder.completed ? "Mark as incomplete" : "Mark as done"}
                                             />
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex justify-between items-start">
-                                                    <h4 className={cn("font-medium text-navy-900 truncate cursor-pointer", reminder.completed && "line-through text-text-muted")} title={reminder.title}>
+                                                    <h4 className={cn("font-medium text-navy-900 truncate", reminder.completed && "line-through text-text-muted")} title={reminder.title}>
                                                         {reminder.title}
                                                     </h4>
                                                     <div className="flex items-center gap-1">
@@ -194,7 +196,7 @@ export function Dashboard() {
                                                 </div>
                                                 {reminder.description && (
                                                     <div className="group/desc relative">
-                                                        <p className={cn("text-sm mt-0.5 line-clamp-2 cursor-help", reminder.completed ? "text-text-muted" : "text-navy-600")} title={reminder.description}>
+                                                        <p className={cn("text-sm mt-0.5 line-clamp-2", reminder.completed ? "text-text-muted" : "text-navy-600")} title={reminder.description}>
                                                             {reminder.description}
                                                         </p>
                                                     </div>
@@ -203,6 +205,23 @@ export function Dashboard() {
                                                     <p className="text-sm text-text-muted">Personal Reminder • {formatDate(reminder.date, 'MMM d')}</p>
                                                 </div>
                                             </div>
+
+                                            {/* Completion Checkbox/Button */}
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    toggleReminder(reminder.id);
+                                                }}
+                                                className={cn(
+                                                    "absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center transition-all border-2",
+                                                    reminder.completed
+                                                        ? "bg-emerald-500 border-emerald-500 text-white"
+                                                        : "bg-white border-slate-200 text-transparent hover:border-emerald-500 hover:text-emerald-500/50"
+                                                )}
+                                                title={reminder.completed ? "Mark as incomplete" : "Mark as done"}
+                                            >
+                                                <Check className="w-5 h-5" />
+                                            </button>
                                         </div>
                                     ))}
 

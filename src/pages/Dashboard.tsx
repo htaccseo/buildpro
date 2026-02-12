@@ -49,11 +49,9 @@ export function Dashboard() {
     // Actually, user wants them to NOT disappear. Let's show all due/past reminders, sorted by status (pending first).
     const dueReminders = reminders
         .filter(r => {
-            // Fix: Compare dates string-wise to avoid timezone issues.
-            // If reminder date is YYYY-MM-DD, new Date(r.date) is UTC midnight.
-            // new Date() is local time.
-            // Safe comparison: r.date <= new Date().toISOString().split('T')[0]
-            const todayStr = new Date().toISOString().split('T')[0];
+            // Fix: Compare dates string-wise using local time to avoid timezone issues.
+            // new Date().toLocaleDateString('en-CA') returns YYYY-MM-DD in local time
+            const todayStr = new Date().toLocaleDateString('en-CA');
             return r.date <= todayStr || r.completed; // Show past/today due OR completed
         })
         .sort((a, b) => {
@@ -189,9 +187,6 @@ export function Dashboard() {
                                                     <div className="flex items-center gap-1">
                                                         {reminder.assignedTo && (
                                                             <UserAvatar userId={reminder.assignedTo} className="h-8 w-8 text-xs ring-2 ring-white" />
-                                                        )}
-                                                        {reminder.completed && reminder.completedBy && (
-                                                            <UserAvatar userId={reminder.completedBy} className="h-8 w-8 text-xs ring-2 ring-white opacity-50" />
                                                         )}
                                                     </div>
                                                 </div>

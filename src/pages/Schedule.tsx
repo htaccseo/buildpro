@@ -81,121 +81,121 @@ export function Schedule() {
                 </div>
             </div>
 
-            <Card className="p-6 overflow-x-auto border-none shadow-sm">
-                <div className="min-w-[800px]">
-                    <div className="grid grid-cols-7 gap-4 mb-6">
-                        {weekDays.map((day, i) => (
-                            <div key={i} className={`text-center p-3 rounded-xl border ${isSameDay(day, new Date()) ? 'bg-emerald-50 border-emerald-200' : 'bg-slate-50 border-transparent'}`}>
-                                <div className={`text-xs font-semibold uppercase mb-1 ${isSameDay(day, new Date()) ? 'text-emerald-600' : 'text-text-muted'}`}>
-                                    {format(day, 'EEE')}
+            <Card className="p-4 sm:p-6 overflow-hidden border-none shadow-sm">
+                <div className="grid grid-cols-1 sm:grid-cols-7 gap-6 sm:gap-4">
+                    {weekDays.map((day, i) => {
+                        const dayTasks = allTasks.filter(t => isSameDay(new Date(t.requiredDate), day));
+                        const dayMeetings = meetings.filter(m => isSameDay(new Date(m.date), day));
+                        const dayReminders = reminders
+                            .filter(r => isSameDay(new Date(r.date), day))
+                            .sort((a, b) => {
+                                if (a.completed === b.completed) return 0;
+                                return a.completed ? 1 : -1;
+                            });
+                        const isToday = isSameDay(day, new Date());
+
+                        return (
+                            <div key={i} className="flex flex-col gap-3 min-w-0">
+                                {/* Header */}
+                                <div className={cn(
+                                    "p-3 rounded-xl border flex sm:block items-center justify-between sm:text-center gap-4",
+                                    isToday ? "bg-emerald-50 border-emerald-200" : "bg-slate-50 border-transparent"
+                                )}>
+                                    <div className={cn("text-xs font-semibold uppercase", isToday ? "text-emerald-600" : "text-text-muted")}>
+                                        {format(day, 'EEE')}
+                                    </div>
+                                    <div className={cn("text-xl font-bold", isToday ? "text-emerald-700" : "text-navy-900")}>
+                                        {format(day, 'd')}
+                                    </div>
                                 </div>
-                                <div className={`text-xl font-bold ${isSameDay(day, new Date()) ? 'text-emerald-700' : 'text-navy-900'}`}>
-                                    {format(day, 'd')}
+
+                                {/* Content */}
+                                <div className="space-y-2 flex-1">
+                                    {/* Meetings */}
+                                    {dayMeetings.map(meeting => (
+                                        <div
+                                            key={meeting.id}
+                                            className="bg-emerald-50 border border-emerald-100 p-3 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-default group"
+                                        >
+                                            <div className="flex justify-between items-start mb-1">
+                                                <div className="flex items-center gap-2">
+                                                    <Clock className="w-3 h-3 text-emerald-600" />
+                                                    <span className="text-xs font-bold text-emerald-700">{meeting.time}</span>
+                                                </div>
+                                                <UserAvatar userId={meeting.createdBy} className="h-4 w-4 text-[8px]" />
+                                            </div>
+                                            <h4 className="font-semibold text-sm text-navy-900 line-clamp-2">{meeting.title}</h4>
+                                            {meeting.address && (
+                                                <div className="flex items-center gap-1 mt-1 text-xs text-text-muted truncate">
+                                                    <MapPin className="w-3 h-3" />
+                                                    {meeting.address}
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+
+                                    {/* Reminders */}
+                                    {dayReminders.map(reminder => (
+                                        <div
+                                            key={reminder.id}
+                                            className={cn(
+                                                "p-3 rounded-xl border shadow-sm hover:shadow-md transition-shadow cursor-pointer group",
+                                                reminder.completed
+                                                    ? "bg-slate-50 border-slate-100 opacity-75"
+                                                    : "bg-indigo-50 border-indigo-100"
+                                            )}
+                                            onClick={() => {
+                                                setSelectedReminder(reminder);
+                                                setIsReminderModalOpen(true);
+                                            }}
+                                        >
+                                            <div className="flex justify-between items-start mb-1">
+                                                <div className="flex items-center gap-2">
+                                                    <div
+                                                        className={cn("w-2 h-2 rounded-full", reminder.completed ? "bg-slate-300" : "bg-indigo-500")}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            toggleReminder(reminder.id);
+                                                        }}
+                                                        title={reminder.completed ? "Mark as incomplete" : "Mark as done"}
+                                                    />
+                                                    <span className={cn("text-xs font-bold", reminder.completed ? "text-text-muted" : "text-indigo-700")}>
+                                                        Reminder
+                                                    </span>
+                                                </div>
+                                                <UserAvatar userId={reminder.createdBy} className="h-4 w-4 text-[8px]" />
+                                            </div>
+                                            <h4 className={cn("font-semibold text-sm line-clamp-2", reminder.completed ? "text-text-muted line-through" : "text-navy-900")}>
+                                                {reminder.title}
+                                            </h4>
+                                            {reminder.description && (
+                                                <p className={cn("text-xs mt-1 line-clamp-1", reminder.completed ? "text-text-muted" : "text-navy-600")}>
+                                                    {reminder.description}
+                                                </p>
+                                            )}
+                                        </div>
+                                    ))}
+
+                                    {/* Tasks */}
+                                    {dayTasks.map(task => (
+                                        <div
+                                            key={task.id}
+                                            onClick={() => navigate(`/projects/${task.projectId}`)}
+                                            className="bg-white border border-slate-100 p-3 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer group"
+                                        >
+                                            <div className={`w-full h-1.5 rounded-full mb-2 ${task.projectColor}`} />
+                                            <h4 className="font-semibold text-sm text-navy-900 line-clamp-2 mb-1 group-hover:text-emerald-600 transition-colors">{task.title}</h4>
+                                            <p className="text-xs text-text-muted line-clamp-1">{task.projectName}</p>
+                                        </div>
+                                    ))}
+
+                                    {dayTasks.length === 0 && dayMeetings.length === 0 && dayReminders.length === 0 && (
+                                        <div className="h-24 sm:h-full rounded-xl border-2 border-dashed border-slate-50 min-h-[100px]" />
+                                    )}
                                 </div>
                             </div>
-                        ))}
-                    </div>
-
-                    <div className="space-y-3">
-                        {/* Time slots or just list tasks per day */}
-                        <div className="grid grid-cols-7 gap-4 min-h-[400px]">
-                            {weekDays.map((day, i) => {
-                                const dayTasks = allTasks.filter(t => isSameDay(new Date(t.requiredDate), day));
-                                const dayMeetings = meetings.filter(m => isSameDay(new Date(m.date), day));
-                                const dayReminders = reminders
-                                    .filter(r => isSameDay(new Date(r.date), day))
-                                    .sort((a, b) => {
-                                        if (a.completed === b.completed) return 0;
-                                        return a.completed ? 1 : -1;
-                                    });
-
-                                return (
-                                    <div key={i} className="space-y-2">
-                                        {/* Meetings */}
-                                        {dayMeetings.map(meeting => (
-                                            <div
-                                                key={meeting.id}
-                                                className="bg-emerald-50 border border-emerald-100 p-3 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-default group"
-                                            >
-                                                <div className="flex justify-between items-start mb-1">
-                                                    <div className="flex items-center gap-2">
-                                                        <Clock className="w-3 h-3 text-emerald-600" />
-                                                        <span className="text-xs font-bold text-emerald-700">{meeting.time}</span>
-                                                    </div>
-                                                    <UserAvatar userId={meeting.createdBy} className="h-4 w-4 text-[8px]" />
-                                                </div>
-                                                <h4 className="font-semibold text-sm text-navy-900 line-clamp-2">{meeting.title}</h4>
-                                                {meeting.address && (
-                                                    <div className="flex items-center gap-1 mt-1 text-xs text-text-muted truncate">
-                                                        <MapPin className="w-3 h-3" />
-                                                        {meeting.address}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ))}
-
-                                        {/* Reminders */}
-                                        {dayReminders.map(reminder => (
-                                            <div
-                                                key={reminder.id}
-                                                className={cn(
-                                                    "p-3 rounded-xl border shadow-sm hover:shadow-md transition-shadow cursor-pointer group",
-                                                    reminder.completed
-                                                        ? "bg-slate-50 border-slate-100 opacity-75"
-                                                        : "bg-indigo-50 border-indigo-100"
-                                                )}
-                                                onClick={() => {
-                                                    setSelectedReminder(reminder);
-                                                    setIsReminderModalOpen(true);
-                                                }}
-                                            >
-                                                <div className="flex justify-between items-start mb-1">
-                                                    <div className="flex items-center gap-2">
-                                                        <div
-                                                            className={cn("w-2 h-2 rounded-full", reminder.completed ? "bg-slate-300" : "bg-indigo-500")}
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                toggleReminder(reminder.id);
-                                                            }}
-                                                            title={reminder.completed ? "Mark as incomplete" : "Mark as done"}
-                                                        />
-                                                        <span className={cn("text-xs font-bold", reminder.completed ? "text-text-muted" : "text-indigo-700")}>
-                                                            Reminder
-                                                        </span>
-                                                    </div>
-                                                    <UserAvatar userId={reminder.createdBy} className="h-4 w-4 text-[8px]" />
-                                                </div>
-                                                <h4 className={cn("font-semibold text-sm line-clamp-2", reminder.completed ? "text-text-muted line-through" : "text-navy-900")}>
-                                                    {reminder.title}
-                                                </h4>
-                                                {reminder.description && (
-                                                    <p className={cn("text-xs mt-1 line-clamp-1", reminder.completed ? "text-text-muted" : "text-navy-600")}>
-                                                        {reminder.description}
-                                                    </p>
-                                                )}
-                                            </div>
-                                        ))}
-
-                                        {/* Tasks */}
-                                        {dayTasks.map(task => (
-                                            <div
-                                                key={task.id}
-                                                onClick={() => navigate(`/projects/${task.projectId}`)}
-                                                className="bg-white border border-slate-100 p-3 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer group"
-                                            >
-                                                <div className={`w-full h-1.5 rounded-full mb-2 ${task.projectColor}`} />
-                                                <h4 className="font-semibold text-sm text-navy-900 line-clamp-2 mb-1 group-hover:text-emerald-600 transition-colors">{task.title}</h4>
-                                                <p className="text-xs text-text-muted line-clamp-1">{task.projectName}</p>
-                                            </div>
-                                        ))}
-                                        {dayTasks.length === 0 && dayMeetings.length === 0 && dayReminders.length === 0 && (
-                                            <div className="h-full rounded-xl border-2 border-dashed border-slate-50 min-h-[100px]" />
-                                        )}
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
+                        );
+                    })}
                 </div>
             </Card>
 

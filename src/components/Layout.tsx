@@ -58,16 +58,47 @@ export function Layout({ children }: { children: React.ReactNode }) {
                         <span className="text-lg font-extrabold text-navy-900">{currentOrganization?.name || 'meits'}</span>
                     </div>
                 </div>
-                <div className="flex items-center gap-2">
-                    <button className="relative p-2 text-navy-600" aria-label="Notifications">
+                <div className="flex items-center gap-2 relative">
+                    <button
+                        onClick={() => setShowNotifications(!showNotifications)}
+                        className="relative p-2 text-navy-600"
+                        aria-label="Notifications"
+                    >
                         <Bell className="w-5 h-5" />
                         {unreadCount > 0 && (
                             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full" />
                         )}
                     </button>
-                    <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
-                        <UserAvatar userId={currentUser?.id || ''} className="w-full h-full text-xs" />
-                    </div>
+
+                    {/* Mobile Notifications Dropdown */}
+                    {showNotifications && (
+                        <div className="absolute top-full right-0 mt-2 w-80 bg-white border border-slate-100 rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 ring-1 ring-black/5 z-50">
+                            <div className="p-4 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
+                                <h3 className="font-semibold text-navy-900">Notifications</h3>
+                                <span className="text-xs font-medium px-2 py-1 bg-emerald-50 text-emerald-600 rounded-full">{unreadCount} new</span>
+                            </div>
+                            <div className="max-h-[60vh] overflow-y-auto">
+                                {notifications.length === 0 ? (
+                                    <div className="p-8 text-center text-slate-400 text-sm">No notifications</div>
+                                ) : (
+                                    notifications.map(n => (
+                                        <div key={n.id} className={cn("p-4 border-b border-slate-50 hover:bg-slate-50 transition-colors", !n.read && "bg-emerald-50/30")}>
+                                            <div className="flex gap-3">
+                                                <div className="mt-1 w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                                                <div>
+                                                    <p className="text-sm text-navy-900 font-medium line-clamp-2">{n.message}</p>
+                                                    <div className="mt-1.5 flex items-center justify-between gap-4">
+                                                        <span className="text-xs text-slate-500">{new Date(n.date).toLocaleDateString()}</span>
+                                                        {n.data?.image && <span className="text-xs text-emerald-600 font-medium flex items-center gap-1">View Image</span>}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 

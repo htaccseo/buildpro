@@ -45,20 +45,20 @@ export function Schedule() {
                     <p className="text-text-muted">Track project timelines and upcoming deadlines.</p>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
                     <button
                         onClick={() => {
                             setSelectedReminder(null);
                             setIsReminderModalOpen(true);
                         }}
-                        className="flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-700 rounded-xl hover:bg-indigo-100 transition-colors font-medium border border-indigo-100"
+                        className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-indigo-50 text-indigo-700 rounded-xl hover:bg-indigo-100 transition-colors font-medium border border-indigo-100 text-sm sm:text-base"
                     >
                         <Plus className="w-4 h-4" />
                         <span>Reminder</span>
                     </button>
                     <button
                         onClick={() => setIsMeetingModalOpen(true)}
-                        className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors font-medium shadow-lg shadow-emerald-500/20"
+                        className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors font-medium shadow-lg shadow-emerald-500/20 text-sm sm:text-base"
                     >
                         <Plus className="w-4 h-4" />
                         <span>Meeting</span>
@@ -66,22 +66,22 @@ export function Schedule() {
 
                     <div className="h-8 w-px bg-slate-200 mx-1 hidden sm:block"></div>
 
-                    <div className="flex items-center gap-2 bg-white p-1 rounded-xl border border-slate-200 shadow-sm">
-                        <button onClick={prevWeek} className="p-2 hover:bg-slate-50 rounded-lg transition-colors text-navy-600">
+                    <div className="flex items-center gap-1 sm:gap-2 bg-white p-1 rounded-xl border border-slate-200 shadow-sm grow sm:grow-0 justify-between sm:justify-start">
+                        <button onClick={prevWeek} className="p-1.5 sm:p-2 hover:bg-slate-50 rounded-lg transition-colors text-navy-600">
                             <ChevronLeft className="w-5 h-5" />
                         </button>
-                        <div className="px-4 font-medium text-navy-900 flex items-center gap-2">
-                            <CalendarIcon className="w-4 h-4 text-emerald-500" />
-                            {format(startDate, 'MMM d')} - {format(addDays(startDate, 6), 'MMM d, yyyy')}
+                        <div className="px-2 sm:px-4 font-medium text-navy-900 flex items-center gap-2 text-xs sm:text-base whitespace-nowrap">
+                            <CalendarIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500 shrink-0" />
+                            <span>{format(startDate, 'MMM d')} - {format(addDays(startDate, 6), 'MMM d, yyyy')}</span>
                         </div>
-                        <button onClick={nextWeek} className="p-2 hover:bg-slate-50 rounded-lg transition-colors text-navy-600">
+                        <button onClick={nextWeek} className="p-1.5 sm:p-2 hover:bg-slate-50 rounded-lg transition-colors text-navy-600">
                             <ChevronRight className="w-5 h-5" />
                         </button>
                     </div>
                 </div>
             </div>
 
-            <Card className="p-4 sm:p-6 overflow-hidden border-none shadow-sm w-full max-w-full">
+            <Card className="p-3 sm:p-6 overflow-hidden border-none shadow-sm w-full max-w-full">
                 <div className="grid grid-cols-1 sm:grid-cols-7 gap-6 sm:gap-4 w-full">
                     {weekDays.map((day, i) => {
                         const dayTasks = allTasks.filter(t => isSameDay(new Date(t.requiredDate), day));

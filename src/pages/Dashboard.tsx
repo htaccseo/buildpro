@@ -377,14 +377,16 @@ export function Dashboard() {
                         {invoices.filter(i => i.status === 'pending' || i.status === 'overdue').slice(0, 3).map(inv => (
                             <div key={inv.id} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
                                 <div className="flex gap-3 items-center">
-                                    <div className="w-1.5 h-10 rounded-full bg-emerald-500" />
+                                    <div className={cn("w-1.5 h-10 rounded-full", inv.type === 'received' ? "bg-rose-500" : "bg-emerald-500")} />
                                     <div>
                                         <p className="font-bold text-navy-900 text-sm truncate w-24">{inv.clientName}</p>
                                         <p className="text-xs text-text-muted">{formatDate(inv.dueDate, 'MMM d')}</p>
                                     </div>
                                 </div>
                                 <div className="text-right">
-                                    <p className="font-bold text-navy-900">${inv.amount.toLocaleString()}</p>
+                                    <p className={cn("font-bold", inv.type === 'received' ? "text-rose-600" : "text-emerald-600")}>
+                                        ${inv.amount.toLocaleString()}
+                                    </p>
                                     <p className={cn("text-xs font-medium", inv.status === 'overdue' ? "text-rose-500" : "text-amber-600")}>
                                         {inv.status === 'overdue' ? 'Overdue' : 'Pending'}
                                     </p>
@@ -397,7 +399,6 @@ export function Dashboard() {
                         )}
                     </Card>
 
-                    {/* Other Matters Widget */}
                     <h2 className="text-xl font-bold text-navy-900 pt-2">General Notes</h2>
                     <Card className="p-5 border-none shadow-sm space-y-4">
                         <div className="flex justify-between items-center pb-2 border-b border-slate-100">

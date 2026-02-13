@@ -365,12 +365,26 @@ export default {
                 if (url.pathname === '/api/invoice' && request.method === 'POST') {
                     try {
                         const invoice = await request.json();
-                        await env.DB.prepare(`
+                        const insertQuery = `
                             INSERT INTO invoices (id, organization_id, type, amount, client_name, due_date, status, date, description, project_id, created_by, attachment_url)
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                        `).bind(
-                            invoice.id, invoice.organizationId, invoice.type, invoice.amount, invoice.clientName || null, invoice.dueDate || null, invoice.status || 'pending', invoice.date || null, invoice.description || null, invoice.projectId || null, invoice.createdBy || null, invoice.attachmentUrl || null
-                        ).run();
+                        `;
+                        try {
+                            await env.DB.prepare(insertQuery).bind(
+                                invoice.id, invoice.organizationId, invoice.type, invoice.amount, invoice.clientName || null, invoice.dueDate || null, invoice.status || 'pending', invoice.date || null, invoice.description || null, invoice.projectId || null, invoice.createdBy || null, invoice.attachmentUrl || null
+                            ).run();
+                        } catch (err: any) {
+                            if (err.message.includes('no such column')) {
+                                console.log('Attempting auto-migration: Adding attachment_url column');
+                                await env.DB.prepare('ALTER TABLE invoices ADD COLUMN attachment_url TEXT').run();
+                                // Retry
+                                await env.DB.prepare(insertQuery).bind(
+                                    invoice.id, invoice.organizationId, invoice.type, invoice.amount, invoice.clientName || null, invoice.dueDate || null, invoice.status || 'pending', invoice.date || null, invoice.description || null, invoice.projectId || null, invoice.createdBy || null, invoice.attachmentUrl || null
+                                ).run();
+                            } else {
+                                throw err;
+                            }
+                        }
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {
                         return withCors(Response.json({ message: `Invoice Error: ${e.message}` }, { status: 500 }));
@@ -381,13 +395,27 @@ export default {
                 if (url.pathname === '/api/invoice/update' && request.method === 'POST') {
                     try {
                         const invoice = await request.json();
-                        await env.DB.prepare(`
+                        const updateQuery = `
                             UPDATE invoices 
                             SET type = ?, amount = ?, client_name = ?, due_date = ?, status = ?, date = ?, description = ?, attachment_url = ?
                             WHERE id = ?
-                        `).bind(
-                            invoice.type, invoice.amount, invoice.clientName || null, invoice.dueDate || null, invoice.status || 'pending', invoice.date || null, invoice.description || null, invoice.attachmentUrl || null, invoice.id
-                        ).run();
+                        `;
+                        try {
+                            await env.DB.prepare(updateQuery).bind(
+                                invoice.type, invoice.amount, invoice.clientName || null, invoice.dueDate || null, invoice.status || 'pending', invoice.date || null, invoice.description || null, invoice.attachmentUrl || null, invoice.id
+                            ).run();
+                        } catch (err: any) {
+                            if (err.message.includes('no such column')) {
+                                console.log('Attempting auto-migration: Adding attachment_url column');
+                                await env.DB.prepare('ALTER TABLE invoices ADD COLUMN attachment_url TEXT').run();
+                                // Retry
+                                await env.DB.prepare(updateQuery).bind(
+                                    invoice.type, invoice.amount, invoice.clientName || null, invoice.dueDate || null, invoice.status || 'pending', invoice.date || null, invoice.description || null, invoice.attachmentUrl || null, invoice.id
+                                ).run();
+                            } else {
+                                throw err;
+                            }
+                        }
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {
                         return withCors(Response.json({ message: `Invoice Update Error: ${e.message}` }, { status: 500 }));

@@ -27,15 +27,26 @@
   /* Slate 500 */
 }
 
+/* Dark Theme Design System */
 .dark {
-  --color-bg-app: var(--color-navy-900);
-  --color-bg-card: var(--color-navy-800);
-  --color-text-main: #f8fafc;
-  /* Slate 50 */
-  --color-text-muted: #94a3b8;
-  /* Slate 400 */
+  /* Main Background: Deep Dark Slate */
+  --color-bg-app: #0f172a;
 
-  /* Re-map specific colors if needed for dark mode */
+  /* Secondary Background: Lighter Slate/Grey (Sidebar & Cards) */
+  --color-bg-card: #1e293b;
+
+  /* Text Colors */
+  --color-text-main: #f1f5f9;
+  /* Off-White */
+  --color-text-muted: #94a3b8;
+  /* Light Grey */
+
+  /* Border Color for Dark Mode */
+  --color-border: #334155;
+
+  /* Re-map specific colors */
+  --color-navy-900: #f1f5f9;
+  /* Map heavy dark text to light in dark mode */
 }
 
 :root {

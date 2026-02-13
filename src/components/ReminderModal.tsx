@@ -72,15 +72,15 @@ export function ReminderModal({ isOpen, onClose, initialDate, existingReminder }
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl animate-in zoom-in-95 duration-200">
-                <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-xl font-bold text-navy-900">
+            <div className="bg-white dark:bg-bg-card rounded-2xl w-full max-w-md p-6 shadow-2xl animate-in zoom-in-95 duration-200 border border-slate-100 dark:border-border">
+                <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-xl font-bold text-navy-900 dark:text-text-main">
                         {existingReminder ? 'Edit Reminder' : 'New Reminder'}
                     </h3>
                     {existingReminder && (
                         <button
                             onClick={handleDelete}
-                            className="text-slate-400 hover:text-rose-500 transition-colors p-2 rounded-lg hover:bg-rose-50"
+                            className="text-slate-400 hover:text-rose-500 transition-colors p-2 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-500/10"
                             title="Delete Reminder"
                         >
                             <Trash2 className="w-5 h-5" />
@@ -90,82 +90,67 @@ export function ReminderModal({ isOpen, onClose, initialDate, existingReminder }
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-navy-900 mb-1.5">Reminder Title</label>
+                        <label className="block text-sm font-medium text-navy-900 dark:text-text-main mb-1">Reminder Title</label>
                         <input
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-indigo-500 outline-none"
+                            className="w-full px-3 py-2 bg-slate-50 dark:bg-navy-900/50 border border-slate-200 dark:border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900 dark:text-text-main placeholder:text-slate-400"
                             placeholder="e.g., Call supplier"
                             required
                         />
                     </div>
+
                     <div>
-                        <label className="block text-sm font-medium text-navy-900 mb-1.5">Description (Optional)</label>
+                        <label className="block text-sm font-medium text-navy-900 dark:text-text-main mb-1">Details (Optional)</label>
                         <textarea
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-indigo-500 outline-none h-24 resize-none"
-                            placeholder="Details..."
+                            className="w-full px-3 py-2 bg-slate-50 dark:bg-navy-900/50 border border-slate-200 dark:border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900 dark:text-text-main placeholder:text-slate-400 min-h-[80px]"
+                            placeholder="Add details..."
                         />
                     </div>
+
                     <div>
-                        <label className="block text-sm font-medium text-navy-900 mb-1.5">Assign To</label>
-                        <select
-                            value={assignedTo}
-                            onChange={(e) => setAssignedTo(e.target.value)}
-                            className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-indigo-500 outline-none"
-                        >
-                            <option value="">Select User...</option>
-                            {users.map(u => (
-                                <option key={u.id} value={u.id}>
-                                    {u.id === currentUser?.id ? `${u.name} (Me)` : u.name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-navy-900 mb-1.5">Due Date</label>
+                        <label className="block text-sm font-medium text-navy-900 dark:text-text-main mb-1">Date</label>
                         <input
                             type="date"
                             value={date}
                             onChange={(e) => setDate(e.target.value)}
-                            className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-indigo-500 outline-none"
+                            className="w-full px-3 py-2 bg-slate-50 dark:bg-navy-900/50 border border-slate-200 dark:border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900 dark:text-text-main [color-scheme:light] dark:[color-scheme:dark]"
                             required
                         />
                     </div>
 
-                    {existingReminder && (
-                        <div
-                            className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100 cursor-pointer"
-                            onClick={() => {
-                                const newCompleted = !completed;
-                                setCompleted(newCompleted);
-                                // We don't have direct access to setCompletedBy here, but we pass it effectively on submit
-                            }}
+                    <div>
+                        <label className="block text-sm font-medium text-navy-900 dark:text-text-main mb-1">Assign To</label>
+                        <select
+                            value={assignedTo}
+                            onChange={(e) => setAssignedTo(e.target.value)}
+                            className="w-full px-3 py-2 bg-slate-50 dark:bg-navy-900/50 border border-slate-200 dark:border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900 dark:text-text-main appearance-none"
                         >
-                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${completed ? 'bg-emerald-500 border-emerald-500' : 'border-slate-300'}`}>
-                                {completed && <div className="w-2.5 h-2.5 bg-white rounded-full" />}
-                            </div>
-                            <span className={`text-sm font-medium ${completed ? 'text-navy-900' : 'text-slate-600'}`}>
-                                {completed ? 'Completed' : 'Mark as Completed'}
-                            </span>
-                        </div>
-                    )}
+                            <option value="">Select User...</option>
+                            {users.map((user) => (
+                                <option key={user.id} value={user.id}>
+                                    {user.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
 
-                    <div className="flex gap-3 pt-2">
+                    <div className="flex gap-3 pt-4 border-t border-slate-100 dark:border-border">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 px-4 py-2 rounded-xl border border-slate-200 text-navy-900 hover:bg-slate-50"
+                            className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-border text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-navy-800 font-medium transition-colors text-sm"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
-                            className="flex-1 px-4 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg shadow-indigo-500/20"
+                            className="flex-1 px-4 py-2.5 rounded-xl bg-navy-900 dark:bg-emerald-600 text-white hover:bg-navy-800 dark:hover:bg-emerald-500 font-medium transition-all shadow-lg shadow-navy-900/20 text-sm"
                         >
-                            {existingReminder ? 'Save Changes' : 'Add Reminder'}
+                            {existingReminder ? 'Save Changes' : 'Create Reminder'}
                         </button>
                     </div>
                 </form>

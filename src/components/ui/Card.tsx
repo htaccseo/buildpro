@@ -9,7 +9,7 @@ export function Card({ children, className, ...props }: CardProps) {
     return (
         <div
             className={cn(
-                "bg-bg-card rounded-2xl border border-slate-100 shadow-sm p-6",
+                "bg-bg-card rounded-2xl border border-slate-100 dark:border-border shadow-sm dark:shadow-none p-6 transition-colors duration-200",
                 className
             )}
             {...props}

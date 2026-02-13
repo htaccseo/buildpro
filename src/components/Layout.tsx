@@ -63,25 +63,28 @@ export function Layout({ children }: { children: React.ReactNode }) {
     return (
         <div className="flex min-h-screen bg-bg-app font-sans transition-colors duration-300">
             {/* Mobile Header */}
-            <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-white dark:bg-navy-800 border-b border-slate-100 dark:border-navy-700 z-30 flex items-center justify-between px-4">
+            <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-white dark:bg-bg-card border-b border-slate-100 dark:border-border z-30 flex items-center justify-between px-4">
                 <div className="flex items-center gap-3">
-                    <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 -ml-2 text-navy-900 dark:text-white" aria-label="Open menu">
+                    <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 -ml-2 text-navy-900 dark:text-text-main" aria-label="Open menu">
                         <Menu className="w-6 h-6" />
                     </button>
                     <div className="flex items-center gap-2">
                         <div className="w-6 h-6 rounded-md bg-emerald-500 flex items-center justify-center text-white">
                             <Hexagon className="w-4 h-4 fill-current" />
                         </div>
-                        <span className="text-lg font-extrabold text-navy-900 dark:text-white">{currentOrganization?.name || 'meits'}</span>
+                        <span className="text-lg font-extrabold text-navy-900 dark:text-text-main">{currentOrganization?.name || 'meits'}</span>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
-                    <button className="relative p-2 text-navy-600 dark:text-slate-300" aria-label="Notifications">
+                    <button className="relative p-2 text-navy-600 dark:text-text-muted" aria-label="Notifications">
                         <Bell className="w-5 h-5" />
                         {unreadCount > 0 && (
                             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full" />
                         )}
                     </button>
+                    <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+                        <UserAvatar userId={currentUser?.id || ''} className="w-full h-full text-xs" />
+                    </div>
                 </div>
             </div>
 
@@ -95,24 +98,24 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
             {/* Sidebar - Responsive */}
             <aside className={cn(
-                "fixed top-0 bottom-0 left-0 w-64 bg-white text-navy-900 z-50 flex flex-col shadow-sm border-r border-slate-100 transition-transform duration-300 md:translate-x-0",
+                "fixed top-0 bottom-0 left-0 w-64 bg-white dark:bg-bg-card text-navy-900 z-50 flex flex-col shadow-sm border-r border-slate-100 dark:border-border transition-transform duration-300 md:translate-x-0",
                 isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
             )}>
-                <div className="p-6 flex items-center justify-between">
+                <div className="p-6 flex items-center justify-between border-b border-slate-100 dark:border-border">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-white">
+                        <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-white shadow-emerald-500/20 shadow-lg">
                             <Hexagon className="w-5 h-5 fill-current" />
                         </div>
-                        <h1 className="text-xl font-extrabold tracking-tight text-navy-900 truncate max-w-[150px]" title={currentOrganization?.name}>
+                        <h1 className="text-xl font-extrabold tracking-tight text-navy-900 dark:text-text-main truncate max-w-[150px]" title={currentOrganization?.name}>
                             {currentOrganization?.name || 'meits'}
                         </h1>
                     </div>
-                    <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden text-slate-400" aria-label="Close menu">
+                    <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden text-slate-400 dark:text-slate-500" aria-label="Close menu">
                         <X className="w-5 h-5" />
                     </button>
                 </div>
 
-                <div className="px-4 mb-6">
+                <div className="px-4 mb-6 mt-4">
                     <div className="relative">
                         <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                         <input
@@ -121,7 +124,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                             value={sidebarSearch}
                             onChange={(e) => setSidebarSearch(e.target.value)}
                             onKeyDown={handleSidebarSearch}
-                            className="w-full bg-slate-50 text-sm text-navy-900 placeholder-slate-400 pl-9 pr-3 py-2.5 rounded-xl border border-transparent focus:border-emerald-500 focus:outline-none transition-all hover:bg-slate-100"
+                            className="w-full bg-slate-50 dark:bg-navy-900/50 text-sm text-navy-900 dark:text-text-main placeholder-slate-400 pl-9 pr-3 py-2.5 rounded-xl border border-transparent dark:border-border focus:border-emerald-500 focus:outline-none transition-all hover:bg-slate-100 dark:hover:bg-navy-900"
                         />
                     </div>
                 </div>
@@ -135,8 +138,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
                             className={cn(
                                 "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group text-sm font-medium",
                                 location.pathname === item.path
-                                    ? "bg-emerald-50 text-emerald-600 font-semibold"
-                                    : "text-slate-500 hover:bg-slate-50 hover:text-navy-900"
+                                    ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold ring-1 ring-emerald-100 dark:ring-emerald-500/20"
+                                    : "text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-navy-800 hover:text-navy-900 dark:hover:text-text-main"
                             )}
                         >
                             <item.icon className={cn("w-5 h-5 transition-transform group-hover:scale-105", location.pathname === item.path && "stroke-[2.5px]")} />
@@ -145,16 +148,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     ))}
                 </nav>
 
-                <div className="p-4 border-t border-slate-100">
-                    <Link to="/settings" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-slate-500 hover:bg-slate-50 hover:text-navy-900 transition-all text-sm font-medium">
+                <div className="p-4 border-t border-slate-100 dark:border-border">
+                    <Link to="/settings" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-navy-800 hover:text-navy-900 dark:hover:text-text-main transition-all text-sm font-medium">
                         <Settings className="w-5 h-5" />
                         <span>Settings</span>
                     </Link>
-                    <div className="mt-4 flex items-center gap-3 px-4 py-2 rounded-xl bg-slate-50">
-                        <UserAvatar userId={currentUser?.id || ''} className="w-8 h-8 text-xs border border-emerald-200" />
+                    <div className="mt-4 flex items-center gap-3 px-4 py-2 rounded-xl bg-slate-50 dark:bg-navy-900/50 border border-transparent dark:border-border">
+                        <UserAvatar userId={currentUser?.id || ''} className="w-8 h-8 text-xs border border-emerald-200 dark:border-emerald-900" />
                         <div className="flex-1 overflow-hidden">
-                            <p className="text-sm font-medium truncate text-navy-900">{currentUser?.name || 'Guest'}</p>
-                            <p className="text-xs text-slate-500 truncate capitalize">{currentUser?.role || 'Visitor'}</p>
+                            <p className="text-sm font-medium truncate text-navy-900 dark:text-text-main">{currentUser?.name || 'Guest'}</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 truncate capitalize">{currentUser?.role || 'Visitor'}</p>
                         </div>
                     </div>
                 </div>

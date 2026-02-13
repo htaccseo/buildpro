@@ -85,114 +85,123 @@ export function NewMeetingModal({ isOpen, onClose, initialDate, meeting }: NewMe
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl animate-in zoom-in-95 duration-200">
-                <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-xl font-bold text-navy-900">
+            <div className="bg-white dark:bg-bg-card rounded-2xl w-full max-w-md p-6 shadow-2xl animate-in zoom-in-95 duration-200 border border-slate-100 dark:border-border">
+                <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-xl font-bold text-navy-900 dark:text-text-main">
                         {meeting ? 'Edit Meeting' : 'New Meeting'}
                     </h3>
                     {meeting && (
                         <button
                             type="button"
                             onClick={handleDelete}
-                            className="text-slate-400 hover:text-rose-500 transition-colors p-2 rounded-lg hover:bg-rose-50"
+                            className="text-slate-400 hover:text-rose-500 transition-colors p-2 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-500/10"
                             title="Delete Meeting"
                         >
                             <Trash2 className="w-5 h-5" />
                         </button>
                     )}
                 </div>
+
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-navy-900 mb-1.5">Title</label>
+                        <label className="block text-sm font-medium text-navy-900 dark:text-text-main mb-1">Title</label>
                         <input
                             type="text"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none"
-                            placeholder="e.g., Client Briefing"
                             required
+                            className="w-full px-3 py-2 bg-slate-50 dark:bg-navy-900/50 border border-slate-200 dark:border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900 dark:text-text-main placeholder:text-slate-400"
+                            placeholder="Meeting title"
+                            value={title}
+                            onChange={e => setTitle(e.target.value)}
                         />
                     </div>
+
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-navy-900 mb-1.5">Date</label>
+                            <label className="block text-sm font-medium text-navy-900 dark:text-text-main mb-1">Date</label>
                             <input
                                 type="date"
-                                value={date}
-                                onChange={(e) => setDate(e.target.value)}
-                                className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none"
                                 required
+                                className="w-full px-3 py-2 bg-slate-50 dark:bg-navy-900/50 border border-slate-200 dark:border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900 dark:text-text-main [color-scheme:light] dark:[color-scheme:dark]"
+                                value={date}
+                                onChange={e => setDate(e.target.value)}
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-navy-900 mb-1.5">Time</label>
+                            <label className="block text-sm font-medium text-navy-900 dark:text-text-main mb-1">Time</label>
                             <input
                                 type="time"
-                                value={time}
-                                onChange={(e) => setTime(e.target.value)}
-                                className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none"
                                 required
+                                className="w-full px-3 py-2 bg-slate-50 dark:bg-navy-900/50 border border-slate-200 dark:border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900 dark:text-text-main [color-scheme:light] dark:[color-scheme:dark]"
+                                value={time}
+                                onChange={e => setTime(e.target.value)}
                             />
                         </div>
                     </div>
+
                     <div>
-                        <label className="block text-sm font-medium text-navy-900 mb-1.5">Address (Optional)</label>
+                        <label className="block text-sm font-medium text-navy-900 dark:text-text-main mb-1">Location</label>
                         <input
                             type="text"
+                            className="w-full px-3 py-2 bg-slate-50 dark:bg-navy-900/50 border border-slate-200 dark:border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900 dark:text-text-main placeholder:text-slate-400"
+                            placeholder="Address or link"
                             value={address}
-                            onChange={(e) => setAddress(e.target.value)}
-                            className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none"
-                            placeholder="e.g., 123 Construction Ave"
+                            onChange={e => setAddress(e.target.value)}
                         />
                     </div>
+
                     <div>
-                        <label className="block text-sm font-medium text-navy-900 mb-1.5">Description (Optional)</label>
+                        <label className="block text-sm font-medium text-navy-900 dark:text-text-main mb-1">Description</label>
                         <textarea
+                            className="w-full px-3 py-2 bg-slate-50 dark:bg-navy-900/50 border border-slate-200 dark:border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900 dark:text-text-main placeholder:text-slate-400 min-h-[80px]"
+                            placeholder="Meeting details..."
                             value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none h-24 resize-none"
-                            placeholder="Details..."
+                            onChange={e => setDescription(e.target.value)}
                         />
                     </div>
+
                     <div>
-                        <label className="block text-sm font-medium text-navy-900 mb-1.5">Assign To</label>
+                        <label className="block text-sm font-medium text-navy-900 dark:text-text-main mb-1">Assign To</label>
                         <select
+                            className="w-full px-3 py-2 bg-slate-50 dark:bg-navy-900/50 border border-slate-200 dark:border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900 dark:text-text-main appearance-none"
                             value={assignedTo}
-                            onChange={(e) => setAssignedTo(e.target.value)}
-                            className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none"
+                            onChange={e => setAssignedTo(e.target.value)}
                         >
-                            <option value="">Select User...</option>
-                            {users.map(u => (
-                                <option key={u.id} value={u.id}>
-                                    {u.id === currentUser?.id ? `${u.name} (Me)` : u.name}
-                                </option>
+                            <option value="">Select user...</option>
+                            {users.map(user => (
+                                <option key={user.id} value={user.id}>{user.name}</option>
                             ))}
                         </select>
                     </div>
 
                     {meeting && (
-                        <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100 cursor-pointer" onClick={() => setIsCompleted(!isCompleted)}>
-                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${isCompleted ? 'bg-emerald-500 border-emerald-500' : 'border-slate-300'}`}>
-                                {isCompleted && <Check className="w-3 h-3 text-white" />}
-                            </div>
-                            <span className={`font-medium ${isCompleted ? 'text-emerald-600' : 'text-navy-700'}`}>
-                                {isCompleted ? 'Marked as Completed' : 'Mark as Completed'}
-                            </span>
+                        <div className="flex items-center gap-3 pt-2">
+                            <button
+                                type="button"
+                                onClick={() => setIsCompleted(!isCompleted)}
+                                className={`flex-1 py-2.5 px-4 rounded-xl text-sm font-semibold transition-colors flex items-center justify-center gap-2 ${isCompleted
+                                    ? 'bg-emerald-500 text-white hover:bg-emerald-600 shadow-emerald-500/20 shadow-lg'
+                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+                                    }`}
+                            >
+                                <Check className="w-4 h-4" />
+                                {isCompleted ? 'Completed' : 'Mark as Complete'}
+                            </button>
                         </div>
                     )}
-                    <div className="flex gap-3 pt-2">
+
+                    <div className="flex gap-3 pt-4 border-t border-slate-100 dark:border-border">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 px-4 py-2 rounded-xl border border-slate-200 text-navy-900 hover:bg-slate-50"
+                            className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-border text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-navy-800 font-medium transition-colors text-sm"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
-                            className="flex-1 px-4 py-2 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-500/20"
+                            className="flex-1 px-4 py-2.5 rounded-xl bg-navy-900 dark:bg-emerald-600 text-white hover:bg-navy-800 dark:hover:bg-emerald-500 font-medium transition-all shadow-lg shadow-navy-900/20 text-sm"
                         >
-                            Add Meeting
+                            {meeting ? 'Save Changes' : 'Create Meeting'}
                         </button>
                     </div>
                 </form>

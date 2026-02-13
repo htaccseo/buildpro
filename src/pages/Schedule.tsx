@@ -81,8 +81,8 @@ export function Schedule() {
                 </div>
             </div>
 
-            <Card className="p-4 sm:p-6 overflow-hidden border-none shadow-sm">
-                <div className="grid grid-cols-1 sm:grid-cols-7 gap-6 sm:gap-4">
+            <Card className="p-4 sm:p-6 overflow-hidden border-none shadow-sm w-full max-w-full">
+                <div className="grid grid-cols-1 sm:grid-cols-7 gap-6 sm:gap-4 w-full">
                     {weekDays.map((day, i) => {
                         const dayTasks = allTasks.filter(t => isSameDay(new Date(t.requiredDate), day));
                         const dayMeetings = meetings.filter(m => isSameDay(new Date(m.date), day));

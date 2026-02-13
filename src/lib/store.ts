@@ -249,8 +249,13 @@ export const useStore = create<AppState>((set, get) => ({
 
         try {
             await apiRequest('/invoice', 'POST', newInvoice);
-        } catch (e) {
+        } catch (e: any) {
             console.error("Failed to add invoice", e);
+            // Rollback
+            set((state) => ({
+                invoices: state.invoices.filter(i => i.id !== newInvoice.id)
+            }));
+            alert(`Failed to save invoice: ${e.message || 'Unknown error'}`);
         }
     },
 
@@ -263,8 +268,14 @@ export const useStore = create<AppState>((set, get) => ({
 
         try {
             await apiRequest('/invoice/update', 'POST', invoice);
-        } catch (e) {
+        } catch (e: any) {
             console.error("Failed to update invoice", e);
+            // Revert to original text logic would be complex here without fetching, 
+            // but at least we should alert.
+            //Ideally we should re-fetch data here to sync state.
+            alert(`Failed to update invoice: ${e.message || 'Unknown error'}`);
+            // Force refresh to get back consistent state
+            window.location.reload();
         }
     },
 

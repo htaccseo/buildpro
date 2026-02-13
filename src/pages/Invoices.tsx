@@ -40,7 +40,7 @@ export function Invoices() {
                 // For now, assuming images or small files acceptable as base64.
                 // NOTE: resizeImage returns a base64 string for images.
                 if (file.type.startsWith('image/')) {
-                    const resized = await resizeImage(file, 1200);
+                    const resized = await resizeImage(file, 800);
                     setAttachment(resized);
                 } else {
                     // For non-images, straightforward base64 (caution: large files)

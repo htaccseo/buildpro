@@ -366,14 +366,31 @@ export default {
                     try {
                         const invoice = await request.json();
                         await env.DB.prepare(`
-                            INSERT INTO invoices (id, organization_id, type, amount, client_name, due_date, status, date, description, project_id, created_by)
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            INSERT INTO invoices (id, organization_id, type, amount, client_name, due_date, status, date, description, project_id, created_by, attachment_url)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                         `).bind(
-                            invoice.id, invoice.organizationId, invoice.type, invoice.amount, invoice.clientName || null, invoice.dueDate || null, invoice.status || 'pending', invoice.date || null, invoice.description || null, invoice.projectId || null, invoice.createdBy || null
+                            invoice.id, invoice.organizationId, invoice.type, invoice.amount, invoice.clientName || null, invoice.dueDate || null, invoice.status || 'pending', invoice.date || null, invoice.description || null, invoice.projectId || null, invoice.createdBy || null, invoice.attachmentUrl || null
                         ).run();
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {
                         return withCors(Response.json({ message: `Invoice Error: ${e.message}` }, { status: 500 }));
+                    }
+                }
+
+                // POST /api/invoice/update
+                if (url.pathname === '/api/invoice/update' && request.method === 'POST') {
+                    try {
+                        const invoice = await request.json();
+                        await env.DB.prepare(`
+                            UPDATE invoices 
+                            SET type = ?, amount = ?, client_name = ?, due_date = ?, status = ?, date = ?, description = ?, attachment_url = ?
+                            WHERE id = ?
+                        `).bind(
+                            invoice.type, invoice.amount, invoice.clientName || null, invoice.dueDate || null, invoice.status || 'pending', invoice.date || null, invoice.description || null, invoice.attachmentUrl || null, invoice.id
+                        ).run();
+                        return withCors(Response.json({ success: true }));
+                    } catch (e: any) {
+                        return withCors(Response.json({ message: `Invoice Update Error: ${e.message}` }, { status: 500 }));
                     }
                 }
 

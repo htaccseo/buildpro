@@ -494,7 +494,7 @@ export function ProjectDetails() {
                                                             Completion Report
                                                             {task.completedBy && <UserAvatar userId={task.completedBy} className="h-4 w-4 text-[8px] ml-1" />}
                                                         </div>
-                                                        <div className="flex gap-1 opacity-0 group-hover/report:opacity-100 transition-opacity">
+                                                        <div className="flex gap-1 opacity-100 md:opacity-0 md:group-hover/report:opacity-100 transition-opacity">
                                                             <button
                                                                 onClick={() => openCompletionModal(task.id, task.completionNote, task.completionImage)}
                                                                 className="text-emerald-600 hover:text-emerald-800 bg-white/50 hover:bg-white rounded-lg p-1.5"
@@ -520,7 +520,7 @@ export function ProjectDetails() {
                                                     {task.completionImage && (
                                                         <div className="mt-2 relative group/img w-fit cursor-pointer" onClick={() => setExpandedImage(task.completionImage!)}>
                                                             <img src={task.completionImage} alt="Proof" className="w-24 h-16 object-cover rounded-lg border border-slate-200 hover:ring-2 hover:ring-emerald-400 transition-all" />
-                                                            <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover/img:opacity-100 transition-opacity rounded-lg">
+                                                            <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-100 md:opacity-0 md:group-hover/img:opacity-100 transition-opacity rounded-lg">
                                                                 <Camera className="w-4 h-4 text-white" />
                                                             </div>
                                                         </div>

@@ -178,7 +178,8 @@ export const useStore = create<AppState>((set, get) => ({
                         clientName: i.client_name,
                         dueDate: i.due_date,
                         projectId: i.project_id,
-                        createdBy: i.created_by
+                        createdBy: i.created_by,
+                        attachmentUrl: i.attachment_url
                     })),
 
                     notifications: (data.notifications || [])

@@ -374,7 +374,11 @@ export default {
                                 invoice.id, invoice.organizationId, invoice.type, invoice.amount, invoice.clientName || null, invoice.dueDate || null, invoice.status || 'pending', invoice.date || null, invoice.description || null, invoice.projectId || null, invoice.createdBy || null, invoice.attachmentUrl || null
                             ).run();
                         } catch (err: any) {
-                            if (err.message.includes('no such column')) {
+                            // CATCH D1 SPECIFIC ERROR MESSAGES
+                            // Standard SQLite: "no such column: attachment_url"
+                            // Cloudflare D1: "table invoices has no column named attachment_url"
+                            const errorMsg = (err.message || '').toLowerCase();
+                            if (errorMsg.includes('no such column') || errorMsg.includes('no column named') || errorMsg.includes('has no column')) {
                                 console.log('Attempting auto-migration: Adding attachment_url column');
                                 await env.DB.prepare('ALTER TABLE invoices ADD COLUMN attachment_url TEXT').run();
                                 // Retry
@@ -405,7 +409,9 @@ export default {
                                 invoice.type, invoice.amount, invoice.clientName || null, invoice.dueDate || null, invoice.status || 'pending', invoice.date || null, invoice.description || null, invoice.attachmentUrl || null, invoice.id
                             ).run();
                         } catch (err: any) {
-                            if (err.message.includes('no such column')) {
+                            // CATCH D1 SPECIFIC ERROR MESSAGES
+                            const errorMsg = (err.message || '').toLowerCase();
+                            if (errorMsg.includes('no such column') || errorMsg.includes('no column named') || errorMsg.includes('has no column')) {
                                 console.log('Attempting auto-migration: Adding attachment_url column');
                                 await env.DB.prepare('ALTER TABLE invoices ADD COLUMN attachment_url TEXT').run();
                                 // Retry

@@ -314,7 +314,7 @@ export function Dashboard() {
                                                 deleteMeeting(meeting.id);
                                             }
                                         }}
-                                        className="absolute top-2 right-2 text-slate-400 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        className="absolute top-2 right-2 text-slate-400 hover:text-rose-500 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
                                         title="Delete Meeting"
                                     >
                                         <X className="w-4 h-4" />
@@ -417,7 +417,7 @@ export function Dashboard() {
                         {otherMatters && otherMatters.length > 0 ? (
                             otherMatters.map(matter => (
                                 <div key={matter.id} className="p-4 rounded-xl bg-amber-50 border border-amber-100 space-y-2 group relative">
-                                    <div className="absolute top-2 right-2 flex gap-1 group-hover:opacity-100 opacity-0 transition-opacity">
+                                    <div className="absolute top-2 right-2 flex gap-1 md:opacity-0 md:group-hover:opacity-100 opacity-100 transition-opacity">
                                         <button
                                             onClick={() => openMatterModal(matter)}
                                             className="text-amber-400 hover:text-amber-600 p-1"

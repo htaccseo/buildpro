@@ -425,13 +425,13 @@ export function ProjectDetails() {
                                                         {task.createdBy && <UserAvatar userId={task.createdBy} className="h-5 w-5 text-[10px]" />}
                                                         <button
                                                             onClick={() => openTaskForm(task)}
-                                                            className="text-slate-400 hover:text-navy-900 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                            className="text-slate-400 hover:text-navy-900 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
                                                         >
                                                             <Pencil className="w-3.5 h-3.5" />
                                                         </button>
                                                         <button
                                                             onClick={() => handleDeleteTask(task.id)}
-                                                            className="text-slate-400 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                            className="text-slate-400 hover:text-rose-500 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
                                                         >
                                                             <Trash2 className="w-3.5 h-3.5" />
                                                         </button>
@@ -458,7 +458,7 @@ export function ProjectDetails() {
 
                                             {/* Actions */}
                                             {task.status !== 'completed' && (
-                                                <div className="mt-4 flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <div className="mt-4 flex gap-3 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                                                     <div className="relative group/assign">
                                                         <select
                                                             className="opacity-0 absolute inset-0 w-full h-full cursor-pointer"

@@ -27,6 +27,17 @@
   /* Slate 500 */
 }
 
+.dark {
+  --color-bg-app: var(--color-navy-900);
+  --color-bg-card: var(--color-navy-800);
+  --color-text-main: #f8fafc;
+  /* Slate 50 */
+  --color-text-muted: #94a3b8;
+  /* Slate 400 */
+
+  /* Re-map specific colors if needed for dark mode */
+}
+
 :root {
   font-family: var(--font-sans);
   color: var(--color-text-main);

@@ -101,6 +101,7 @@ CREATE TABLE invoices (
     description TEXT,
     project_id TEXT,
     created_by TEXT,
+    attachment_url TEXT,
     FOREIGN KEY (organization_id) REFERENCES organizations(id)
 );
 

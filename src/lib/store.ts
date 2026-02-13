@@ -62,6 +62,7 @@ interface AppState {
 
     // Invoice Actions
     addInvoice: (invoice: Omit<Invoice, 'organizationId'>) => void;
+    updateInvoice: (invoice: Invoice) => Promise<void>;
     updateInvoiceStatus: (id: string, status: Invoice['status']) => void;
     deleteInvoice: (id: string) => void;
 
@@ -250,6 +251,20 @@ export const useStore = create<AppState>((set, get) => ({
             await apiRequest('/invoice', 'POST', newInvoice);
         } catch (e) {
             console.error("Failed to add invoice", e);
+        }
+    },
+
+    updateInvoice: async (invoice) => {
+        // Optimistic update
+        set((state) => ({
+            invoices: state.invoices.map(i => i.id === invoice.id ? invoice : i)
+                .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
+        }));
+
+        try {
+            await apiRequest('/invoice/update', 'POST', invoice);
+        } catch (e) {
+            console.error("Failed to update invoice", e);
         }
     },
 

@@ -104,6 +104,7 @@ export interface Invoice {
     date: string; // Issue Date
     description: string;
     projectId?: string;
+    attachmentUrl?: string; // URL or Base64
 }
 
 export interface Reminder {

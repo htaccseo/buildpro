@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useStore } from '../lib/store';
 import { useOrganizationData } from '../lib/hooks';
 import { Card } from '../components/ui/Card';
-import { Plus, FileText, ArrowUpRight, ArrowDownLeft, Trash2 } from 'lucide-react';
-import { cn, formatDate } from '../lib/utils';
+import { Plus, FileText, ArrowUpRight, ArrowDownLeft, Trash2, Edit2, Paperclip, Download } from 'lucide-react';
+import { cn, formatDate, resizeImage } from '../lib/utils';
 import type { Invoice } from '../lib/types';
 import { UserAvatar } from '../components/UserAvatar';
 
@@ -11,17 +11,20 @@ export function Invoices() {
     // Use Clean Data Hook (RLS)
     const { invoices } = useOrganizationData();
     // Store actions
-    const { addInvoice, updateInvoiceStatus, deleteInvoice } = useStore();
+    const { addInvoice, updateInvoice, updateInvoiceStatus, deleteInvoice } = useStore();
     const [activeTab, setActiveTab] = useState<'sent' | 'received'>('sent');
     const [isFormOpen, setIsFormOpen] = useState(false);
 
     // Form State
+    const [isEditing, setIsEditing] = useState(false);
+    const [editingId, setEditingId] = useState<string | null>(null);
     const [clientName, setClientName] = useState('');
     const [amount, setAmount] = useState('');
     const [dueDate, setDueDate] = useState('');
     const [issueDate, setIssueDate] = useState(new Date().toISOString().split('T')[0]);
     const [description, setDescription] = useState('');
     const [invoiceType, setInvoiceType] = useState<'sent' | 'received'>('sent');
+    const [attachment, setAttachment] = useState<string | null>(null);
 
     const filteredInvoices = invoices.filter(inv => inv.type === activeTab);
 
@@ -29,21 +32,78 @@ export function Invoices() {
     const totalAmount = filteredInvoices.reduce((sum, inv) => sum + inv.amount, 0);
     const pendingAmount = filteredInvoices.filter(inv => inv.status === 'pending' || inv.status === 'overdue').reduce((sum, inv) => sum + inv.amount, 0);
 
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            try {
+                // If it's an image, resize it. If it's a PDF or other, we might need a different strategy.
+                // For now, assuming images or small files acceptable as base64.
+                // NOTE: resizeImage returns a base64 string for images.
+                if (file.type.startsWith('image/')) {
+                    const resized = await resizeImage(file, 1200);
+                    setAttachment(resized);
+                } else {
+                    // For non-images, straightforward base64 (caution: large files)
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        setAttachment(ev.target?.result as string);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            } catch (error) {
+                console.error("File upload failed", error);
+                alert("Failed to process file.");
+            }
+        }
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const newInvoice: Omit<Invoice, 'organizationId'> = {
-            id: Math.random().toString(36).substr(2, 9),
-            type: invoiceType,
-            amount: parseFloat(amount),
-            clientName,
-            dueDate,
-            description,
-            date: issueDate, // Use user selected date
-            status: 'pending'
-        };
-        addInvoice(newInvoice);
+
+        if (isEditing && editingId) {
+            // Update existing
+            const existing = invoices.find(i => i.id === editingId);
+            if (!existing) return;
+
+            updateInvoice({
+                ...existing,
+                clientName,
+                amount: parseFloat(amount),
+                dueDate,
+                date: issueDate,
+                description,
+                attachmentUrl: attachment || undefined
+            });
+        } else {
+            // Create new
+            const newInvoice: Omit<Invoice, 'organizationId'> = {
+                id: Math.random().toString(36).substr(2, 9),
+                type: invoiceType,
+                amount: parseFloat(amount),
+                clientName,
+                dueDate,
+                description,
+                date: issueDate,
+                status: 'pending',
+                attachmentUrl: attachment || undefined
+            };
+            addInvoice(newInvoice);
+        }
         setIsFormOpen(false);
         resetForm();
+    };
+
+    const handleEdit = (invoice: Invoice) => {
+        setIsEditing(true);
+        setEditingId(invoice.id);
+        setClientName(invoice.clientName);
+        setAmount(invoice.amount.toString());
+        setDueDate(invoice.dueDate);
+        setIssueDate(invoice.date);
+        setDescription(invoice.description);
+        setInvoiceType(invoice.type);
+        setAttachment(invoice.attachmentUrl || null);
+        setIsFormOpen(true);
     };
 
     const resetForm = () => {
@@ -52,6 +112,9 @@ export function Invoices() {
         setDueDate('');
         setIssueDate(new Date().toISOString().split('T')[0]);
         setDescription('');
+        setAttachment(null);
+        setIsEditing(false);
+        setEditingId(null);
     };
 
     return (
@@ -182,11 +245,35 @@ export function Invoices() {
                                             <button
                                                 onClick={() => deleteInvoice(invoice.id)}
                                                 className="p-1.5 text-slate-400 hover:text-rose-500 transition-colors"
+                                                title="Delete"
                                             >
                                                 <Trash2 className="w-4 h-4" />
                                             </button>
+                                            <button
+                                                onClick={() => handleEdit(invoice)}
+                                                className="p-1.5 text-slate-400 hover:text-navy-900 transition-colors"
+                                                title="Edit"
+                                            >
+                                                <Edit2 className="w-4 h-4" />
+                                            </button>
                                         </div>
                                     </div>
+
+                                    {invoice.attachmentUrl && (
+                                        <div className="w-full pl-0 md:pl-[60px] pt-2 border-t border-slate-50 mt-2">
+                                            <a
+                                                href={invoice.attachmentUrl}
+                                                download={`invoice-${invoice.id}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-2 text-xs font-medium text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-lg transition-colors group"
+                                            >
+                                                <Paperclip className="w-3.5 h-3.5" />
+                                                View Attachment
+                                                <Download className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity ml-1" />
+                                            </a>
+                                        </div>
+                                    )}
                                 </Card>
                             ))
                         )}
@@ -198,7 +285,9 @@ export function Invoices() {
             {isFormOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
                     <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl animate-in zoom-in-95 duration-200">
-                        <h3 className="text-xl font-bold text-navy-900 mb-4">{activeTab === 'sent' ? 'New Invoice' : 'New Bill'}</h3>
+                        <h3 className="text-xl font-bold text-navy-900 mb-4">
+                            {isEditing ? 'Edit Invoice' : (activeTab === 'sent' ? 'New Invoice' : 'New Bill')}
+                        </h3>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-navy-900 mb-1.5">{activeTab === 'sent' ? 'Client Name' : 'Payee Name'}</label>
@@ -252,6 +341,22 @@ export function Invoices() {
                                     required
                                 />
                             </div>
+                            <div>
+                                <label className="block text-sm font-medium text-navy-900 mb-1.5">Attachment (Optional)</label>
+                                <div className="flex items-center gap-3">
+                                    <label className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 transition-colors text-sm font-medium text-navy-700">
+                                        <Paperclip className="w-4 h-4" />
+                                        <span>{attachment ? 'Change File' : 'Upload File'}</span>
+                                        <input
+                                            type="file"
+                                            accept="image/*,application/pdf"
+                                            onChange={handleFileUpload}
+                                            className="hidden"
+                                        />
+                                    </label>
+                                    {attachment && <span className="text-xs text-emerald-600 font-medium flex items-center gap-1"><FileText className="w-3 h-3" /> File Selected</span>}
+                                </div>
+                            </div>
                             <div className="flex gap-3 pt-2">
                                 <button
                                     type="button"
@@ -264,7 +369,7 @@ export function Invoices() {
                                     type="submit"
                                     className="flex-1 px-4 py-2 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-500/20"
                                 >
-                                    Create Check
+                                    {isEditing ? 'Save Changes' : (activeTab === 'sent' ? 'Create Invoice' : 'Create Bill')}
                                 </button>
                             </div>
                         </form>

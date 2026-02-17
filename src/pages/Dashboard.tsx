@@ -3,7 +3,7 @@ import { useStore } from '../lib/store';
 import { useOrganizationData } from '../lib/hooks';
 import { isSameDay } from 'date-fns';
 import { Link, useNavigate } from 'react-router-dom';
-import { Activity, Clock, MapPin, X, StickyNote, Edit2, Check } from 'lucide-react';
+import { Activity, Clock, MapPin, X, Check } from 'lucide-react';
 import { cn, formatDate } from '../lib/utils';
 import { Card } from '../components/ui/Card';
 import { NewMeetingModal } from '../components/NewMeetingModal';
@@ -416,41 +416,30 @@ export function Dashboard() {
 
                         {otherMatters && otherMatters.length > 0 ? (
                             otherMatters.map(matter => (
-                                <div key={matter.id} className="p-4 rounded-xl bg-amber-50 border border-amber-100 space-y-2 group relative">
-                                    <div className="absolute top-2 right-2 flex gap-1 md:opacity-0 md:group-hover:opacity-100 opacity-100 transition-opacity">
-                                        <button
-                                            onClick={() => openMatterModal(matter)}
-                                            className="text-amber-400 hover:text-amber-600 p-1"
-                                            title="Edit Note"
-                                        >
-                                            <Edit2 className="w-4 h-4" />
-                                        </button>
-                                        <button
-                                            onClick={() => deleteOtherMatter(matter.id)}
-                                            className="text-amber-400 hover:text-amber-600 p-1"
-                                            title="Delete Note"
-                                        >
-                                            <X className="w-4 h-4" />
-                                        </button>
-                                    </div>
-                                    <div className="flex justify-between items-start pr-12">
-                                        <h4 className="font-bold text-navy-900 flex items-center gap-2">
-                                            <StickyNote className="w-4 h-4 text-amber-500" />
-                                            {matter.title}
-                                        </h4>
-                                        <div className="flex items-center gap-1">
-                                            {/* Creator */}
-                                            <UserAvatar userId={matter.createdBy} className="h-5 w-5 text-[8px]" />
+                                <div
+                                    key={matter.id}
+                                    onClick={() => openMatterModal(matter)}
+                                    className="p-4 rounded-xl bg-amber-50 border border-amber-100 space-y-2 cursor-pointer hover:shadow-md transition-all relative"
+                                >
+                                    <div className="flex items-center justify-between gap-3">
+                                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                                            {/* Creator Avatar (Left) */}
+                                            <UserAvatar userId={matter.createdBy} className="h-8 w-8 text-xs shrink-0" />
 
-                                            {/* Assignee Arrow */}
-                                            {matter.assignedTo && matter.assignedTo !== matter.createdBy && (
-                                                <>
-                                                    <span className="text-slate-300 text-[10px]">→</span>
-                                                    <UserAvatar userId={matter.assignedTo} className="h-5 w-5 text-[8px] ring-1 ring-white" />
-                                                </>
-                                            )}
+                                            {/* Note Title */}
+                                            <h4 className="font-bold text-navy-900 truncate">
+                                                {matter.title}
+                                            </h4>
                                         </div>
+
+                                        {/* Assignee Avatar (Right) */}
+                                        {matter.assignedTo && (
+                                            <div className="shrink-0">
+                                                <UserAvatar userId={matter.assignedTo} className="h-8 w-8 text-xs ring-2 ring-white" />
+                                            </div>
+                                        )}
                                     </div>
+
                                     {matter.address && (
                                         <div className="flex items-center gap-1.5 text-sm text-navy-700">
                                             <MapPin className="w-3.5 h-3.5 text-amber-500/70" />
@@ -538,6 +527,20 @@ export function Dashboard() {
                                     />
                                 </div>
                                 <div className="flex gap-3 pt-2">
+                                    {matterToEdit && (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                if (confirm('Are you sure you want to delete this note?')) {
+                                                    deleteOtherMatter(matterToEdit.id);
+                                                    setIsMatterModalOpen(false);
+                                                }
+                                            }}
+                                            className="px-4 py-2 rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50"
+                                        >
+                                            Delete
+                                        </button>
+                                    )}
                                     <button
                                         type="button"
                                         onClick={() => setIsMatterModalOpen(false)}

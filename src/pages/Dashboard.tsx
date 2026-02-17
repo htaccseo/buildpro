@@ -254,25 +254,25 @@ export function Dashboard() {
                         <div className="grid gap-4">
                             {projects.filter(p => p.status === 'active').map(project => (
                                 <Link key={project.id} to={`/projects/${project.id}`} className="block">
-                                    <Card className="p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 hover:shadow-md transition-all cursor-pointer group border-none shadow-sm h-full relative">
-                                        <div className="absolute top-4 right-4 sm:static">
+                                    <Card className="p-4 sm:p-5 flex flex-row items-center justify-between gap-0 sm:gap-6 hover:shadow-md transition-all cursor-pointer group border-none shadow-sm h-full relative">
+                                        <div className="absolute top-4 right-4 sm:static hidden sm:block">
                                             <UserAvatar userId={project.createdBy} className="h-6 w-6 text-[10px]" />
                                         </div>
-                                        <div className={cn("w-full sm:w-16 h-32 sm:h-16 rounded-xl flex items-center justify-center text-white shadow-inner shrink-0", project.color)}>
-                                            <Activity className="w-8 h-8 opacity-80" />
+                                        <div className={cn("w-12 h-12 sm:w-16 sm:h-16 rounded-xl flex items-center justify-center text-white shadow-inner shrink-0 mr-3 sm:mr-0", project.color)}>
+                                            <Activity className="w-6 h-6 sm:w-8 sm:h-8 opacity-80" />
                                         </div>
 
-                                        <div className="flex-1 min-w-0 w-full">
-                                            <h3 className="text-lg font-semibold text-navy-900 truncate mb-1 pr-6 sm:pr-0">{project.name}</h3>
+                                        <div className="flex-1 min-w-0">
+                                            <h3 className="text-lg font-semibold text-navy-900 truncate mb-1 pr-0 sm:pr-0">{project.name}</h3>
                                             <p className="text-sm text-text-muted truncate flex items-center gap-1">
                                                 <MapPin className="w-3 h-3 shrink-0" />
                                                 <span className="truncate">{project.address}</span>
                                             </p>
                                         </div>
 
-                                        <div className="flex flex-row sm:flex-col items-center sm:items-end gap-2 w-full sm:w-auto mt-2 sm:mt-0">
+                                        <div className="flex flex-col items-end sm:items-end gap-0 sm:gap-2 shrink-0 ml-2 sm:ml-0">
                                             <span className="text-sm font-medium text-navy-600">{project.progress}%</span>
-                                            <div className="flex-1 sm:flex-none w-full sm:w-24 h-2 bg-slate-100 rounded-full overflow-hidden">
+                                            <div className="hidden sm:block w-24 h-2 bg-slate-100 rounded-full overflow-hidden">
                                                 <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${project.progress}%` }} />
                                             </div>
                                         </div>

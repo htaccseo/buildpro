@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useStore } from '../lib/store';
 import { useOrganizationData } from '../lib/hooks';
 import { Card } from '../components/ui/Card';
-import { Plus, FileText, ArrowUpRight, ArrowDownLeft, Trash2, Edit2, Paperclip, Download } from 'lucide-react';
+import { Plus, FileText, ArrowUpRight, ArrowDownLeft, Trash2, Edit2, Paperclip } from 'lucide-react';
 import { cn, formatDate, resizeImage } from '../lib/utils';
 import type { Invoice } from '../lib/types';
 import { UserAvatar } from '../components/UserAvatar';
@@ -189,91 +189,79 @@ export function Invoices() {
                             </div>
                         ) : (
                             filteredInvoices.map(invoice => (
-                                <Card key={invoice.id} className="p-5 border-none shadow-sm hover:shadow-md transition-shadow flex flex-col md:flex-row items-start md:items-center gap-4">
-                                    <div className={cn("p-3 rounded-lg shrink-0", activeTab === 'sent' ? "bg-emerald-50 text-emerald-600" : "bg-indigo-50 text-indigo-600")}>
-                                        <FileText className="w-6 h-6" />
-                                    </div>
+                                <Card key={invoice.id} className="p-4 md:p-5 border-none shadow-sm hover:shadow-md transition-shadow flex flex-col md:flex-row items-stretch md:items-center gap-3">
+                                    {/* Left Section (Info) */}
                                     <div className="flex-1 min-w-0">
-                                        <div className="flex justify-between items-start mb-2">
-                                            <div>
-                                                <div className="flex items-center gap-2">
-                                                    <h3 className="font-bold text-navy-900">{invoice.clientName}</h3>
-                                                    <UserAvatar userId={invoice.createdBy} className="h-5 w-5 text-[10px]" />
-                                                </div>
-                                                <p className="text-sm text-text-muted">{invoice.description}</p>
+                                        <div className="flex items-center gap-2 md:gap-3 flex-wrap">
+                                            {/* Icon - Hidden on mobile to save space and align name first */}
+                                            <div className={cn("hidden md:flex p-2 rounded-lg shrink-0 items-center justify-center", activeTab === 'sent' ? "bg-emerald-50 text-emerald-600" : "bg-indigo-50 text-indigo-600")}>
+                                                <FileText className="w-5 h-5" />
                                             </div>
-                                            <span className={cn(
-                                                "px-2.5 py-0.5 rounded-full text-xs font-medium uppercase tracking-wide",
+
+                                            <h3 className="font-bold text-navy-900 text-base truncate max-w-[150px] md:max-w-none">{invoice.clientName}</h3>
+
+                                            <span className={cn("px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide shrink-0",
                                                 invoice.status === 'paid' ? "bg-emerald-100 text-emerald-700" :
                                                     invoice.status === 'overdue' ? "bg-rose-100 text-rose-700" :
-                                                        "bg-amber-100 text-amber-700"
-                                            )}>
+                                                        "bg-amber-100 text-amber-700")}>
                                                 {invoice.status}
                                             </span>
+
+                                            <UserAvatar userId={invoice.createdBy} className="h-6 w-6 text-[10px] shrink-0" />
+
+                                            {/* Desktop Attachment Button */}
+                                            {invoice.attachmentUrl && (
+                                                <a href={invoice.attachmentUrl} target="_blank" rel="noopener noreferrer" className="hidden md:inline-flex items-center gap-1.5 text-emerald-600 hover:text-emerald-700 ml-2 px-2 py-1 rounded-lg hover:bg-emerald-50 transition-colors group" title="View Attachment">
+                                                    <Paperclip className="w-3.5 h-3.5" />
+                                                    <span className="text-xs font-medium">Attachment</span>
+                                                </a>
+                                            )}
                                         </div>
 
-                                        <div className="flex justify-between items-end mt-4">
-                                            <div className="text-xs text-text-muted space-y-1">
-                                                <p>Due {formatDate(invoice.dueDate, 'MMM d, yyyy')}</p>
-                                                {/* Assuming 'projects' and 'invoice.projectId' are available in scope if needed */}
-                                                {/* {invoice.projectId && <p>Project: {projects.find(p => p.id === invoice.projectId)?.name}</p>} */}
-                                                <p className="text-slate-400">Issued {formatDate(invoice.date, 'MMM d, yyyy')}</p>
-                                            </div>
-                                            <div className="text-right">
-                                                <p className="text-lg font-bold text-navy-900">${invoice.amount.toLocaleString()}</p>
-                                            </div>
+                                        {/* Description & Date */}
+                                        <div className="pl-0 md:pl-[52px] mt-1">
+                                            <p className="text-sm text-text-muted mb-1 line-clamp-1">{invoice.description}</p>
+                                            <p className="text-xs text-slate-400">
+                                                {activeTab === 'sent' ? 'Issued' : 'Received'}: {formatDate(invoice.date, 'MMM d, yyyy')} • Due: {formatDate(invoice.dueDate, 'MMM d, yyyy')}
+                                            </p>
                                         </div>
+
+                                        {/* Mobile Attachment Button (Middle Row) */}
+                                        {invoice.attachmentUrl && (
+                                            <div className="md:hidden mt-3">
+                                                <a href={invoice.attachmentUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 w-full py-2 bg-slate-50 rounded-lg text-emerald-600 text-sm font-medium border border-slate-100 hover:bg-slate-100 transition-colors">
+                                                    <Paperclip className="w-4 h-4" /> View Attachment
+                                                </a>
+                                            </div>
+                                        )}
                                     </div>
-                                    <div className="flex flex-row md:flex-col items-center md:items-end gap-4 md:gap-2 w-full md:w-auto justify-between md:justify-end">
-                                        <span className="text-xl font-bold text-navy-900">${invoice.amount.toLocaleString()}</span>
-                                        <div className="flex gap-2">
+
+                                    {/* Right Section: Amount + Actions */}
+                                    <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center w-full md:w-auto mt-2 md:mt-0 pt-3 md:pt-0 border-t md:border-none border-slate-100">
+                                        <span className="text-lg md:text-xl font-bold text-navy-900 block md:mb-1">${invoice.amount.toLocaleString()}</span>
+
+                                        {/* Action Buttons Group */}
+                                        <div className="flex items-center gap-1">
                                             {invoice.status !== 'paid' ? (
-                                                <button
-                                                    onClick={() => updateInvoiceStatus(invoice.id, 'paid')}
-                                                    className="px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-lg text-xs font-bold hover:bg-emerald-100 transition-colors"
-                                                >
+                                                <button onClick={() => updateInvoiceStatus(invoice.id, 'paid')} className="px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-lg text-xs font-bold hover:bg-emerald-100 transition-colors shrink-0">
                                                     Mark Paid
                                                 </button>
                                             ) : (
-                                                <button
-                                                    onClick={() => updateInvoiceStatus(invoice.id, 'pending')}
-                                                    className="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg text-xs font-bold hover:bg-slate-200 transition-colors"
-                                                >
+                                                <button onClick={() => updateInvoiceStatus(invoice.id, 'pending')} className="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg text-xs font-bold hover:bg-slate-200 transition-colors shrink-0">
                                                     Mark Unpaid
                                                 </button>
                                             )}
-                                            <button
-                                                onClick={() => deleteInvoice(invoice.id)}
-                                                className="p-1.5 text-slate-400 hover:text-rose-500 transition-colors"
-                                                title="Delete"
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
-                                            <button
-                                                onClick={() => handleEdit(invoice)}
-                                                className="p-1.5 text-slate-400 hover:text-navy-900 transition-colors"
-                                                title="Edit"
-                                            >
-                                                <Edit2 className="w-4 h-4" />
-                                            </button>
+                                            <div className="flex bg-slate-50 rounded-lg p-0.5 border border-slate-100 ml-1">
+                                                <button onClick={() => handleEdit(invoice)} className="p-1.5 text-slate-400 hover:text-navy-900 hover:bg-white rounded-md transition-all shadow-none hover:shadow-sm" title="Edit">
+                                                    <Edit2 className="w-3.5 h-3.5" />
+                                                </button>
+                                                <div className="w-px bg-slate-200 my-1 mx-0.5" />
+                                                <button onClick={() => deleteInvoice(invoice.id)} className="p-1.5 text-slate-400 hover:text-rose-500 hover:bg-white rounded-md transition-all shadow-none hover:shadow-sm" title="Delete">
+                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-
-                                    {invoice.attachmentUrl && (
-                                        <div className="w-full pl-0 md:pl-[60px] pt-2 border-t border-slate-50 mt-2">
-                                            <a
-                                                href={invoice.attachmentUrl}
-                                                download={`invoice-${invoice.id}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="inline-flex items-center gap-2 text-xs font-medium text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-lg transition-colors group"
-                                            >
-                                                <Paperclip className="w-3.5 h-3.5" />
-                                                View Attachment
-                                                <Download className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity ml-1" />
-                                            </a>
-                                        </div>
-                                    )}
                                 </Card>
                             ))
                         )}

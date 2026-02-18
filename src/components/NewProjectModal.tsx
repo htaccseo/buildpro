@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useStore } from '../lib/store';
-import { X, Check, Store } from 'lucide-react';
+import { X, Check, Store, Home } from 'lucide-react';
 import { cn } from '../lib/utils';
 import type { Project } from '../lib/types';
 
@@ -134,52 +134,51 @@ export function NewProjectModal({ isOpen, onClose, projectToEdit }: ProjectModal
                         <h3 className="text-sm font-semibold text-navy-900 uppercase tracking-wider">Project Type</h3>
                         <div className="grid grid-cols-2 gap-4">
                             {[
-                                {
-                                    id: 'residential',
-                                    label: 'Residential',
-                                    color: 'bg-gradient-to-br from-emerald-500 to-teal-600',
-                                    ring: 'ring-emerald-500',
-                                    icon: <svg className="w-6 h-6 text-navy-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                                id: 'residential',
+                            label: 'Residential',
+                            color: 'bg-emerald-500', // Flat Emerald
+                            ring: 'ring-emerald-500',
+                            icon: <Home className="w-6 h-6 text-navy-900" /> // Home icon from Lucide
                                 },
-                                {
-                                    id: 'commercial',
-                                    label: 'Commercial',
-                                    color: 'bg-navy-900', // Black/Navy background
-                                    ring: 'ring-navy-900',
-                                    icon: <Store className="w-6 h-6 text-emerald-500" /> // Shop icon with Green color
+                            {
+                                id: 'commercial',
+                            label: 'Commercial',
+                            color: 'bg-navy-900', // Black/Navy background
+                            ring: 'ring-navy-900',
+                            icon: <Store className="w-6 h-6 text-emerald-500" /> // Shop icon with Green color
                                 }
                             ].map((type) => (
-                                <button
-                                    key={type.id}
-                                    type="button"
-                                    onClick={() => setSelectedColor(type.color)}
-                                    className={cn(
-                                        "relative flex flex-col items-center gap-3 p-4 rounded-2xl border-2 transition-all hover:scale-[1.02]",
-                                        selectedColor === type.color
-                                            ? `${type.ring} bg-slate-50 border-transparent`
-                                            : "border-slate-100 bg-white hover:border-slate-200"
-                                    )}
-                                >
-                                    {/* Icon Circle */}
-                                    <div className={cn(
-                                        "w-12 h-12 rounded-xl flex items-center justify-center shadow-lg",
-                                        type.color
-                                    )}>
-                                        {type.icon}
-                                    </div>
-                                    <span className={cn(
-                                        "font-bold text-sm",
-                                        selectedColor === type.color ? "text-navy-900" : "text-text-muted"
-                                    )}>
-                                        {type.label}
-                                    </span>
+                            <button
+                                key={type.id}
+                                type="button"
+                                onClick={() => setSelectedColor(type.color)}
+                                className={cn(
+                                    "relative flex flex-col items-center gap-3 p-4 rounded-2xl border-2 transition-all hover:scale-[1.02]",
+                                    selectedColor === type.color
+                                        ? `${type.ring} bg-slate-50 border-transparent`
+                                        : "border-slate-100 bg-white hover:border-slate-200"
+                                )}
+                            >
+                                {/* Icon Circle */}
+                                <div className={cn(
+                                    "w-12 h-12 rounded-xl flex items-center justify-center shadow-lg",
+                                    type.color
+                                )}>
+                                    {type.icon}
+                                </div>
+                                <span className={cn(
+                                    "font-bold text-sm",
+                                    selectedColor === type.color ? "text-navy-900" : "text-text-muted"
+                                )}>
+                                    {type.label}
+                                </span>
 
-                                    {selectedColor === type.color && (
-                                        <div className="absolute top-3 right-3 text-emerald-500">
-                                            <Check className="w-5 h-5" />
-                                        </div>
-                                    )}
-                                </button>
+                                {selectedColor === type.color && (
+                                    <div className="absolute top-3 right-3 text-emerald-500">
+                                        <Check className="w-5 h-5" />
+                                    </div>
+                                )}
+                            </button>
                             ))}
                         </div>
                     </div>

@@ -337,7 +337,7 @@ export function ProjectDetails() {
                                                                 <h3 className={cn("text-lg font-medium truncate pr-2", task.status === 'completed' ? "text-text-muted line-through" : "text-navy-900")}>
                                                                     {task.title}
                                                                 </h3>
-                                                                {task.createdBy && <UserAvatar userId={task.createdBy} className="w-5 h-5 text-[10px]" />}
+
                                                             </div>
                                                             <p className="text-text-muted text-sm line-clamp-2">{task.description}</p>
 

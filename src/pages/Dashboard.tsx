@@ -152,7 +152,7 @@ export function Dashboard() {
                                 + Add Reminder
                             </button>
                         </div>
-                        <Card className="p-4 space-y-4 h-auto border-none shadow-sm bg-white">
+                        <Card className="p-4 space-y-4 h-auto border-none shadow-sm bg-white rounded-xl">
                             {dueProjectTasks.length === 0 && dueReminders.length === 0 ? (
                                 <div className="text-center py-10 text-text-muted sm">No urgent tasks or reminders.</div>
                             ) : (
@@ -368,10 +368,10 @@ export function Dashboard() {
                     </Card>
 
                     <h2 className="text-xl font-bold text-navy-900 pt-2">Financial Overview</h2>
-                    <Card className="p-5 border-slate-800 shadow-lg bg-navy-900 space-y-4">
-                        <div className="flex justify-between items-center pb-2 border-b border-slate-800">
-                            <span className="text-sm font-medium text-slate-300">Pending Invoices</span>
-                            <Link to="/invoices" className="text-xs font-bold text-emerald-400 hover:text-emerald-300">View All</Link>
+                    <Card className="p-5 border-none shadow-sm space-y-4">
+                        <div className="flex justify-between items-center pb-2 border-b border-slate-100">
+                            <span className="text-sm font-medium text-text-muted">Pending Invoices</span>
+                            <Link to="/invoices" className="text-xs font-bold text-emerald-600 hover:text-emerald-700">View All</Link>
                         </div>
 
                         {invoices.filter(i => i.status === 'pending' || i.status === 'overdue').slice(0, 3).map(inv => (
@@ -379,8 +379,8 @@ export function Dashboard() {
                                 <div className="flex gap-3 items-center">
                                     <div className={cn("w-1.5 h-10 rounded-full", inv.type === 'received' ? "bg-rose-500" : "bg-emerald-500")} />
                                     <div>
-                                        <p className="font-bold text-white text-sm truncate w-24">{inv.clientName}</p>
-                                        <p className="text-xs text-slate-400">{formatDate(inv.dueDate, 'MMM d')}</p>
+                                        <p className="font-bold text-navy-900 text-sm truncate w-24">{inv.clientName}</p>
+                                        <p className="text-xs text-text-muted">{formatDate(inv.dueDate, 'MMM d')}</p>
                                     </div>
                                 </div>
                                 <div className="text-right">

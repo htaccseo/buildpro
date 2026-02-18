@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useStore } from '../lib/store';
-import { X, Check } from 'lucide-react';
+import { X, Check, Store } from 'lucide-react';
 import { cn } from '../lib/utils';
 import type { Project } from '../lib/types';
 
@@ -139,14 +139,14 @@ export function NewProjectModal({ isOpen, onClose, projectToEdit }: ProjectModal
                                     label: 'Residential',
                                     color: 'bg-gradient-to-br from-emerald-500 to-teal-600',
                                     ring: 'ring-emerald-500',
-                                    icon: <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                                    icon: <svg className="w-6 h-6 text-navy-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                                 },
                                 {
                                     id: 'commercial',
                                     label: 'Commercial',
-                                    color: 'bg-gradient-to-br from-blue-500 to-indigo-600',
-                                    ring: 'ring-blue-500',
-                                    icon: <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 22V9l12-13v13"></path><path d="M6 22h12"></path><path d="M6 9h12"></path></svg>
+                                    color: 'bg-navy-900', // Black/Navy background
+                                    ring: 'ring-navy-900',
+                                    icon: <Store className="w-6 h-6 text-emerald-500" /> // Shop icon with Green color
                                 }
                             ].map((type) => (
                                 <button

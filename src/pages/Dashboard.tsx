@@ -302,7 +302,7 @@ export function Dashboard() {
                                 <div
                                     key={meeting.id}
                                     onClick={() => openMeetingModal(meeting)}
-                                    className="group relative flex items-center gap-4 p-3 rounded-full bg-slate-50 border border-slate-100 pr-8 cursor-pointer hover:bg-slate-100 transition-colors"
+                                    className="group relative flex items-center gap-4 p-3 rounded-xl bg-slate-50 border border-slate-100 pr-8 cursor-pointer hover:bg-slate-100 transition-colors"
                                 >
                                     <button
                                         onClick={(e) => {
@@ -375,7 +375,7 @@ export function Dashboard() {
                         </div>
 
                         {invoices.filter(i => i.status === 'pending' || i.status === 'overdue').slice(0, 3).map(inv => (
-                            <div key={inv.id} className="flex items-center justify-between p-3 rounded-full bg-slate-50 border border-slate-100">
+                            <div key={inv.id} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
                                 <div className="flex gap-3 items-center">
                                     <div className={cn("w-1.5 h-10 rounded-full", inv.type === 'received' ? "bg-rose-500" : "bg-emerald-500")} />
                                     <div>

@@ -30,7 +30,12 @@ export function Schedule() {
     const allTasks = projects.flatMap(p => p.tasks.map(t => ({
         ...t,
         projectId: p.id,
-        projectColor: p.status === 'active' ? 'bg-emerald-500' : 'bg-slate-400',
+        projectId: p.id,
+        // Update logic: Residential (emerald) = Green, Commercial (blue/navy) = Navy/Black
+        projectColor: p.status === 'active'
+            ? (p.color.includes('emerald') ? 'bg-emerald-500' : 'bg-navy-900')
+            : 'bg-slate-400',
+        projectName: p.name
         projectName: p.name
     })));
 
@@ -104,7 +109,7 @@ export function Schedule() {
                                     <div className={cn("text-xs font-semibold uppercase", isToday ? "text-emerald-100" : "text-text-muted")}>
                                         {format(day, 'EEE')}
                                     </div>
-                                    <div className={cn("text-xl font-bold", isToday ? "text-white" : "text-navy-900")}>
+                                    <div className={cn("text-xl font-bold", isToday ? "text-navy-900" : "text-navy-900")}>
                                         {format(day, 'd')}
                                     </div>
                                 </div>

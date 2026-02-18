@@ -43,15 +43,15 @@ export function InviteMemberModal({ isOpen, onClose }: InviteMemberModalProps) {
             <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl scale-100 animate-in zoom-in-95 duration-200">
                 <div className="flex justify-between items-center p-6 border-b border-slate-100">
                     <h2 className="text-xl font-bold text-navy-900">Invite Team Member</h2>
-                    <button onClick={() => { onClose(); setInviteLink(''); }} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
+                    <button onClick={() => { onClose(); setInviteLink(''); }} className="p-2 hover:bg-slate-100 rounded-xl transition-colors">
                         <X className="w-5 h-5 text-slate-400" />
                     </button>
                 </div>
 
                 {inviteLink ? (
                     <div className="p-6 space-y-4">
-                        <div className="p-4 bg-emerald-50 rounded-full border border-emerald-100 text-center">
-                            <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100 text-center">
+                            <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-3">
                                 <Mail className="w-6 h-6" />
                             </div>
                             <h3 className="font-bold text-navy-900 mb-1">Invite Generated!</h3>
@@ -63,7 +63,7 @@ export function InviteMemberModal({ isOpen, onClose }: InviteMemberModalProps) {
 
                             <button
                                 onClick={copyLink}
-                                className="w-full py-2.5 bg-emerald-600 text-white rounded-full font-medium hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-500/20"
+                                className="w-full py-2.5 bg-emerald-600 text-white rounded-xl font-medium hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-500/20"
                             >
                                 Copy Link & Close
                             </button>
@@ -78,9 +78,10 @@ export function InviteMemberModal({ isOpen, onClose }: InviteMemberModalProps) {
                                 <input
                                     required
                                     type="text"
+                                    type="text"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-3 rounded-full border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
+                                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
                                     placeholder="John Doe"
                                 />
                             </div>
@@ -93,9 +94,10 @@ export function InviteMemberModal({ isOpen, onClose }: InviteMemberModalProps) {
                                 <input
                                     required
                                     type="email"
+                                    type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-3 rounded-full border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
+                                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
                                     placeholder="john@example.com"
                                 />
                             </div>

@@ -109,7 +109,7 @@ export function NewProjectModal({ isOpen, onClose, projectToEdit }: ProjectModal
                                 type="text"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                className="w-full px-4 py-2.5 rounded-full bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
+                                className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
                                 placeholder="e.g. Modern Villa Renovation"
                                 required
                             />
@@ -120,7 +120,7 @@ export function NewProjectModal({ isOpen, onClose, projectToEdit }: ProjectModal
                                 type="text"
                                 value={address}
                                 onChange={(e) => setAddress(e.target.value)}
-                                className="w-full px-4 py-2.5 rounded-full bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
+                                className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
                                 placeholder="e.g. 123 Ocean Drive, Sydney"
                                 required
                             />
@@ -162,7 +162,7 @@ export function NewProjectModal({ isOpen, onClose, projectToEdit }: ProjectModal
                                 >
                                     {/* Icon Circle */}
                                     <div className={cn(
-                                        "w-12 h-12 rounded-full flex items-center justify-center shadow-lg",
+                                        "w-12 h-12 rounded-xl flex items-center justify-center shadow-lg",
                                         type.color
                                     )}>
                                         {type.icon}
@@ -195,7 +195,7 @@ export function NewProjectModal({ isOpen, onClose, projectToEdit }: ProjectModal
                                 type="text"
                                 value={clientName}
                                 onChange={(e) => setClientName(e.target.value)}
-                                className="w-full px-4 py-2.5 rounded-full bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
+                                className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
                                 placeholder="e.g. Mr. Smith"
                                 required
                             />
@@ -207,7 +207,7 @@ export function NewProjectModal({ isOpen, onClose, projectToEdit }: ProjectModal
                                     type="email"
                                     value={clientEmail}
                                     onChange={(e) => setClientEmail(e.target.value)}
-                                    className="w-full px-4 py-2.5 rounded-full bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
+                                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
                                     placeholder="client@example.com"
                                 />
                             </div>
@@ -217,7 +217,7 @@ export function NewProjectModal({ isOpen, onClose, projectToEdit }: ProjectModal
                                     type="tel"
                                     value={clientPhone}
                                     onChange={(e) => setClientPhone(e.target.value)}
-                                    className="w-full px-4 py-2.5 rounded-full bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
+                                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
                                     placeholder="+61 ..."
                                 />
                             </div>
@@ -236,7 +236,7 @@ export function NewProjectModal({ isOpen, onClose, projectToEdit }: ProjectModal
                                     type="date"
                                     value={startDate}
                                     onChange={(e) => setStartDate(e.target.value)}
-                                    className="w-full px-4 py-2.5 rounded-full bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
+                                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
                                     required
                                 />
                             </div>
@@ -246,7 +246,7 @@ export function NewProjectModal({ isOpen, onClose, projectToEdit }: ProjectModal
                                     type="date"
                                     value={endDate}
                                     onChange={(e) => setEndDate(e.target.value)}
-                                    className="w-full px-4 py-2.5 rounded-full bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
+                                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
                                     required
                                 />
                             </div>
@@ -257,13 +257,13 @@ export function NewProjectModal({ isOpen, onClose, projectToEdit }: ProjectModal
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 px-4 py-2.5 rounded-full border border-slate-200 text-navy-700 font-medium hover:bg-slate-50 transition-colors"
+                            className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-navy-700 font-medium hover:bg-slate-50 transition-colors"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
-                            className="flex-1 px-4 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-lg shadow-emerald-600/20 transition-all"
+                            className="flex-1 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-lg shadow-emerald-600/20 transition-all"
                         >
                             {projectToEdit ? 'Save Changes' : 'Create Project'}
                         </button>

@@ -97,7 +97,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
 
                     {/* Completion Report */}
                     {task.status === 'completed' && (task.completionNote || task.completionImage) && (
-                        <div className="bg-emerald-50/50 border border-emerald-100 p-4 rounded-full space-y-3">
+                        <div className="bg-emerald-50/50 border border-emerald-100 p-4 rounded-xl space-y-3">
                             <div className="flex items-center gap-2 text-emerald-700 text-sm font-bold">
                                 <FileText className="w-4 h-4" />
                                 Completion Report
@@ -170,7 +170,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                                     className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
                                 >
                                     <option value="">Unassigned</option>
-                                    {users.filter(u => u.role !== 'builder').map(u => (
+                                    {users.map(u => (
                                         <option key={u.id} value={u.id}>{u.name}</option>
                                     ))}
                                 </select>

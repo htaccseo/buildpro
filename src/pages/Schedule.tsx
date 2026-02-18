@@ -104,7 +104,7 @@ export function Schedule() {
                                     "p-3 rounded-xl border flex sm:block items-center justify-between sm:text-center gap-4",
                                     isToday ? "bg-emerald-500 border-emerald-500 shadow-lg shadow-emerald-500/20" : "bg-white border-slate-100"
                                 )}>
-                                    <div className={cn("text-xs font-semibold uppercase", isToday ? "text-emerald-100" : "text-text-muted")}>
+                                    <div className={cn("text-xs font-semibold uppercase", isToday ? "text-navy-900" : "text-text-muted")}>
                                         {format(day, 'EEE')}
                                     </div>
                                     <div className={cn("text-xl font-bold", isToday ? "text-navy-900" : "text-navy-900")}>

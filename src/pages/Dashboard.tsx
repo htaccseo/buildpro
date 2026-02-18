@@ -225,17 +225,17 @@ export function Dashboard() {
                                             />
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex justify-between items-start">
-                                                    <h4 className={cn("font-medium truncate", task.status === 'completed' ? "line-through text-text-muted" : "text-white")}>
+                                                    <h4 className={cn("font-medium truncate", task.status === 'completed' ? "line-through text-text-muted" : "text-navy-900")}>
                                                         {task.title}
                                                     </h4>
                                                     {/* Task assignment avatar handles the 'who' part naturally, createdBy not strictly needed here but could be added if requested for tasks too */}
                                                 </div>
                                                 {task.description && (
-                                                    <p className={cn("text-sm mt-0.5 line-clamp-2", task.status === 'completed' ? "text-text-muted" : "text-emerald-50")}>
+                                                    <p className={cn("text-sm mt-0.5 line-clamp-2", task.status === 'completed' ? "text-text-muted" : "text-navy-700")}>
                                                         {task.description}
                                                     </p>
                                                 )}
-                                                <p className={cn("text-sm mt-1", task.status === 'completed' ? "text-text-muted" : "text-emerald-100")}>Project Task • Due: {formatDate(task.requiredDate, 'MMM d')}</p>
+                                                <p className={cn("text-sm mt-1", task.status === 'completed' ? "text-text-muted" : "text-navy-600")}>Project Task • Due: {formatDate(task.requiredDate, 'MMM d')}</p>
                                             </div>
                                         </div>
                                     ))}

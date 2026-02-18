@@ -30,12 +30,10 @@ export function Schedule() {
     const allTasks = projects.flatMap(p => p.tasks.map(t => ({
         ...t,
         projectId: p.id,
-        projectId: p.id,
         // Update logic: Residential (emerald) = Green, Commercial (blue/navy) = Navy/Black
         projectColor: p.status === 'active'
             ? (p.color.includes('emerald') ? 'bg-emerald-500' : 'bg-navy-900')
             : 'bg-slate-400',
-        projectName: p.name
         projectName: p.name
     })));
 

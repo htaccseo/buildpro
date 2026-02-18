@@ -255,9 +255,6 @@ export function Dashboard() {
                             {projects.filter(p => p.status === 'active').map(project => (
                                 <Link key={project.id} to={`/projects/${project.id}`} className="block">
                                     <Card className="p-4 sm:p-5 flex flex-row items-center justify-between gap-0 sm:gap-6 hover:shadow-md transition-all cursor-pointer group border-none shadow-sm h-full relative">
-                                        <div className="absolute top-4 right-4 sm:static hidden sm:block">
-                                            <UserAvatar userId={project.createdBy} />
-                                        </div>
                                         <div className={cn("w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-white shadow-inner shrink-0 mr-3 sm:mr-0", project.color)}>
                                             <Activity className="w-6 h-6 sm:w-8 sm:h-8 opacity-80" />
                                         </div>
@@ -371,10 +368,10 @@ export function Dashboard() {
                     </Card>
 
                     <h2 className="text-xl font-bold text-navy-900 pt-2">Financial Overview</h2>
-                    <Card className="p-5 border-none shadow-sm space-y-4">
-                        <div className="flex justify-between items-center pb-2 border-b border-slate-100">
-                            <span className="text-sm font-medium text-text-muted">Pending Invoices</span>
-                            <Link to="/invoices" className="text-xs font-bold text-emerald-600 hover:text-emerald-700">View All</Link>
+                    <Card className="p-5 border-slate-800 shadow-lg bg-navy-900 space-y-4">
+                        <div className="flex justify-between items-center pb-2 border-b border-slate-800">
+                            <span className="text-sm font-medium text-slate-300">Pending Invoices</span>
+                            <Link to="/invoices" className="text-xs font-bold text-emerald-400 hover:text-emerald-300">View All</Link>
                         </div>
 
                         {invoices.filter(i => i.status === 'pending' || i.status === 'overdue').slice(0, 3).map(inv => (
@@ -382,8 +379,8 @@ export function Dashboard() {
                                 <div className="flex gap-3 items-center">
                                     <div className={cn("w-1.5 h-10 rounded-full", inv.type === 'received' ? "bg-rose-500" : "bg-emerald-500")} />
                                     <div>
-                                        <p className="font-bold text-navy-900 text-sm truncate w-24">{inv.clientName}</p>
-                                        <p className="text-xs text-text-muted">{formatDate(inv.dueDate, 'MMM d')}</p>
+                                        <p className="font-bold text-white text-sm truncate w-24">{inv.clientName}</p>
+                                        <p className="text-xs text-slate-400">{formatDate(inv.dueDate, 'MMM d')}</p>
                                     </div>
                                 </div>
                                 <div className="text-right">
@@ -419,7 +416,7 @@ export function Dashboard() {
                                 <div
                                     key={matter.id}
                                     onClick={() => openMatterModal(matter)}
-                                    className="p-4 rounded-full bg-amber-50 border border-amber-100 space-y-2 cursor-pointer hover:shadow-md transition-all relative"
+                                    className="p-4 rounded-xl bg-white border border-slate-200 space-y-2 cursor-pointer hover:shadow-md transition-all relative"
                                 >
                                     <div className="flex items-center justify-between gap-3">
                                         <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -446,7 +443,7 @@ export function Dashboard() {
                                             {matter.address}
                                         </div>
                                     )}
-                                    <p className="text-sm text-navy-600 bg-white/50 p-2 rounded-lg border border-amber-100/50 whitespace-pre-wrap">
+                                    <p className="text-sm text-navy-600 bg-slate-50 p-2 rounded-lg border border-slate-100 whitespace-pre-wrap">
                                         {matter.note}
                                     </p>
                                 </div>

@@ -167,11 +167,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
                         <Settings className="w-5 h-5" />
                         <span>Settings</span>
                     </Link>
-                    <div className="mt-4 flex items-center gap-3 px-4 py-2 rounded-xl bg-slate-50 border border-transparent">
-                        <UserAvatar userId={currentUser?.id || ''} className="w-8 h-8 text-xs border border-emerald-200" />
+                    <div className="mt-4 flex items-center gap-3 px-4 py-2 rounded-xl bg-black border border-transparent shadow-lg shadow-black/20">
+                        <UserAvatar userId={currentUser?.id || ''} className="w-8 h-8 text-xs border border-white/20" />
                         <div className="flex-1 overflow-hidden">
-                            <p className="text-sm font-medium truncate text-navy-900">{currentUser?.name || 'Guest'}</p>
-                            <p className="text-xs text-slate-500 truncate capitalize">{currentUser?.role || 'Visitor'}</p>
+                            <p className="text-sm font-medium truncate text-white">{currentUser?.name || 'Guest'}</p>
+                            <p className="text-xs text-slate-400 truncate capitalize">{currentUser?.role || 'Visitor'}</p>
                         </div>
                     </div>
                 </div>

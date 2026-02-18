@@ -219,31 +219,31 @@ export function ProjectDetails() {
             </div>
 
             {/* Header */}
-            <div className={cn("relative h-64 rounded-3xl overflow-hidden group shadow-sm transition-all", project.color)}>
+            <div className={cn("relative min-h-[256px] h-auto rounded-3xl overflow-hidden group shadow-sm transition-all", project.color)}>
                 <div className="absolute inset-0 bg-black/10" />
                 <div className="absolute inset-0 bg-gradient-to-t from-navy-900/60 to-transparent" />
-                <div className="absolute bottom-0 left-0 p-8 w-full">
-                    <div className="flex flex-col md:flex-row justify-between items-end gap-6">
-                        <div>
-                            <h1 className="text-4xl font-bold text-white mb-2">{project.name}</h1>
-                            <div className="flex items-center gap-6 text-slate-200">
+                <div className="absolute bottom-0 left-0 p-6 md:p-8 w-full">
+                    <div className="flex flex-col md:flex-row justify-end md:justify-between items-start md:items-end gap-6 md:gap-6">
+                        <div className="w-full md:w-auto">
+                            <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">{project.name}</h1>
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 text-slate-200">
                                 <div className="flex items-center gap-2">
-                                    <MapPin className="w-4 h-4" />
+                                    <MapPin className="w-4 h-4 shrink-0" />
                                     {project.address}
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <Calendar className="w-4 h-4" />
+                                    <Calendar className="w-4 h-4 shrink-0" />
                                     Due {format(new Date(project.endDate), 'MMM d, yyyy')}
                                 </div>
                             </div>
                         </div>
-                        <div className="bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-lg min-w-[200px]">
+                        <div className="bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-lg w-full md:w-auto md:min-w-[200px] mt-5 md:mt-0">
                             <div className="flex justify-between text-sm mb-2">
                                 <span className="text-navy-900 font-medium">Progress</span>
                                 <span className="text-emerald-600 font-bold">{project.progress}%</span>
                             </div>
                             <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                                <div className="h-full bg-emerald-500" style={{ width: `${project.progress}% ` }} />
+                                <div className="h-full bg-emerald-500" style={{ width: `${project.progress}%` }} />
                             </div>
                         </div>
                     </div>

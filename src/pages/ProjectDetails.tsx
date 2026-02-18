@@ -225,11 +225,12 @@ export function ProjectDetails() {
             </div>
 
             {/* Header */}
-            <div className={cn("relative min-h-[200px] md:min-h-[256px] h-auto rounded-3xl overflow-hidden group shadow-sm transition-all mt-[30px] md:mt-0", project.color)}>
+            <div className={cn("relative min-h-[300px] md:min-h-[256px] h-auto rounded-3xl overflow-hidden group shadow-sm transition-all mt-[30px] md:mt-0 md:block flex flex-col justify-end pt-[60px] pb-6 px-6", project.color)}>
                 <div className="absolute inset-0 bg-black/10" />
                 <div className="absolute inset-0 bg-gradient-to-t from-navy-900/60 to-transparent" />
-                <div className="absolute bottom-0 left-0 p-6 md:p-8 w-full">
-                    <div className="flex flex-col md:flex-row justify-end md:justify-between items-end gap-4 md:gap-6">
+                {/* Content Wrapper */}
+                <div className="w-full relative z-10 md:absolute md:bottom-0 md:left-0 md:p-8 md:w-full">
+                    <div className="flex flex-col md:flex-row justify-end md:justify-between items-end gap-3 md:gap-6">
                         <div className="w-full md:w-auto">
                             <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">{project.name}</h1>
                             <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 text-slate-200">
@@ -237,24 +238,34 @@ export function ProjectDetails() {
                                     <MapPin className="w-4 h-4 shrink-0" />
                                     {project.address}
                                 </div>
-                                <div className="flex items-center gap-2">
+                                {/* Desktop Due Date (Hidden on Mobile) */}
+                                <div className="hidden md:flex items-center gap-2">
                                     <Calendar className="w-4 h-4 shrink-0" />
                                     Due {format(new Date(project.endDate), 'MMM d, yyyy')}
                                 </div>
                             </div>
                         </div>
 
-                        <div className="md:bg-white/90 md:backdrop-blur-md md:p-4 md:rounded-xl md:shadow-lg w-full md:w-auto md:min-w-[200px] mt-2 md:mt-0 text-right md:text-left">
+                        {/* Mobile Bottom Row: Due Date + Progress */}
+                        <div className="flex md:hidden w-full justify-between items-end mt-4 border-t border-white/20 pt-4">
+                            <div className="flex items-center gap-2 text-slate-200 text-sm">
+                                <Calendar className="w-4 h-4 shrink-0" />
+                                Due {format(new Date(project.endDate), 'MMM d, yyyy')}
+                            </div>
+                            <div className="text-white font-bold text-sm">
+                                Progress: {project.progress}%
+                            </div>
+                        </div>
+
+                        {/* Desktop Progress Section (Hidden on Mobile) */}
+                        <div className="hidden md:block bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-lg w-full md:w-auto md:min-w-[200px] mt-2 md:mt-0 text-left">
                             {/* Desktop View: Label + Percent */}
                             <div className="hidden md:flex justify-between text-sm mb-2">
                                 <span className="text-navy-900 font-medium">Progress</span>
                                 <span className="text-emerald-600 font-bold">{project.progress}%</span>
                             </div>
 
-                            {/* Mobile View: Combined Text */}
-                            <div className="md:hidden text-white font-medium text-sm">
-                                Progress: {project.progress}%
-                            </div>
+
 
                             {/* Progress Bar (Desktop Only) */}
                             <div className="hidden md:block h-2 bg-slate-100 rounded-full overflow-hidden">

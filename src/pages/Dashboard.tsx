@@ -285,7 +285,7 @@ export function Dashboard() {
                 <div className="space-y-6">
                     {/* Meetings Widget */}
                     <h2 className="text-xl font-bold text-navy-900">Upcoming Meetings</h2>
-                    <Card className="p-5 border-none shadow-sm space-y-4">
+                    <Card className="p-5 border-none shadow-sm space-y-4 rounded-xl">
                         <div className="flex justify-between items-center pb-2 border-b border-slate-100">
                             <span className="text-sm font-medium text-text-muted">Schedule</span>
                             <button
@@ -368,7 +368,7 @@ export function Dashboard() {
                     </Card>
 
                     <h2 className="text-xl font-bold text-navy-900 pt-2">Financial Overview</h2>
-                    <Card className="p-5 border-none shadow-sm space-y-4">
+                    <Card className="p-5 border-none shadow-sm space-y-4 rounded-xl">
                         <div className="flex justify-between items-center pb-2 border-b border-slate-100">
                             <span className="text-sm font-medium text-text-muted">Pending Invoices</span>
                             <Link to="/invoices" className="text-xs font-bold text-emerald-600 hover:text-emerald-700">View All</Link>

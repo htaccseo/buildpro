@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useStore } from '../lib/store';
 import { useOrganizationData } from '../lib/hooks';
-import { Search, Plus, Calendar, MapPin, User as UserIcon, CheckCircle, RotateCcw, Home, Store, Activity } from 'lucide-react';
+import { Search, Plus, Calendar, MapPin, CheckCircle, RotateCcw, Home, Store, Activity } from 'lucide-react';
 import { cn, formatDate } from '../lib/utils';
 import { Card } from '../components/ui/Card';
 import { NewProjectModal } from '../components/NewProjectModal';

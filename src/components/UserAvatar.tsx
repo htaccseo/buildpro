@@ -49,7 +49,7 @@ export function UserAvatar({ userId, className, showName = false, showBadge = fa
                     className={cn(
                         "rounded-full flex items-center justify-center font-bold shadow-sm border-2 border-white",
                         colorClass,
-                        className || "w-10 h-10 text-sm"
+                        className || "w-8 h-8 text-xs"
                     )}
                     title={user.name}
                 >

@@ -367,7 +367,7 @@ export function ProjectDetails() {
                                                                 {assignee ? (
                                                                     <div className="flex items-center justify-end gap-2">
                                                                         <span className="hidden sm:inline text-navy-700">{assignee.name}</span>
-                                                                        <UserAvatar userId={assignee.id} className="w-8 h-8 border border-slate-100" />
+                                                                        <UserAvatar userId={assignee.id} className="border border-slate-100" />
                                                                     </div>
                                                                 ) : (
                                                                     <div className="flex items-center justify-end gap-2 opacity-50">
@@ -582,43 +582,39 @@ export function ProjectDetails() {
 
 const ProjectUpdateCard = ({ update, onEdit, onDelete }: { update: ProjectUpdate, projectId?: string, onEdit: () => void, onDelete: () => void }) => {
     return (
-        <Card className="p-5 border-none shadow-sm flex gap-4 bg-white">
-            <div className="flex-shrink-0 mt-1">
-                {(update.userId) ? (
-                    <UserAvatar userId={update.userId} className="w-10 h-10 text-sm border-2 border-emerald-100" />
-                ) : (
-                    <UserAvatar userId="" className="w-10 h-10 text-sm border-2 border-emerald-100" />
-                )}
-            </div>
-            <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between mb-1">
-                    <div className="flex items-center gap-2">
-                        <span className="font-bold text-navy-900">{update.authorName}</span>
-                        <span className="text-text-muted text-xs">• {format(new Date(update.date), 'MMM d, h:mm a')}</span>
-                    </div>
-                    <div className="flex gap-1">
-                        <button
-                            onClick={onEdit}
-                            className="p-1.5 text-slate-300 hover:text-emerald-600 transition-colors rounded-lg hover:bg-emerald-50"
-                            title="Edit Update"
-                        >
-                            <Edit2 className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                onDelete();
-                            }}
-                            className="p-1.5 text-slate-300 hover:text-rose-500 transition-colors rounded-lg hover:bg-rose-50"
-                            title="Delete Update"
-                        >
-                            <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+        <Card className="p-4 border-none shadow-sm bg-white">
+            <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-3">
+                    <UserAvatar userId={update.userId} className="border-2 border-emerald-100" />
+                    <div>
+                        <div className="flex items-center gap-2">
+                            <span className="font-bold text-navy-900 leading-tight">{update.authorName}</span>
+                            <span className="text-text-muted text-xs">• {format(new Date(update.date), 'MMM d, h:mm a')}</span>
+                        </div>
                     </div>
                 </div>
-
-                <p className="text-navy-700 leading-relaxed whitespace-pre-wrap">{update.message}</p>
+                <div className="flex gap-1">
+                    <button
+                        onClick={onEdit}
+                        className="p-1.5 text-slate-300 hover:text-emerald-600 transition-colors rounded-lg hover:bg-emerald-50"
+                        title="Edit Update"
+                    >
+                        <Edit2 className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete();
+                        }}
+                        className="p-1.5 text-slate-300 hover:text-rose-500 transition-colors rounded-lg hover:bg-rose-50"
+                        title="Delete Update"
+                    >
+                        <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                </div>
             </div>
+
+            <p className="text-navy-700 leading-relaxed whitespace-pre-wrap pl-11">{update.message}</p>
         </Card>
     );
 };

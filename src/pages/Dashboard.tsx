@@ -186,7 +186,7 @@ export function Dashboard() {
                                                     </h4>
                                                     <div className="flex items-center gap-1">
                                                         {reminder.assignedTo && (
-                                                            <UserAvatar userId={reminder.assignedTo} className="h-8 w-8 text-xs ring-2 ring-white" />
+                                                            <UserAvatar userId={reminder.assignedTo} className="ring-2 ring-white" />
                                                         )}
                                                     </div>
                                                 </div>
@@ -256,7 +256,7 @@ export function Dashboard() {
                                 <Link key={project.id} to={`/projects/${project.id}`} className="block">
                                     <Card className="p-4 sm:p-5 flex flex-row items-center justify-between gap-0 sm:gap-6 hover:shadow-md transition-all cursor-pointer group border-none shadow-sm h-full relative">
                                         <div className="absolute top-4 right-4 sm:static hidden sm:block">
-                                            <UserAvatar userId={project.createdBy} className="h-6 w-6 text-[10px]" />
+                                            <UserAvatar userId={project.createdBy} />
                                         </div>
                                         <div className={cn("w-12 h-12 sm:w-16 sm:h-16 rounded-xl flex items-center justify-center text-white shadow-inner shrink-0 mr-3 sm:mr-0", project.color)}>
                                             <Activity className="w-6 h-6 sm:w-8 sm:h-8 opacity-80" />
@@ -345,7 +345,7 @@ export function Dashboard() {
                                             </div>
                                             <div className="flex items-center gap-1 shrink-0">
                                                 {meeting.assignedTo && (
-                                                    <UserAvatar userId={meeting.assignedTo} className="w-8 h-8 text-[10px]" />
+                                                    <UserAvatar userId={meeting.assignedTo} />
                                                 )}
                                             </div>
                                         </div>
@@ -424,7 +424,7 @@ export function Dashboard() {
                                     <div className="flex items-center justify-between gap-3">
                                         <div className="flex items-center gap-3 flex-1 min-w-0">
                                             {/* Creator Avatar (Left) */}
-                                            <UserAvatar userId={matter.createdBy} className="h-8 w-8 text-xs shrink-0" />
+                                            <UserAvatar userId={matter.createdBy} />
 
                                             {/* Note Title */}
                                             <h4 className="font-bold text-navy-900 truncate">
@@ -435,7 +435,7 @@ export function Dashboard() {
                                         {/* Assignee Avatar (Right) */}
                                         {matter.assignedTo && (
                                             <div className="shrink-0">
-                                                <UserAvatar userId={matter.assignedTo} className="h-8 w-8 text-xs ring-2 ring-white" />
+                                                <UserAvatar userId={matter.assignedTo} className="ring-2 ring-white" />
                                             </div>
                                         )}
                                     </div>

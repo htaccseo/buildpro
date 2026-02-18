@@ -51,9 +51,9 @@ export function Schedule() {
                             setSelectedReminder(null);
                             setIsReminderModalOpen(true);
                         }}
-                        className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-indigo-50 text-indigo-700 rounded-full hover:bg-indigo-100 transition-colors font-medium border border-indigo-100 text-sm sm:text-base"
+                        className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-black text-white rounded-full hover:bg-slate-900 transition-colors font-medium border border-black shadow-lg shadow-black/20 text-sm sm:text-base"
                     >
-                        <Plus className="w-4 h-4" />
+                        <Plus className="w-4 h-4 text-emerald-500" />
                         <span>Reminder</span>
                     </button>
                     <button
@@ -98,13 +98,13 @@ export function Schedule() {
                             <div key={i} className="flex flex-col gap-3 min-w-0">
                                 {/* Header */}
                                 <div className={cn(
-                                    "p-3 rounded-full border flex sm:block items-center justify-between sm:text-center gap-4",
-                                    isToday ? "bg-emerald-50 border-emerald-200" : "bg-slate-50 border-transparent"
+                                    "p-3 rounded-xl border flex sm:block items-center justify-between sm:text-center gap-4",
+                                    isToday ? "bg-emerald-500 border-emerald-500 shadow-lg shadow-emerald-500/20" : "bg-white border-slate-100"
                                 )}>
-                                    <div className={cn("text-xs font-semibold uppercase", isToday ? "text-emerald-600" : "text-text-muted")}>
+                                    <div className={cn("text-xs font-semibold uppercase", isToday ? "text-emerald-100" : "text-text-muted")}>
                                         {format(day, 'EEE')}
                                     </div>
-                                    <div className={cn("text-xl font-bold", isToday ? "text-emerald-700" : "text-navy-900")}>
+                                    <div className={cn("text-xl font-bold", isToday ? "text-white" : "text-navy-900")}>
                                         {format(day, 'd')}
                                     </div>
                                 </div>
@@ -115,7 +115,7 @@ export function Schedule() {
                                     {dayMeetings.map(meeting => (
                                         <div
                                             key={meeting.id}
-                                            className="bg-emerald-50 border border-emerald-100 p-3 rounded-full shadow-sm hover:shadow-md transition-shadow cursor-default group"
+                                            className="bg-emerald-50 border border-emerald-100 p-3 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-default group"
                                         >
                                             <div className="flex justify-between items-start mb-1">
                                                 <div className="flex items-center gap-2">
@@ -142,7 +142,7 @@ export function Schedule() {
                                                 "p-3 rounded-xl border shadow-sm hover:shadow-md transition-shadow cursor-pointer group",
                                                 reminder.completed
                                                     ? "bg-slate-50 border-slate-100 opacity-75"
-                                                    : "bg-indigo-50 border-indigo-100"
+                                                    : "bg-black border-black shadow-black/10"
                                             )}
                                             onClick={() => {
                                                 setSelectedReminder(reminder);
@@ -152,24 +152,24 @@ export function Schedule() {
                                             <div className="flex justify-between items-start mb-1">
                                                 <div className="flex items-center gap-2">
                                                     <div
-                                                        className={cn("w-2 h-2 rounded-full", reminder.completed ? "bg-slate-300" : "bg-indigo-500")}
+                                                        className={cn("w-2 h-2 rounded-full", reminder.completed ? "bg-slate-300" : "bg-emerald-500")}
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             toggleReminder(reminder.id);
                                                         }}
                                                         title={reminder.completed ? "Mark as incomplete" : "Mark as done"}
                                                     />
-                                                    <span className={cn("text-xs font-bold", reminder.completed ? "text-text-muted" : "text-indigo-700")}>
+                                                    <span className={cn("text-xs font-bold", reminder.completed ? "text-text-muted" : "text-white")}>
                                                         Reminder
                                                     </span>
                                                 </div>
                                                 <UserAvatar userId={reminder.createdBy} className="h-4 w-4 text-[8px]" />
                                             </div>
-                                            <h4 className={cn("font-semibold text-sm line-clamp-2", reminder.completed ? "text-text-muted line-through" : "text-navy-900")}>
+                                            <h4 className={cn("font-semibold text-sm line-clamp-2", reminder.completed ? "text-text-muted line-through" : "text-white")}>
                                                 {reminder.title}
                                             </h4>
                                             {reminder.description && (
-                                                <p className={cn("text-xs mt-1 line-clamp-1", reminder.completed ? "text-text-muted" : "text-navy-600")}>
+                                                <p className={cn("text-xs mt-1 line-clamp-1", reminder.completed ? "text-text-muted" : "text-slate-400")}>
                                                     {reminder.description}
                                                 </p>
                                             )}

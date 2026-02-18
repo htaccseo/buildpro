@@ -219,7 +219,7 @@ export function ProjectDetails() {
             </div>
 
             {/* Header */}
-            <div className={cn("relative min-h-[256px] h-auto rounded-3xl overflow-hidden group shadow-sm transition-all", project.color)}>
+            <div className={cn("relative min-h-[256px] h-auto rounded-3xl overflow-hidden group shadow-sm transition-all mt-6 md:mt-0", project.color)}>
                 <div className="absolute inset-0 bg-black/10" />
                 <div className="absolute inset-0 bg-gradient-to-t from-navy-900/60 to-transparent" />
                 <div className="absolute bottom-0 left-0 p-6 md:p-8 w-full">

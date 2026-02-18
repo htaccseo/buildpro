@@ -126,15 +126,15 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                                         className="w-full max-w-[200px] h-auto rounded-lg border border-emerald-100 shadow-sm"
                                         onClick={() => window.open(task.completionImage, '_blank')}
                                     />
-                                    <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/10 transition-colors rounded-lg cursor-pointer">
-                                        <Camera className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 drop-shadow-md" />
+                                    <div className="absolute inset-0 flex items-center justify-center bg-black/0 md:group-hover:bg-black/10 transition-colors rounded-lg cursor-pointer">
+                                        <Camera className="w-6 h-6 text-white opacity-0 md:group-hover:opacity-100 drop-shadow-md" />
                                         <a
                                             href={task.completionImage}
                                             download
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             onClick={(e) => e.stopPropagation()}
-                                            className="absolute bottom-2 right-2 p-1.5 bg-white/90 text-slate-700 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white hover:text-emerald-600"
+                                            className="absolute bottom-2 right-2 p-1.5 bg-white/90 text-slate-700 rounded-full shadow-sm opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity hover:bg-white hover:text-emerald-600"
                                             title="Download Image"
                                         >
                                             <Download className="w-4 h-4" />

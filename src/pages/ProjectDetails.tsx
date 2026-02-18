@@ -3,32 +3,31 @@ import React, { useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useStore } from '../lib/store';
 import { format } from 'date-fns';
-import { ArrowLeft, Calendar, Camera, CheckCircle, Clock, MapPin, MessageSquare, Pencil, Plus, Send, Trash2, UserPlus, Edit2, X, Paperclip } from 'lucide-react';
+import { ArrowLeft, Calendar, Camera, CheckCircle, Clock, MapPin, MessageSquare, Pencil, Plus, Trash2, UserPlus, Edit2, X, Paperclip } from 'lucide-react';
 import { cn, resizeImage } from '../lib/utils';
 import { Card } from '../components/ui/Card';
 import { NewProjectModal } from '../components/NewProjectModal';
 import { UserAvatar } from '../components/UserAvatar';
 import { TaskDetailModal } from '../components/TaskDetailModal';
-import type { Task } from '../lib/types';
+import { TaskFormModal } from '../components/TaskFormModal';
+import { ProjectUpdateModal } from '../components/ProjectUpdateModal';
+import type { Task, ProjectUpdate } from '../lib/types';
 
 export function ProjectDetails() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { projects, users, currentUser, assignTask, completeTask, uncompleteTask, addTask, updateTask, addProjectUpdate, deleteProject, deleteTask } = useStore();
+    const { projects, users, currentUser, assignTask, completeTask, uncompleteTask, addTask, updateTask, addProjectUpdate, deleteProject, deleteTask, updateProjectUpdate, deleteProjectUpdate } = useStore();
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     // Task Management State
     const [isTaskFormOpen, setIsTaskFormOpen] = useState(false);
     const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
-    const [taskTitle, setTaskTitle] = useState('');
-    const [taskDesc, setTaskDesc] = useState('');
-    const [taskDate, setTaskDate] = useState('');
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
     const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
 
     // Progress Update State
     const [isUpdateFormOpen, setIsUpdateFormOpen] = useState(false);
-    const [updateMessage, setUpdateMessage] = useState('');
+    const [updateToEdit, setUpdateToEdit] = useState<ProjectUpdate | null>(null);
 
     const project = projects.find(p => p.id === id);
 
@@ -38,61 +37,62 @@ export function ProjectDetails() {
 
     const [activeTab, setActiveTab] = useState<'tasks' | 'updates'>('tasks');
 
-    const handleTaskSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleTaskSubmit = (taskData: Partial<Task>) => {
         if (taskToEdit) {
             updateTask(project.id, {
                 ...taskToEdit,
-                title: taskTitle,
-                description: taskDesc,
-                requiredDate: taskDate
+                ...taskData,
+                title: taskData.title!,
+                description: taskData.description!,
+                requiredDate: taskData.requiredDate!
             });
         } else {
             addTask(project.id, {
                 id: Math.random().toString(36).substr(2, 9),
                 projectId: project.id,
-                title: taskTitle,
-                description: taskDesc,
-                requiredDate: taskDate,
+                title: taskData.title!,
+                description: taskData.description!,
+                requiredDate: taskData.requiredDate!,
                 status: 'pending'
             });
         }
-        closeTaskForm();
+        setIsTaskFormOpen(false);
+        setTaskToEdit(null);
     };
 
     const openTaskForm = (task?: Task) => {
         if (task) {
             setTaskToEdit(task);
-            setTaskTitle(task.title);
-            setTaskDesc(task.description);
-            setTaskDate(task.requiredDate);
         } else {
             setTaskToEdit(null);
-            setTaskTitle('');
-            setTaskDesc('');
-            setTaskDate('');
         }
         setIsTaskFormOpen(true);
     };
 
-    const closeTaskForm = () => {
-        setIsTaskFormOpen(false);
-        setTaskToEdit(null);
+    const handlePostUpdate = (message: string) => {
+        if (updateToEdit) {
+            updateProjectUpdate(project.id, { ...updateToEdit, message });
+            setUpdateToEdit(null);
+        } else {
+            addProjectUpdate(project.id, {
+                id: Math.random().toString(36).substr(2, 9),
+                projectId: project.id,
+                message: message,
+                date: new Date().toISOString(),
+                authorName: currentUser?.name || 'Admin',
+                userId: currentUser?.id
+            });
+        }
+        setIsUpdateFormOpen(false);
     };
 
-    const handlePostUpdate = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!updateMessage.trim()) return;
-
-        addProjectUpdate(project.id, {
-            id: Math.random().toString(36).substr(2, 9),
-            projectId: project.id,
-            message: updateMessage,
-            date: new Date().toISOString(),
-            authorName: currentUser?.name || 'Admin'
-        });
-        setUpdateMessage('');
-        setIsUpdateFormOpen(false);
+    const openUpdateForm = (update?: ProjectUpdate) => {
+        if (update) {
+            setUpdateToEdit(update);
+        } else {
+            setUpdateToEdit(null);
+        }
+        setIsUpdateFormOpen(true);
     };
 
     const handleDeleteProject = async () => {
@@ -309,59 +309,90 @@ export function ProjectDetails() {
                                 </button>
                             </div>
 
-                            {/* Task Form */}
-                            {isTaskFormOpen && (
-                                <Card className="p-6 border-none shadow-md ring-1 ring-slate-100 animate-in slide-in-from-top-4 duration-200">
-                                    <h3 className="text-lg font-bold text-navy-900 mb-4">{taskToEdit ? 'Edit Requirement' : 'New Requirement'}</h3>
-                                    <form onSubmit={handleTaskSubmit} className="space-y-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-navy-900 mb-1.5">Title</label>
-                                            <input
-                                                type="text"
-                                                value={taskTitle}
-                                                onChange={(e) => setTaskTitle(e.target.value)}
-                                                className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none"
-                                                placeholder="e.g. Install Windows"
-                                                required
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-navy-900 mb-1.5">Description</label>
-                                            <textarea
-                                                value={taskDesc}
-                                                onChange={(e) => setTaskDesc(e.target.value)}
-                                                className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none h-24 resize-none"
-                                                placeholder="Details about the task..."
-                                                required
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-navy-900 mb-1.5">Due Date</label>
-                                            <input
-                                                type="date"
-                                                value={taskDate}
-                                                onChange={(e) => setTaskDate(e.target.value)}
-                                                className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none"
-                                                required
-                                            />
-                                        </div>
-                                        <div className="flex gap-3 pt-2">
-                                            <button
-                                                type="button"
-                                                onClick={closeTaskForm}
-                                                className="flex-1 px-4 py-2 rounded-xl border border-slate-200 text-navy-900 hover:bg-slate-50"
+                            {project.tasks.length === 0 ? (
+                                <div className="text-center py-12 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
+                                    <p className="text-text-muted">No work requirements yet.</p>
+                                </div>
+                            ) : (
+                                <div className="space-y-3">
+                                    {project.tasks.map((task) => {
+                                        const assignee = users.find(u => u.id === task.assignedTo);
+
+                                        return (
+                                            <Card
+                                                key={task.id}
+                                                className="p-5 flex items-start gap-4 border-none shadow-sm hover:shadow-md transition-all group cursor-pointer hover:bg-slate-50/50"
+                                                onClick={() => {
+                                                    setSelectedTask(task);
+                                                    setIsTaskDetailOpen(true);
+                                                }}
                                             >
-                                                Cancel
-                                            </button>
-                                            <button
-                                                type="submit"
-                                                className="flex-1 px-4 py-2 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-500/20"
-                                            >
-                                                {taskToEdit ? 'Save Changes' : 'Add Task'}
-                                            </button>
-                                        </div>
-                                    </form>
-                                </Card>
+                                                <div className={cn("mt-1 p-2 rounded-lg bg-slate-50", task.status === 'completed' ? 'text-emerald-500' : 'text-amber-500')}>
+                                                    {task.status === 'completed' ? <CheckCircle className="w-5 h-5" /> : <Clock className="w-5 h-5" />}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex justify-between items-start gap-4">
+                                                        <div className="min-w-0 flex-1">
+                                                            <div className="flex items-center gap-2 mb-1">
+                                                                <h3 className={cn("text-lg font-medium truncate pr-2", task.status === 'completed' ? "text-text-muted line-through" : "text-navy-900")}>
+                                                                    {task.title}
+                                                                </h3>
+                                                                {task.createdBy && <UserAvatar userId={task.createdBy} className="h-5 w-5 text-[10px] shrink-0" />}
+                                                            </div>
+                                                            <p className="text-text-muted text-sm line-clamp-2">{task.description}</p>
+
+                                                            {/* Attachments List */}
+                                                            {task.attachments && task.attachments.length > 0 && (
+                                                                <div className="mt-2 flex flex-wrap gap-2">
+                                                                    {task.attachments.map((url, idx) => {
+                                                                        const filename = url.split('/').pop() || 'Attachment';
+                                                                        return (
+                                                                            <a
+                                                                                key={idx}
+                                                                                href={url}
+                                                                                download
+                                                                                onClick={(e) => e.stopPropagation()}
+                                                                                className="inline-flex items-center gap-1 px-2 py-1 bg-white border border-slate-200 rounded-md text-xs font-medium text-emerald-600 hover:bg-emerald-50 hover:border-emerald-200 transition-colors"
+                                                                            >
+                                                                                <Paperclip className="w-3 h-3" />
+                                                                                <span className="truncate max-w-[150px]">{filename}</span>
+                                                                            </a>
+                                                                        );
+                                                                    })}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        <div className="text-right shrink-0">
+                                                            <div className="text-sm font-medium text-navy-900 mb-1">
+                                                                {assignee ? (
+                                                                    <div className="flex items-center justify-end gap-2">
+                                                                        <span className="hidden sm:inline text-navy-700">{assignee.name}</span>
+                                                                        <UserAvatar userId={assignee.id} className="w-8 h-8 border border-slate-100" />
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="flex items-center justify-end gap-2 opacity-50">
+                                                                        <span className="hidden sm:inline text-text-muted">Unassigned</span>
+                                                                        <div className="w-8 h-8 rounded-full bg-slate-100 border border-dashed border-slate-300 flex items-center justify-center">
+                                                                            <UserPlus className="w-4 h-4 text-slate-400" />
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                            <p className={cn(
+                                                                "text-xs mt-1 font-medium",
+                                                                task.requiredDate && new Date(task.requiredDate) < new Date() && task.status !== 'completed'
+                                                                    ? "text-rose-500"
+                                                                    : "text-text-muted"
+                                                            )}>
+                                                                Due {format(new Date(task.requiredDate), 'MMM d')}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </Card>
+                                        );
+                                    })}
+                                </div>
                             )}
 
                             {/* Completion Modal */}
@@ -430,137 +461,20 @@ export function ProjectDetails() {
                                     </div>
                                 </div>
                             )}
-
-                            {project.tasks.length === 0 && !isTaskFormOpen && (
-                                <div className="text-center py-12 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
-                                    <p className="text-text-muted">No work requirements yet.</p>
-                                </div>
-                            )}
-
-                            {project.tasks.map(task => {
-                                const assignee = users.find(u => u.id === task.assignedTo);
-                                return (
-                                    <Card
-                                        key={task.id}
-                                        className="p-5 flex items-start gap-4 border-none shadow-sm hover:shadow-md transition-all group cursor-pointer hover:bg-slate-50/50"
-                                        onClick={() => {
-                                            setSelectedTask(task);
-                                            setIsTaskDetailOpen(true);
-                                        }}
-                                    >
-                                        <div className={cn("mt-1 p-2 rounded-lg bg-slate-50", task.status === 'completed' ? 'text-emerald-500' : 'text-amber-500')}>
-                                            {task.status === 'completed' ? <CheckCircle className="w-5 h-5" /> : <Clock className="w-5 h-5" />}
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex justify-between items-start gap-4">
-                                                <div className="min-w-0 flex-1">
-                                                    <div className="flex items-center gap-2 mb-1">
-                                                        <h3 className={cn("text-lg font-medium truncate pr-2", task.status === 'completed' ? "text-text-muted line-through" : "text-navy-900")}>
-                                                            {task.title}
-                                                        </h3>
-                                                        {task.createdBy && <UserAvatar userId={task.createdBy} className="h-5 w-5 text-[10px] shrink-0" />}
-                                                    </div>
-                                                    <p className="text-text-muted text-sm line-clamp-2">{task.description}</p>
-
-                                                    {/* Attachments List */}
-                                                    {task.attachments && task.attachments.length > 0 && (
-                                                        <div className="mt-2 flex flex-wrap gap-2">
-                                                            {task.attachments.map((url, idx) => {
-                                                                const filename = url.split('/').pop() || 'Attachment';
-                                                                return (
-                                                                    <a
-                                                                        key={idx}
-                                                                        href={url}
-                                                                        download
-                                                                        onClick={(e) => e.stopPropagation()}
-                                                                        className="inline-flex items-center gap-1 px-2 py-1 bg-white border border-slate-200 rounded-md text-xs font-medium text-emerald-600 hover:bg-emerald-50 hover:border-emerald-200 transition-colors"
-                                                                    >
-                                                                        <Paperclip className="w-3 h-3" />
-                                                                        <span className="truncate max-w-[150px]">{filename}</span>
-                                                                    </a>
-                                                                );
-                                                            })}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                                <div className="text-right shrink-0">
-                                                    <div className="text-sm font-medium text-navy-900 mb-1">
-                                                        {assignee ? (
-                                                            <div className="flex items-center justify-end gap-2">
-                                                                <span className="hidden sm:inline text-navy-700">{assignee.name}</span>
-                                                                <UserAvatar userId={assignee.id} className="w-8 h-8 border border-slate-100" />
-                                                            </div>
-                                                        ) : (
-                                                            <div className="flex items-center justify-end gap-2 opacity-50">
-                                                                <span className="hidden sm:inline text-text-muted">Unassigned</span>
-                                                                <div className="w-8 h-8 rounded-full bg-slate-100 border border-dashed border-slate-300 flex items-center justify-center">
-                                                                    <UserPlus className="w-4 h-4 text-slate-400" />
-                                                                </div>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                    <p className={cn(
-                                                        "text-xs mt-1 font-medium",
-                                                        task.requiredDate && new Date(task.requiredDate) < new Date() && task.status !== 'completed'
-                                                            ? "text-rose-500"
-                                                            : "text-text-muted"
-                                                    )}>
-                                                        Due {format(new Date(task.requiredDate), 'MMM d')}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </Card>
-                                );
-                            })}
                         </div>
                     )}
 
                     {activeTab === 'updates' && (
-                        <div className="space-y-6">
+                        <div className="space-y-4">
                             <div className="flex justify-end">
                                 <button
-                                    onClick={() => setIsUpdateFormOpen(true)}
+                                    onClick={() => openUpdateForm()}
                                     className="flex items-center gap-2 px-4 py-2 bg-navy-900 text-white rounded-xl hover:bg-navy-800 transition-colors shadow-lg shadow-navy-900/20 text-sm font-medium"
                                 >
                                     <Plus className="w-4 h-4" />
                                     Add Notification
                                 </button>
                             </div>
-
-                            {isUpdateFormOpen && (
-                                <Card className="p-6 border-none shadow-md ring-1 ring-slate-100 animate-in slide-in-from-top-4 duration-200">
-                                    <h3 className="text-lg font-bold text-navy-900 mb-4">Post Update</h3>
-                                    <form onSubmit={handlePostUpdate} className="space-y-4">
-                                        <div>
-                                            <textarea
-                                                value={updateMessage}
-                                                onChange={(e) => setUpdateMessage(e.target.value)}
-                                                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none h-32 resize-none"
-                                                placeholder="e.g. Building Surveyor has been engaged..."
-                                                required
-                                            />
-                                        </div>
-                                        <div className="flex gap-3 pt-2">
-                                            <button
-                                                type="button"
-                                                onClick={() => setIsUpdateFormOpen(false)}
-                                                className="flex-1 px-4 py-2 rounded-xl border border-slate-200 text-navy-900 hover:bg-slate-50"
-                                            >
-                                                Cancel
-                                            </button>
-                                            <button
-                                                type="submit"
-                                                disabled={!updateMessage.trim()}
-                                                className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20"
-                                            >
-                                                <Send className="w-4 h-4" />
-                                                Post
-                                            </button>
-                                        </div>
-                                    </form>
-                                </Card>
-                            )}
 
                             <div className="space-y-4">
                                 {(project.updates || []).length === 0 ? (
@@ -570,7 +484,17 @@ export function ProjectDetails() {
                                     </div>
                                 ) : (
                                     (project.updates || []).slice().reverse().map((update) => (
-                                        <ProjectUpdateCard key={update.id} update={update} projectId={project.id} />
+                                        <ProjectUpdateCard
+                                            key={update.id}
+                                            update={update}
+                                            projectId={project.id}
+                                            onEdit={() => openUpdateForm(update)}
+                                            onDelete={() => {
+                                                if (confirm('Are you sure you want to delete this update?')) {
+                                                    deleteProjectUpdate(project.id, update.id);
+                                                }
+                                            }}
+                                        />
                                     ))
                                 )}
                             </div>
@@ -619,6 +543,22 @@ export function ProjectDetails() {
                 projectToEdit={project}
             />
 
+            <TaskFormModal
+                isOpen={isTaskFormOpen}
+                onClose={() => setIsTaskFormOpen(false)}
+                onSubmit={handleTaskSubmit}
+                initialData={taskToEdit}
+                title={taskToEdit ? 'Edit Requirement' : 'New requirement'}
+            />
+
+            <ProjectUpdateModal
+                isOpen={isUpdateFormOpen}
+                onClose={() => setIsUpdateFormOpen(false)}
+                onSubmit={handlePostUpdate}
+                initialData={updateToEdit}
+                title={updateToEdit ? 'Edit Notification' : 'New Notification'}
+            />
+
             {selectedTask && (
                 <TaskDetailModal
                     isOpen={isTaskDetailOpen}
@@ -640,32 +580,14 @@ export function ProjectDetails() {
     );
 }
 
-const ProjectUpdateCard = ({ update, projectId }: { update: any, projectId: string }) => {
-    const { deleteProjectUpdate, updateProjectUpdate } = useStore();
-    const [isEditing, setIsEditing] = React.useState(false);
-    const [message, setMessage] = React.useState(update.message);
-
-    const handleSave = () => {
-        if (message.trim()) {
-            updateProjectUpdate(projectId, { ...update, message });
-            setIsEditing(false);
-        }
-    };
-
-    const handleDelete = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        if (confirm('Are you sure you want to delete this update?')) {
-            deleteProjectUpdate(projectId, update.id);
-        }
-    };
-
+const ProjectUpdateCard = ({ update, onEdit, onDelete }: { update: ProjectUpdate, projectId?: string, onEdit: () => void, onDelete: () => void }) => {
     return (
         <Card className="p-5 border-none shadow-sm flex gap-4 bg-white">
             <div className="flex-shrink-0 mt-1">
-                {(update.userId || update.authorName) ? (
+                {(update.userId) ? (
                     <UserAvatar userId={update.userId} className="w-10 h-10 text-sm border-2 border-emerald-100" />
                 ) : (
-                    <UserAvatar userId={update.userId} className="w-10 h-10 text-sm border-2 border-emerald-100" />
+                    <UserAvatar userId="" className="w-10 h-10 text-sm border-2 border-emerald-100" />
                 )}
             </div>
             <div className="flex-1 min-w-0">
@@ -676,14 +598,17 @@ const ProjectUpdateCard = ({ update, projectId }: { update: any, projectId: stri
                     </div>
                     <div className="flex gap-1">
                         <button
-                            onClick={() => setIsEditing(!isEditing)}
+                            onClick={onEdit}
                             className="p-1.5 text-slate-300 hover:text-emerald-600 transition-colors rounded-lg hover:bg-emerald-50"
                             title="Edit Update"
                         >
                             <Edit2 className="w-3.5 h-3.5" />
                         </button>
                         <button
-                            onClick={handleDelete}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onDelete();
+                            }}
                             className="p-1.5 text-slate-300 hover:text-rose-500 transition-colors rounded-lg hover:bg-rose-50"
                             title="Delete Update"
                         >
@@ -692,32 +617,7 @@ const ProjectUpdateCard = ({ update, projectId }: { update: any, projectId: stri
                     </div>
                 </div>
 
-                {isEditing ? (
-                    <div className="mt-2 space-y-2">
-                        <textarea
-                            value={message}
-                            onChange={(e) => setMessage(e.target.value)}
-                            className="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none text-navy-700 resize-none min-h-[80px]"
-                            autoFocus
-                        />
-                        <div className="flex gap-2 justify-end">
-                            <button
-                                onClick={() => setIsEditing(false)}
-                                className="px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handleSave}
-                                className="px-3 py-1.5 text-xs font-medium bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg transition-colors"
-                            >
-                                Save Changes
-                            </button>
-                        </div>
-                    </div>
-                ) : (
-                    <p className="text-navy-700 leading-relaxed whitespace-pre-wrap">{update.message}</p>
-                )}
+                <p className="text-navy-700 leading-relaxed whitespace-pre-wrap">{update.message}</p>
             </div>
         </Card>
     );

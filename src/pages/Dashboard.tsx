@@ -166,7 +166,7 @@ export function Dashboard() {
                                                 "p-4 rounded-xl border flex gap-4 hover:shadow-sm transition-all group cursor-pointer",
                                                 reminder.completed
                                                     ? "bg-slate-50 border-slate-100 opacity-75"
-                                                    : "bg-indigo-50 border-indigo-100"
+                                                    : "bg-black border-black shadow-md shadow-black/10"
                                             )}
                                             onClick={() => {
                                                 setSelectedReminder(reminder);
@@ -176,12 +176,12 @@ export function Dashboard() {
                                             <div
                                                 className={cn(
                                                     "w-1 h-12 rounded-full transition-colors shrink-0",
-                                                    reminder.completed ? "bg-slate-300" : "bg-indigo-500"
+                                                    reminder.completed ? "bg-slate-300" : "bg-emerald-500"
                                                 )}
                                             />
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex justify-between items-start">
-                                                    <h4 className={cn("font-medium text-navy-900 truncate", reminder.completed && "line-through text-text-muted")} title={reminder.title}>
+                                                    <h4 className={cn("font-medium truncate", reminder.completed ? "line-through text-text-muted text-navy-900" : "text-white")} title={reminder.title}>
                                                         {reminder.title}
                                                     </h4>
                                                     <div className="flex items-center gap-1">
@@ -192,7 +192,7 @@ export function Dashboard() {
                                                 </div>
                                                 {reminder.description && (
                                                     <div className="group/desc relative">
-                                                        <p className={cn("text-sm mt-0.5 line-clamp-2", reminder.completed ? "text-text-muted" : "text-navy-600")} title={reminder.description}>
+                                                        <p className={cn("text-sm mt-0.5 line-clamp-2", reminder.completed ? "text-text-muted" : "text-slate-400")} title={reminder.description}>
                                                             {reminder.description}
                                                         </p>
                                                     </div>

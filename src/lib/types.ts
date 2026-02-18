@@ -35,6 +35,7 @@ export interface Task {
     completionImage?: string;
     createdBy?: string;
     completedBy?: string;
+    attachments?: string[];
 }
 
 export interface ProjectUpdate {

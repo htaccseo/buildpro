@@ -3,17 +3,18 @@ import React, { useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useStore } from '../lib/store';
 import { format } from 'date-fns';
-import { ArrowLeft, Calendar, Camera, CheckCircle, Clock, FileText, MapPin, MessageSquare, Pencil, Plus, Send, Trash2, UserPlus, Edit2, X } from 'lucide-react';
+import { ArrowLeft, Calendar, Camera, CheckCircle, Clock, MapPin, MessageSquare, Pencil, Plus, Send, Trash2, UserPlus, Edit2, X, Paperclip } from 'lucide-react';
 import { cn, resizeImage } from '../lib/utils';
 import { Card } from '../components/ui/Card';
 import { NewProjectModal } from '../components/NewProjectModal';
 import { UserAvatar } from '../components/UserAvatar';
+import { TaskDetailModal } from '../components/TaskDetailModal';
 import type { Task } from '../lib/types';
 
 export function ProjectDetails() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { projects, users, currentUser, assignTask, completeTask, uncompleteTask, addTask, updateTask, addProjectUpdate, deleteProject, deleteTask } = useStore();
+    const { projects, users, currentUser, completeTask, uncompleteTask, addTask, updateTask, addProjectUpdate, deleteProject, deleteTask } = useStore();
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     // Task Management State
@@ -22,6 +23,8 @@ export function ProjectDetails() {
     const [taskTitle, setTaskTitle] = useState('');
     const [taskDesc, setTaskDesc] = useState('');
     const [taskDate, setTaskDate] = useState('');
+    const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+    const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
 
     // Progress Update State
     const [isUpdateFormOpen, setIsUpdateFormOpen] = useState(false);
@@ -437,122 +440,75 @@ export function ProjectDetails() {
                             {project.tasks.map(task => {
                                 const assignee = users.find(u => u.id === task.assignedTo);
                                 return (
-                                    <Card key={task.id} className="p-5 flex items-start gap-4 border-none shadow-sm hover:shadow-md transition-shadow group">
+                                    <Card
+                                        key={task.id}
+                                        className="p-5 flex items-start gap-4 border-none shadow-sm hover:shadow-md transition-all group cursor-pointer hover:bg-slate-50/50"
+                                        onClick={() => {
+                                            setSelectedTask(task);
+                                            setIsTaskDetailOpen(true);
+                                        }}
+                                    >
                                         <div className={cn("mt-1 p-2 rounded-lg bg-slate-50", task.status === 'completed' ? 'text-emerald-500' : 'text-amber-500')}>
                                             {task.status === 'completed' ? <CheckCircle className="w-5 h-5" /> : <Clock className="w-5 h-5" />}
                                         </div>
-                                        <div className="flex-1">
-                                            <div className="flex justify-between items-start">
-                                                <div>
-                                                    <div className="flex items-center gap-2">
-                                                        <h3 className={cn("text-lg font-medium", task.status === 'completed' ? "text-text-muted line-through" : "text-navy-900")}>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex justify-between items-start gap-4">
+                                                <div className="min-w-0 flex-1">
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <h3 className={cn("text-lg font-medium truncate pr-2", task.status === 'completed' ? "text-text-muted line-through" : "text-navy-900")}>
                                                             {task.title}
                                                         </h3>
-                                                        {task.createdBy && <UserAvatar userId={task.createdBy} className="h-5 w-5 text-[10px]" />}
-                                                        <button
-                                                            onClick={() => openTaskForm(task)}
-                                                            className="text-slate-400 hover:text-navy-900 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
-                                                        >
-                                                            <Pencil className="w-3.5 h-3.5" />
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleDeleteTask(task.id)}
-                                                            className="text-slate-400 hover:text-rose-500 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
-                                                        >
-                                                            <Trash2 className="w-3.5 h-3.5" />
-                                                        </button>
+                                                        {task.createdBy && <UserAvatar userId={task.createdBy} className="h-5 w-5 text-[10px] shrink-0" />}
                                                     </div>
-                                                    <p className="text-text-muted text-sm mt-1">{task.description}</p>
-                                                </div>
-                                                <div className="text-right">
-                                                    <div className="text-sm font-medium text-navy-900">
-                                                        {assignee ? (
-                                                            <div className="flex items-center gap-2 bg-slate-50 px-3 py-1 rounded-full border border-slate-100">
-                                                                <img src={assignee.avatar} className="w-5 h-5 rounded-full" />
-                                                                <span>{assignee.name}</span>
-                                                            </div>
-                                                        ) : (
-                                                            <div className="flex items-center gap-2 text-text-muted bg-slate-50 px-3 py-1 rounded-full border border-dashed border-slate-200">
-                                                                <UserPlus className="w-4 h-4" />
-                                                                <span>Unassigned</span>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                    <p className="text-xs text-text-muted mt-2">Due {format(new Date(task.requiredDate), 'MMM d')}</p>
-                                                </div>
-                                            </div>
+                                                    <p className="text-text-muted text-sm line-clamp-2">{task.description}</p>
 
-                                            {/* Actions */}
-                                            {task.status !== 'completed' && (
-                                                <div className="mt-4 flex gap-3 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                                                    <div className="relative group/assign">
-                                                        <select
-                                                            className="opacity-0 absolute inset-0 w-full h-full cursor-pointer"
-                                                            onChange={(e) => assignTask(task.id, e.target.value)}
-                                                            value={task.assignedTo || ''}
-                                                        >
-                                                            <option value="">Assign to...</option>
-                                                            {users.filter(u => u.role !== 'builder').map(u => (
-                                                                <option key={u.id} value={u.id}>{u.name}</option>
-                                                            ))}
-                                                        </select>
-                                                        <button className="px-3 py-1.5 text-xs font-medium bg-white border border-slate-200 hover:bg-slate-50 text-navy-900 rounded-lg flex items-center gap-2 shadow-sm">
-                                                            <UserPlus className="w-3 h-3" />
-                                                            {task.assignedTo ? 'Reassign' : 'Assign Worker'}
-                                                        </button>
-                                                    </div>
-
-                                                    <button
-                                                        onClick={() => openCompletionModal(task.id)}
-                                                        className="px-3 py-1.5 text-xs font-medium bg-emerald-50 hover:bg-emerald-100 text-emerald-600 rounded-lg flex items-center gap-2"
-                                                    >
-                                                        <CheckCircle className="w-3 h-3" />
-                                                        Mark Complete
-                                                    </button>
-                                                </div>
-                                            )}
-
-                                            {task.status === 'completed' && task.completionNote && (
-                                                <div className="mt-4 bg-emerald-50 border border-emerald-100 p-3 rounded-lg relative group/report">
-                                                    <div className="flex justify-between items-start">
-                                                        <div className="flex items-center gap-2 text-emerald-700 text-sm font-medium mb-1">
-                                                            <FileText className="w-4 h-4" />
-                                                            Completion Report
-                                                            {task.completedBy && <UserAvatar userId={task.completedBy} className="h-4 w-4 text-[8px] ml-1" />}
-                                                        </div>
-                                                        <div className="flex gap-1 opacity-100 md:opacity-0 md:group-hover/report:opacity-100 transition-opacity">
-                                                            <button
-                                                                onClick={() => openCompletionModal(task.id, task.completionNote, task.completionImage)}
-                                                                className="text-emerald-600 hover:text-emerald-800 bg-white/50 hover:bg-white rounded-lg p-1.5"
-                                                                title="Edit Report"
-                                                            >
-                                                                <Edit2 className="w-3.5 h-3.5" />
-                                                            </button>
-                                                            <button
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    if (confirm('Delete this completion report? The task will revert to pending status.')) {
-                                                                        uncompleteTask(task.id);
-                                                                    }
-                                                                }}
-                                                                className="text-rose-400 hover:text-rose-600 bg-white/50 hover:bg-white rounded-lg p-1.5"
-                                                                title="Delete Report"
-                                                            >
-                                                                <Trash2 className="w-3.5 h-3.5" />
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                    <p className="text-sm text-navy-700">{task.completionNote}</p>
-                                                    {task.completionImage && (
-                                                        <div className="mt-2 relative group/img w-fit cursor-pointer" onClick={() => setExpandedImage(task.completionImage!)}>
-                                                            <img src={task.completionImage} alt="Proof" className="w-24 h-16 object-cover rounded-lg border border-slate-200 hover:ring-2 hover:ring-emerald-400 transition-all" />
-                                                            <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-100 md:opacity-0 md:group-hover/img:opacity-100 transition-opacity rounded-lg">
-                                                                <Camera className="w-4 h-4 text-white" />
-                                                            </div>
+                                                    {/* Attachments List */}
+                                                    {task.attachments && task.attachments.length > 0 && (
+                                                        <div className="mt-2 flex flex-wrap gap-2">
+                                                            {task.attachments.map((url, idx) => {
+                                                                const filename = url.split('/').pop() || 'Attachment';
+                                                                return (
+                                                                    <a
+                                                                        key={idx}
+                                                                        href={url}
+                                                                        download
+                                                                        onClick={(e) => e.stopPropagation()}
+                                                                        className="inline-flex items-center gap-1 px-2 py-1 bg-white border border-slate-200 rounded-md text-xs font-medium text-emerald-600 hover:bg-emerald-50 hover:border-emerald-200 transition-colors"
+                                                                    >
+                                                                        <Paperclip className="w-3 h-3" />
+                                                                        <span className="truncate max-w-[150px]">{filename}</span>
+                                                                    </a>
+                                                                );
+                                                            })}
                                                         </div>
                                                     )}
                                                 </div>
-                                            )}
+                                                <div className="text-right shrink-0">
+                                                    <div className="text-sm font-medium text-navy-900 mb-1">
+                                                        {assignee ? (
+                                                            <div className="flex items-center justify-end gap-2">
+                                                                <span className="hidden sm:inline text-navy-700">{assignee.name}</span>
+                                                                <UserAvatar userId={assignee.id} className="w-8 h-8 border border-slate-100" />
+                                                            </div>
+                                                        ) : (
+                                                            <div className="flex items-center justify-end gap-2 opacity-50">
+                                                                <span className="hidden sm:inline text-text-muted">Unassigned</span>
+                                                                <div className="w-8 h-8 rounded-full bg-slate-100 border border-dashed border-slate-300 flex items-center justify-center">
+                                                                    <UserPlus className="w-4 h-4 text-slate-400" />
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <p className={cn(
+                                                        "text-xs mt-1 font-medium",
+                                                        task.requiredDate && new Date(task.requiredDate) < new Date() && task.status !== 'completed'
+                                                            ? "text-rose-500"
+                                                            : "text-text-muted"
+                                                    )}>
+                                                        Due {format(new Date(task.requiredDate), 'MMM d')}
+                                                    </p>
+                                                </div>
+                                            </div>
                                         </div>
                                     </Card>
                                 );
@@ -662,6 +618,22 @@ export function ProjectDetails() {
                 onClose={() => setIsEditModalOpen(false)}
                 projectToEdit={project}
             />
+
+            {selectedTask && (
+                <TaskDetailModal
+                    isOpen={isTaskDetailOpen}
+                    onClose={() => {
+                        setIsTaskDetailOpen(false);
+                        setSelectedTask(null);
+                    }}
+                    task={selectedTask}
+                    users={users}
+                    onEdit={(task) => openTaskForm(task)}
+                    onDelete={(taskId) => handleDeleteTask(taskId)}
+                    onComplete={(taskId) => openCompletionModal(taskId)}
+                    onUncomplete={(taskId) => uncompleteTask(taskId)}
+                />
+            )}
         </div>
     );
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Task, User } from '../lib/types';
 import { format } from 'date-fns';
-import { X, Calendar, CheckCircle, Clock, Paperclip, Pencil, Trash2, Download, FileText, Camera, RotateCcw } from 'lucide-react';
+import { X, Calendar, CheckCircle, Clock, Paperclip, Pencil, Trash2, Download, FileText, Camera, RotateCcw, ChevronDown } from 'lucide-react';
 import { UserAvatar } from './UserAvatar';
 import { cn } from '../lib/utils';
 
@@ -14,6 +14,8 @@ interface TaskDetailModalProps {
     onDelete: (taskId: string) => void;
     onComplete: (taskId: string) => void;
     onUncomplete: (taskId: string) => void;
+    onAssign: (userId: string) => void;
+    onEditReport: (task: Task) => void;
 }
 
 export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
@@ -24,7 +26,9 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
     onEdit,
     onDelete,
     onComplete,
-    onUncomplete
+    onUncomplete,
+    onAssign,
+    onEditReport
 }) => {
     if (!isOpen) return null;
 
@@ -98,6 +102,16 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                                 <FileText className="w-4 h-4" />
                                 Completion Report
                                 {completer && <span className="text-emerald-600 font-medium ml-auto text-xs flex items-center gap-1">by <UserAvatar userId={completer.id} className="w-4 h-4" /> {completer.name}</span>}
+                                <button
+                                    onClick={() => {
+                                        onEditReport(task);
+                                        onClose();
+                                    }}
+                                    className="p-1 text-emerald-600 hover:text-emerald-800 hover:bg-emerald-100 rounded ml-2 transition-colors"
+                                    title="Edit Report"
+                                >
+                                    <Pencil className="w-3.5 h-3.5" />
+                                </button>
                             </div>
 
                             {task.completionNote && (
@@ -114,6 +128,17 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                                     />
                                     <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/10 transition-colors rounded-lg cursor-pointer">
                                         <Camera className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 drop-shadow-md" />
+                                        <a
+                                            href={task.completionImage}
+                                            download
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            onClick={(e) => e.stopPropagation()}
+                                            className="absolute bottom-2 right-2 p-1.5 bg-white/90 text-slate-700 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white hover:text-emerald-600"
+                                            title="Download Image"
+                                        >
+                                            <Download className="w-4 h-4" />
+                                        </a>
                                     </div>
                                 </div>
                             )}
@@ -122,9 +147,9 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
 
                     {/* Meta Info Grid */}
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                        <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 relative">
                             <span className="text-xs font-medium text-slate-400 uppercase tracking-wider block mb-2">Assigned To</span>
-                            <div className="flex items-center gap-2 overflow-hidden">
+                            <div className="flex items-center gap-2 overflow-hidden relative pr-6">
                                 {assignee ? (
                                     <>
                                         <UserAvatar userId={assignee.id} className="w-8 h-8 shrink-0" />
@@ -138,6 +163,17 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                                         <span className="text-sm font-medium text-slate-500 italic">Unassigned</span>
                                     </>
                                 )}
+                                <ChevronDown className="w-4 h-4 text-slate-400 absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                <select
+                                    value={task.assignedTo || ''}
+                                    onChange={(e) => onAssign(e.target.value)}
+                                    className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+                                >
+                                    <option value="">Unassigned</option>
+                                    {users.filter(u => u.role !== 'builder').map(u => (
+                                        <option key={u.id} value={u.id}>{u.name}</option>
+                                    ))}
+                                </select>
                             </div>
                         </div>
 

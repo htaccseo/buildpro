@@ -14,7 +14,7 @@ import type { Task } from '../lib/types';
 export function ProjectDetails() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { projects, users, currentUser, completeTask, uncompleteTask, addTask, updateTask, addProjectUpdate, deleteProject, deleteTask } = useStore();
+    const { projects, users, currentUser, assignTask, completeTask, uncompleteTask, addTask, updateTask, addProjectUpdate, deleteProject, deleteTask } = useStore();
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     // Task Management State
@@ -632,6 +632,8 @@ export function ProjectDetails() {
                     onDelete={(taskId) => handleDeleteTask(taskId)}
                     onComplete={(taskId) => openCompletionModal(taskId)}
                     onUncomplete={(taskId) => uncompleteTask(taskId)}
+                    onAssign={(userId) => assignTask(selectedTask.id, userId)}
+                    onEditReport={(task) => openCompletionModal(task.id, task.completionNote, task.completionImage)}
                 />
             )}
         </div>

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useStore } from '../lib/store';
 import { useOrganizationData } from '../lib/hooks';
-import { Search, Plus, Calendar, MapPin, User as UserIcon, CheckCircle, RotateCcw } from 'lucide-react';
+import { Search, Plus, Calendar, MapPin, User as UserIcon, CheckCircle, RotateCcw, Home, Store, Activity } from 'lucide-react';
 import { cn, formatDate } from '../lib/utils';
 import { Card } from '../components/ui/Card';
 import { NewProjectModal } from '../components/NewProjectModal';
@@ -86,16 +86,30 @@ export function Projects() {
                                 className="group block"
                             >
                                 <Card className="p-0 overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1 border-none shadow-sm h-full flex flex-col">
-                                    <div className={cn("h-48 relative shrink-0 flex items-center justify-center transition-all duration-700", project.color)}>
-                                        <div className="absolute top-4 right-4 z-10">
-                                            <UserAvatar userId={project.createdBy} className="h-8 w-8 text-xs border-2 border-white/50 shadow-sm" />
-                                        </div>
-                                        <MapPin className="w-16 h-16 text-white/20 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-                                        <div className="absolute top-0 left-0 w-full h-full bg-black/10" />
+                                    <div className={cn("h-48 relative shrink-0 flex items-center justify-center transition-all duration-700",
+                                        project.color.includes('emerald') ? "bg-emerald-500" :
+                                            (project.color.includes('blue') || project.color.includes('navy')) ? "bg-navy-900" : project.color
+                                    )}>
+                                        {/* Item 2 & 4: Center Icon */}
+                                        {project.color.includes('emerald') ? (
+                                            <Home className="w-16 h-16 text-navy-900 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-90" />
+                                        ) : (project.color.includes('blue') || project.color.includes('navy')) ? (
+                                            <Store className="w-16 h-16 text-emerald-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-90" />
+                                        ) : (
+                                            <Activity className="w-16 h-16 text-white/20 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                                        )}
+
+                                        {/* Item 5: Remove Top Right Avatar - DONE (Element Removed) */}
+
+                                        <div className="absolute top-0 left-0 w-full h-full bg-black/5" /> {/* Reduced overlay opacity */}
                                         <div className="absolute bottom-4 left-4 right-4">
-                                            <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold mb-2 capitalize ${project.status === 'active' ? 'bg-white/20 text-white backdrop-blur-sm' :
-                                                project.status === 'completed' ? 'bg-slate-900/40 text-white backdrop-blur-sm' : 'bg-amber-500/80 text-white backdrop-blur-sm'
-                                                }`}>
+                                            {/* Item 1 & 3: Status Badge */}
+                                            <span className={cn(
+                                                "inline-block px-2.5 py-1 rounded-full text-xs font-semibold mb-2 capitalize backdrop-blur-sm",
+                                                project.status === 'active'
+                                                    ? (project.color.includes('emerald') ? "bg-navy-900 text-white" : "bg-emerald-500 text-white")
+                                                    : project.status === 'completed' ? "bg-slate-900/40 text-white" : "bg-amber-500/80 text-white"
+                                            )}>
                                                 {project.status}
                                             </span>
                                             <h3 className="text-xl font-bold text-white truncate drop-shadow-sm">{project.name}</h3>
@@ -132,12 +146,19 @@ export function Projects() {
 
                                         <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
                                             <div className="flex -space-x-2">
-                                                {/* Mock avatars for project team */}
-                                                {[1, 2, 3].map(i => (
-                                                    <div key={i} className="w-8 h-8 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-xs text-navy-600 font-medium">
-                                                        <UserIcon className="w-4 h-4" />
-                                                    </div>
-                                                ))}
+                                                <div className="flex -space-x-2">
+                                                    {/* Item 6: Actual Creator + Assignees */}
+                                                    {Array.from(new Set([
+                                                        project.createdBy,
+                                                        ...(project.tasks || []).map(t => t.assignedTo)
+                                                    ])).filter(Boolean).slice(0, 4).map((userId) => (
+                                                        <UserAvatar
+                                                            key={userId as string}
+                                                            userId={userId as string}
+                                                            className="w-8 h-8 text-xs border-2 border-white shadow-sm"
+                                                        />
+                                                    ))}
+                                                </div>
                                             </div>
                                             <span className="text-sm text-emerald-600 group-hover:text-emerald-700 font-medium">View Details &rarr;</span>
                                         </div>

@@ -337,7 +337,7 @@ export function ProjectDetails() {
                                                                 <h3 className={cn("text-lg font-medium truncate pr-2", task.status === 'completed' ? "text-text-muted line-through" : "text-navy-900")}>
                                                                     {task.title}
                                                                 </h3>
-                                                                {task.createdBy && <UserAvatar userId={task.createdBy} className="h-5 w-5 text-[10px] shrink-0" />}
+                                                                {task.createdBy && <UserAvatar userId={task.createdBy} className="w-5 h-5 text-[10px]" />}
                                                             </div>
                                                             <p className="text-text-muted text-sm line-clamp-2">{task.description}</p>
 
@@ -367,7 +367,7 @@ export function ProjectDetails() {
                                                                 {assignee ? (
                                                                     <div className="flex items-center justify-end gap-2">
                                                                         <span className="hidden sm:inline text-navy-700">{assignee.name}</span>
-                                                                        <UserAvatar userId={assignee.id} className="border border-slate-100" />
+                                                                        <UserAvatar userId={assignee.id} />
                                                                     </div>
                                                                 ) : (
                                                                     <div className="flex items-center justify-end gap-2 opacity-50">
@@ -584,13 +584,13 @@ const ProjectUpdateCard = ({ update, onEdit, onDelete }: { update: ProjectUpdate
     return (
         <Card className="p-4 border-none shadow-sm bg-white">
             <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-3">
-                    <UserAvatar userId={update.userId} className="border-2 border-emerald-100" />
-                    <div>
-                        <div className="flex items-center gap-2">
-                            <span className="font-bold text-navy-900 leading-tight">{update.authorName}</span>
-                            <span className="text-text-muted text-xs">• {format(new Date(update.date), 'MMM d, h:mm a')}</span>
-                        </div>
+                <div className="flex items-center">
+                    <div className="mr-2.5">
+                        <UserAvatar userId={update.userId} />
+                    </div>
+                    <div className="flex items-baseline gap-2">
+                        <span className="font-bold text-navy-900 leading-tight">{update.authorName}</span>
+                        <span className="text-text-muted text-xs">• {format(new Date(update.date), 'MMM d, h:mm a')}</span>
                     </div>
                 </div>
                 <div className="flex gap-1">

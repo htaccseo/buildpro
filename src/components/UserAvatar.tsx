@@ -47,9 +47,10 @@ export function UserAvatar({ userId, className, showName = false, showBadge = fa
             <div className="relative">
                 <div
                     className={cn(
-                        "rounded-full flex items-center justify-center font-bold shadow-sm border-2 border-white",
+                        "w-8 h-8 text-xs flex items-center justify-center rounded-full font-bold shadow-sm border-2 border-white",
                         colorClass,
-                        className || "w-8 h-8 text-xs"
+                        // Allow specific overrides ONLY if absolutely necessary, but default to strict 32px
+                        className?.includes('w-') ? className : cn("w-8 h-8", className)
                     )}
                     title={user.name}
                 >
@@ -61,12 +62,14 @@ export function UserAvatar({ userId, className, showName = false, showBadge = fa
                     </div>
                 )}
             </div>
-            {showName && (
-                <div>
-                    <p className="text-sm font-semibold text-navy-900 leading-tight">{user.name}</p>
-                    <p className="text-xs text-slate-500 capitalize">{user.role}</p>
-                </div>
-            )}
-        </div>
+            {
+                showName && (
+                    <div>
+                        <p className="text-sm font-semibold text-navy-900 leading-tight">{user.name}</p>
+                        <p className="text-xs text-slate-500 capitalize">{user.role}</p>
+                    </div>
+                )
+            }
+        </div >
     );
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Task, User } from '../lib/types';
+import type { Task, User } from '../lib/types';
 import { format } from 'date-fns';
 import { X, Calendar, CheckCircle, Clock, Paperclip, Pencil, Trash2, Download, FileText, Camera, RotateCcw } from 'lucide-react';
 import { UserAvatar } from './UserAvatar';

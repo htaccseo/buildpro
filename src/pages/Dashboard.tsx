@@ -163,7 +163,7 @@ export function Dashboard() {
                                         <div
                                             key={reminder.id}
                                             className={cn(
-                                                "p-4 rounded-full border flex gap-4 hover:shadow-sm transition-all group cursor-pointer",
+                                                "p-4 rounded-xl border flex gap-4 hover:shadow-sm transition-all group cursor-pointer",
                                                 reminder.completed
                                                     ? "bg-slate-50 border-slate-100 opacity-75"
                                                     : "bg-indigo-50 border-indigo-100"
@@ -210,7 +210,7 @@ export function Dashboard() {
                                         <div
                                             key={task.id}
                                             className={cn(
-                                                "p-4 rounded-full border flex gap-4 hover:shadow-sm transition-all group cursor-pointer",
+                                                "p-4 rounded-xl border flex gap-4 hover:shadow-sm transition-all group cursor-pointer",
                                                 task.status === 'completed'
                                                     ? "bg-slate-50 border-slate-100 opacity-75"
                                                     : "bg-amber-50 border-amber-100/50" // Differentiate from personal reminders (indigo)

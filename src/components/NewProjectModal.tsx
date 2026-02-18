@@ -225,13 +225,13 @@ export function NewProjectModal({ isOpen, onClose, projectToEdit }: ProjectModal
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-navy-900 font-medium hover:bg-slate-50 transition-colors"
+                            className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-navy-700 font-medium hover:bg-slate-50 transition-colors"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
-                            className="flex-1 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-lg shadow-emerald-500/20 transition-all"
+                            className="flex-1 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-lg shadow-emerald-600/20 transition-all"
                         >
                             {projectToEdit ? 'Save Changes' : 'Create Project'}
                         </button>

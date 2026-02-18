@@ -179,8 +179,8 @@ export function NewMeetingModal({ isOpen, onClose, initialDate, meeting }: NewMe
                                 type="button"
                                 onClick={() => setIsCompleted(!isCompleted)}
                                 className={`flex-1 py-2.5 px-4 rounded-xl text-sm font-semibold transition-colors flex items-center justify-center gap-2 ${isCompleted
-                                    ? 'bg-emerald-500 text-white hover:bg-emerald-600 shadow-emerald-500/20 shadow-lg'
-                                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                    ? 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-emerald-600/20 shadow-lg font-bold'
+                                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200 font-medium'
                                     }`}
                             >
                                 <Check className="w-4 h-4" />
@@ -199,7 +199,7 @@ export function NewMeetingModal({ isOpen, onClose, initialDate, meeting }: NewMe
                         </button>
                         <button
                             type="submit"
-                            className="flex-1 px-4 py-2.5 rounded-xl bg-navy-900 text-white hover:bg-navy-800 font-medium transition-all shadow-lg shadow-navy-900/20 text-sm"
+                            className="flex-1 px-4 py-2.5 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 font-bold transition-all shadow-lg shadow-emerald-600/20 text-sm"
                         >
                             {meeting ? 'Save Changes' : 'Create Meeting'}
                         </button>

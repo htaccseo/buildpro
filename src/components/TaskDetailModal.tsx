@@ -237,7 +237,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                                 onComplete(task.id);
                                 onClose();
                             }}
-                            className="w-full px-4 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 font-medium shadow-md shadow-emerald-500/20 flex items-center justify-center gap-2 transition-colors mb-1"
+                            className="w-full px-4 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 font-bold shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2 transition-colors mb-1"
                         >
                             <CheckCircle className="w-4 h-4" />
                             Mark as Complete
@@ -262,7 +262,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                                 onEdit(task);
                                 onClose();
                             }}
-                            className="flex-1 px-4 py-3 bg-white border border-slate-200 text-navy-900 rounded-xl hover:bg-slate-50 font-medium shadow-sm flex items-center justify-center gap-2 transition-colors"
+                            className="flex-1 px-4 py-3 bg-white border border-slate-200 text-navy-700 rounded-xl hover:bg-slate-50 font-medium shadow-sm flex items-center justify-center gap-2 transition-colors"
                         >
                             <Pencil className="w-4 h-4" />
                             Edit details

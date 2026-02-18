@@ -175,7 +175,7 @@ export function LandingPage() {
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <button
                             onClick={handleSignUpClick}
-                            className="px-8 py-4 bg-emerald-500 text-white text-lg font-extrabold rounded-2xl hover:bg-emerald-400 transition-all shadow-xl shadow-emerald-500/20 hover:-translate-y-1 w-full sm:w-auto"
+                            className="px-8 py-4 bg-emerald-600 text-white text-lg font-extrabold rounded-2xl hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-600/20 hover:-translate-y-1 w-full sm:w-auto"
                         >
                             Get Started Now
                         </button>

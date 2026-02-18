@@ -196,7 +196,7 @@ export function Login({ initialMode = 'login' }: { initialMode?: 'login' | 'sign
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full bg-navy-900 hover:bg-navy-800 text-white font-medium py-3 rounded-xl transition-colors shadow-lg shadow-navy-900/20 disabled:opacity-70 flex items-center justify-center mt-6"
+                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-emerald-600/20 disabled:opacity-70 flex items-center justify-center mt-6"
                     >
                         {isLoading ? (
                             <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

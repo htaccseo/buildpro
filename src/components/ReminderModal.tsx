@@ -80,7 +80,7 @@ export function ReminderModal({ isOpen, onClose, initialDate, existingReminder }
                     {existingReminder && (
                         <button
                             onClick={handleDelete}
-                            className="text-slate-400 hover:text-rose-500 transition-colors p-2 rounded-lg hover:bg-rose-50"
+                            className="text-slate-400 hover:text-rose-600 transition-colors p-2 rounded-lg hover:bg-rose-50"
                             title="Delete Reminder"
                         >
                             <Trash2 className="w-5 h-5" />
@@ -148,7 +148,7 @@ export function ReminderModal({ isOpen, onClose, initialDate, existingReminder }
                         </button>
                         <button
                             type="submit"
-                            className="flex-1 px-4 py-2.5 rounded-xl bg-navy-900 text-white hover:bg-navy-800 font-medium transition-all shadow-lg shadow-navy-900/20 text-sm"
+                            className="flex-1 px-4 py-2.5 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 font-bold transition-all shadow-lg shadow-emerald-600/20 text-sm"
                         >
                             {existingReminder ? 'Save Changes' : 'Create Reminder'}
                         </button>

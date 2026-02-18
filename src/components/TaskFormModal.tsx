@@ -115,13 +115,13 @@ export const TaskFormModal: React.FC<TaskFormModalProps> = ({
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 px-4 py-3 bg-white border border-slate-200 text-navy-900 rounded-xl hover:bg-slate-50 font-medium transition-colors"
+                            className="flex-1 px-4 py-3 bg-white border border-slate-200 text-navy-700 rounded-xl hover:bg-slate-50 font-medium transition-colors"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
-                            className="flex-1 px-4 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 font-medium shadow-lg shadow-emerald-500/20 transition-colors"
+                            className="flex-1 px-4 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 font-bold shadow-lg shadow-emerald-600/20 transition-colors"
                         >
                             {initialData ? 'Save Changes' : 'Create Requirement'}
                         </button>

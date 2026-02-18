@@ -209,7 +209,7 @@ export function Settings() {
                             <button
                                 type="submit"
                                 disabled={isSaving}
-                                className="bg-navy-900 hover:bg-navy-800 text-white px-6 py-2.5 rounded-xl font-medium shadow-lg shadow-navy-900/20 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2 disabled:opacity-70"
+                                className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg shadow-emerald-600/20 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2 disabled:opacity-70"
                             >
                                 {isSaving ? (
                                     <>

@@ -130,7 +130,7 @@ export function Invoices() {
                         setInvoiceType(activeTab);
                         setIsFormOpen(true);
                     }}
-                    className="flex items-center gap-2 px-6 py-3 bg-navy-900 text-white rounded-xl hover:bg-navy-800 transition-colors shadow-lg shadow-navy-900/20 font-medium"
+                    className="flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-600/20 font-bold"
                 >
                     <Plus className="w-5 h-5" />
                     New Invoice
@@ -270,100 +270,102 @@ export function Invoices() {
             </div>
 
             {/* New Invoice Modal */}
-            {isFormOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl animate-in zoom-in-95 duration-200">
-                        <h3 className="text-xl font-bold text-navy-900 mb-4">
-                            {isEditing ? 'Edit Invoice' : (activeTab === 'sent' ? 'New Invoice' : 'New Bill')}
-                        </h3>
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-navy-900 mb-1.5">{activeTab === 'sent' ? 'Client Name' : 'Payee Name'}</label>
-                                <input
-                                    type="text"
-                                    value={clientName}
-                                    onChange={(e) => setClientName(e.target.value)}
-                                    className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none"
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-navy-900 mb-1.5">Description</label>
-                                <input
-                                    type="text"
-                                    value={description}
-                                    onChange={(e) => setDescription(e.target.value)}
-                                    className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none"
-                                    required
-                                />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
+            {
+                isFormOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+                        <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl animate-in zoom-in-95 duration-200">
+                            <h3 className="text-xl font-bold text-navy-900 mb-4">
+                                {isEditing ? 'Edit Invoice' : (activeTab === 'sent' ? 'New Invoice' : 'New Bill')}
+                            </h3>
+                            <form onSubmit={handleSubmit} className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-navy-900 mb-1.5">Amount ($)</label>
+                                    <label className="block text-sm font-medium text-navy-900 mb-1.5">{activeTab === 'sent' ? 'Client Name' : 'Payee Name'}</label>
                                     <input
-                                        type="number"
-                                        value={amount}
-                                        onChange={(e) => setAmount(e.target.value)}
+                                        type="text"
+                                        value={clientName}
+                                        onChange={(e) => setClientName(e.target.value)}
                                         className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none"
                                         required
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-navy-900 mb-1.5">Due Date</label>
+                                    <label className="block text-sm font-medium text-navy-900 mb-1.5">Description</label>
+                                    <input
+                                        type="text"
+                                        value={description}
+                                        onChange={(e) => setDescription(e.target.value)}
+                                        className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none"
+                                        required
+                                    />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-navy-900 mb-1.5">Amount ($)</label>
+                                        <input
+                                            type="number"
+                                            value={amount}
+                                            onChange={(e) => setAmount(e.target.value)}
+                                            className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none"
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-navy-900 mb-1.5">Due Date</label>
+                                        <input
+                                            type="date"
+                                            value={dueDate}
+                                            onChange={(e) => setDueDate(e.target.value)}
+                                            className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none"
+                                            required
+                                        />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-navy-900 mb-1.5">Issue Date</label>
                                     <input
                                         type="date"
-                                        value={dueDate}
-                                        onChange={(e) => setDueDate(e.target.value)}
+                                        value={issueDate}
+                                        onChange={(e) => setIssueDate(e.target.value)}
                                         className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none"
                                         required
                                     />
                                 </div>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-navy-900 mb-1.5">Issue Date</label>
-                                <input
-                                    type="date"
-                                    value={issueDate}
-                                    onChange={(e) => setIssueDate(e.target.value)}
-                                    className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none"
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-navy-900 mb-1.5">Attachment (Optional)</label>
-                                <div className="flex items-center gap-3">
-                                    <label className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 transition-colors text-sm font-medium text-navy-700">
-                                        <Paperclip className="w-4 h-4" />
-                                        <span>{attachment ? 'Change File' : 'Upload File'}</span>
-                                        <input
-                                            type="file"
-                                            accept="image/*,application/pdf"
-                                            onChange={handleFileUpload}
-                                            className="hidden"
-                                        />
-                                    </label>
-                                    {attachment && <span className="text-xs text-emerald-600 font-medium flex items-center gap-1"><FileText className="w-3 h-3" /> File Selected</span>}
+                                <div>
+                                    <label className="block text-sm font-medium text-navy-900 mb-1.5">Attachment (Optional)</label>
+                                    <div className="flex items-center gap-3">
+                                        <label className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 transition-colors text-sm font-medium text-navy-700">
+                                            <Paperclip className="w-4 h-4" />
+                                            <span>{attachment ? 'Change File' : 'Upload File'}</span>
+                                            <input
+                                                type="file"
+                                                accept="image/*,application/pdf"
+                                                onChange={handleFileUpload}
+                                                className="hidden"
+                                            />
+                                        </label>
+                                        {attachment && <span className="text-xs text-emerald-600 font-medium flex items-center gap-1"><FileText className="w-3 h-3" /> File Selected</span>}
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="flex gap-3 pt-2">
-                                <button
-                                    type="button"
-                                    onClick={() => setIsFormOpen(false)}
-                                    className="flex-1 px-4 py-2 rounded-xl border border-slate-200 text-navy-900 hover:bg-slate-50"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="flex-1 px-4 py-2 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-500/20"
-                                >
-                                    {isEditing ? 'Save Changes' : (activeTab === 'sent' ? 'Create Invoice' : 'Create Bill')}
-                                </button>
-                            </div>
-                        </form>
+                                <div className="flex gap-3 pt-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsFormOpen(false)}
+                                        className="flex-1 px-4 py-2 rounded-xl border border-slate-200 text-navy-900 hover:bg-slate-50"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="flex-1 px-4 py-2 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-500/20"
+                                    >
+                                        {isEditing ? 'Save Changes' : (activeTab === 'sent' ? 'Create Invoice' : 'Create Bill')}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 }

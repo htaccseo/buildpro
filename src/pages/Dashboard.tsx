@@ -256,7 +256,14 @@ export function Dashboard() {
                                 <Link key={project.id} to={`/projects/${project.id}`} className="block">
                                     <Card className="p-4 sm:p-5 flex flex-row items-center justify-between gap-0 sm:gap-6 hover:shadow-md transition-all cursor-pointer group border-none shadow-sm h-full relative">
                                         <div className={cn("w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-white shadow-inner shrink-0 mr-3 sm:mr-0", project.color)}>
-                                            <Activity className="w-6 h-6 sm:w-8 sm:h-8 opacity-80" />
+                                            {/* Icon Logic based on color */}
+                                            {project.color.includes('emerald') ? (
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 sm:w-8 sm:h-8 opacity-90"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                                            ) : project.color.includes('blue') ? (
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 sm:w-8 sm:h-8 opacity-90"><path d="M6 22V9l12-13v13"></path><path d="M6 22h12"></path><path d="M6 9h12"></path></svg>
+                                            ) : (
+                                                <Activity className="w-6 h-6 sm:w-8 sm:h-8 opacity-80" />
+                                            )}
                                         </div>
 
                                         <div className="flex-1 min-w-0">

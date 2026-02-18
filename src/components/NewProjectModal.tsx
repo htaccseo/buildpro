@@ -129,27 +129,59 @@ export function NewProjectModal({ isOpen, onClose, projectToEdit }: ProjectModal
 
                     <div className="h-px bg-slate-100" />
 
-                    {/* Branding/Color Selection */}
+                    {/* Project Type / Theme */}
                     <div className="space-y-3">
-                        <h3 className="text-sm font-semibold text-navy-900 uppercase tracking-wider">Project Theme</h3>
-                        <div className="grid grid-cols-6 gap-2">
-                            {PROJECT_COLORS.map((color) => (
+                        <h3 className="text-sm font-semibold text-navy-900 uppercase tracking-wider">Project Type</h3>
+                        <div className="grid grid-cols-2 gap-4">
+                            {[
+                                {
+                                    id: 'residential',
+                                    label: 'Residential',
+                                    color: 'bg-gradient-to-br from-emerald-500 to-teal-600',
+                                    ring: 'ring-emerald-500',
+                                    icon: <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                                },
+                                {
+                                    id: 'commercial',
+                                    label: 'Commercial',
+                                    color: 'bg-gradient-to-br from-blue-500 to-indigo-600',
+                                    ring: 'ring-blue-500',
+                                    icon: <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 22V9l12-13v13"></path><path d="M6 22h12"></path><path d="M6 9h12"></path></svg>
+                                }
+                            ].map((type) => (
                                 <button
-                                    key={color.id}
+                                    key={type.id}
                                     type="button"
-                                    onClick={() => setSelectedColor(color.class)}
+                                    onClick={() => setSelectedColor(type.color)}
                                     className={cn(
-                                        "w-full aspect-square rounded-full relative flex items-center justify-center transition-transform hover:scale-110",
-                                        color.class,
-                                        selectedColor === color.class && "ring-2 ring-offset-2 ring-emerald-500 scale-110"
+                                        "relative flex flex-col items-center gap-3 p-4 rounded-2xl border-2 transition-all hover:scale-[1.02]",
+                                        selectedColor === type.color
+                                            ? `${type.ring} bg-slate-50 border-transparent`
+                                            : "border-slate-100 bg-white hover:border-slate-200"
                                     )}
-                                    title={color.label}
                                 >
-                                    {selectedColor === color.class && <Check className="w-4 h-4 text-white" />}
+                                    {/* Icon Circle */}
+                                    <div className={cn(
+                                        "w-12 h-12 rounded-full flex items-center justify-center shadow-lg",
+                                        type.color
+                                    )}>
+                                        {type.icon}
+                                    </div>
+                                    <span className={cn(
+                                        "font-bold text-sm",
+                                        selectedColor === type.color ? "text-navy-900" : "text-text-muted"
+                                    )}>
+                                        {type.label}
+                                    </span>
+
+                                    {selectedColor === type.color && (
+                                        <div className="absolute top-3 right-3 text-emerald-500">
+                                            <Check className="w-5 h-5" />
+                                        </div>
+                                    )}
                                 </button>
                             ))}
                         </div>
-                        <p className="text-xs text-text-muted">Select a color theme for the project dashboard.</p>
                     </div>
 
                     <div className="h-px bg-slate-100" />

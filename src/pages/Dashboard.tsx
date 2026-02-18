@@ -213,29 +213,29 @@ export function Dashboard() {
                                                 "p-4 rounded-xl border flex gap-4 hover:shadow-sm transition-all group cursor-pointer",
                                                 task.status === 'completed'
                                                     ? "bg-slate-50 border-slate-100 opacity-75"
-                                                    : "bg-amber-50 border-amber-100/50" // Differentiate from personal reminders (indigo)
+                                                    : "bg-emerald-500 border-emerald-500 shadow-md shadow-emerald-500/20" // Green background (Item 1 <- Item 3)
                                             )}
                                             onClick={() => navigate(`/projects/${task.projectId}`)}
                                         >
                                             <div
                                                 className={cn(
                                                     "w-1 h-12 rounded-full transition-colors shrink-0",
-                                                    task.status === 'completed' ? "bg-slate-300" : "bg-amber-500"
+                                                    task.status === 'completed' ? "bg-slate-300" : "bg-black" // Black bar (Item 2 <- Item 4)
                                                 )}
                                             />
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex justify-between items-start">
-                                                    <h4 className={cn("font-medium text-navy-900 truncate", task.status === 'completed' && "line-through text-text-muted")}>
+                                                    <h4 className={cn("font-medium truncate", task.status === 'completed' ? "line-through text-text-muted" : "text-white")}>
                                                         {task.title}
                                                     </h4>
                                                     {/* Task assignment avatar handles the 'who' part naturally, createdBy not strictly needed here but could be added if requested for tasks too */}
                                                 </div>
                                                 {task.description && (
-                                                    <p className={cn("text-sm mt-0.5 line-clamp-2", task.status === 'completed' ? "text-text-muted" : "text-navy-600")}>
+                                                    <p className={cn("text-sm mt-0.5 line-clamp-2", task.status === 'completed' ? "text-text-muted" : "text-emerald-50")}>
                                                         {task.description}
                                                     </p>
                                                 )}
-                                                <p className="text-sm text-text-muted mt-1">Project Task • Due: {formatDate(task.requiredDate, 'MMM d')}</p>
+                                                <p className={cn("text-sm mt-1", task.status === 'completed' ? "text-text-muted" : "text-emerald-100")}>Project Task • Due: {formatDate(task.requiredDate, 'MMM d')}</p>
                                             </div>
                                         </div>
                                     ))}

@@ -107,12 +107,16 @@ export function Projects() {
                                             <span className={cn(
                                                 "inline-block px-2.5 py-1 rounded-full text-xs font-semibold mb-2 capitalize backdrop-blur-sm",
                                                 project.status === 'active'
-                                                    ? (project.color.includes('emerald') ? "bg-navy-900 text-white" : "bg-emerald-500 text-white")
+                                                    ? (project.color.includes('emerald') ? "bg-navy-900 text-white" : "bg-emerald-500 text-navy-900")
                                                     : project.status === 'completed' ? "bg-slate-900/40 text-white" : "bg-amber-500/80 text-white"
                                             )}>
                                                 {project.status}
                                             </span>
-                                            <h3 className="text-xl font-bold text-white truncate drop-shadow-sm">{project.name}</h3>
+                                            <h3 className={cn(
+                                                "text-xl font-bold truncate drop-shadow-sm",
+                                                project.color.includes('emerald') ? "text-navy-900" :
+                                                    (project.color.includes('blue') || project.color.includes('navy')) ? "text-emerald-500" : "text-white"
+                                            )}>{project.name}</h3>
                                         </div>
                                     </div>
 

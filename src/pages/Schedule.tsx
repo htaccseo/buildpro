@@ -51,14 +51,14 @@ export function Schedule() {
                             setSelectedReminder(null);
                             setIsReminderModalOpen(true);
                         }}
-                        className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-indigo-50 text-indigo-700 rounded-xl hover:bg-indigo-100 transition-colors font-medium border border-indigo-100 text-sm sm:text-base"
+                        className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-indigo-50 text-indigo-700 rounded-full hover:bg-indigo-100 transition-colors font-medium border border-indigo-100 text-sm sm:text-base"
                     >
                         <Plus className="w-4 h-4" />
                         <span>Reminder</span>
                     </button>
                     <button
                         onClick={() => setIsMeetingModalOpen(true)}
-                        className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors font-medium shadow-lg shadow-emerald-500/20 text-sm sm:text-base"
+                        className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-emerald-600 text-white rounded-full hover:bg-emerald-700 transition-colors font-medium shadow-lg shadow-emerald-500/20 text-sm sm:text-base"
                     >
                         <Plus className="w-4 h-4" />
                         <span>Meeting</span>
@@ -66,7 +66,7 @@ export function Schedule() {
 
                     <div className="h-8 w-px bg-slate-200 mx-1 hidden sm:block"></div>
 
-                    <div className="flex items-center gap-1 sm:gap-2 bg-white p-1 rounded-xl border border-slate-200 shadow-sm grow sm:grow-0 justify-between sm:justify-start">
+                    <div className="flex items-center gap-1 sm:gap-2 bg-white p-1 rounded-full border border-slate-200 shadow-sm grow sm:grow-0 justify-between sm:justify-start">
                         <button onClick={prevWeek} className="p-1.5 sm:p-2 hover:bg-slate-50 rounded-lg transition-colors text-navy-600">
                             <ChevronLeft className="w-5 h-5" />
                         </button>
@@ -98,7 +98,7 @@ export function Schedule() {
                             <div key={i} className="flex flex-col gap-3 min-w-0">
                                 {/* Header */}
                                 <div className={cn(
-                                    "p-3 rounded-xl border flex sm:block items-center justify-between sm:text-center gap-4",
+                                    "p-3 rounded-full border flex sm:block items-center justify-between sm:text-center gap-4",
                                     isToday ? "bg-emerald-50 border-emerald-200" : "bg-slate-50 border-transparent"
                                 )}>
                                     <div className={cn("text-xs font-semibold uppercase", isToday ? "text-emerald-600" : "text-text-muted")}>
@@ -115,7 +115,7 @@ export function Schedule() {
                                     {dayMeetings.map(meeting => (
                                         <div
                                             key={meeting.id}
-                                            className="bg-emerald-50 border border-emerald-100 p-3 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-default group"
+                                            className="bg-emerald-50 border border-emerald-100 p-3 rounded-full shadow-sm hover:shadow-md transition-shadow cursor-default group"
                                         >
                                             <div className="flex justify-between items-start mb-1">
                                                 <div className="flex items-center gap-2">

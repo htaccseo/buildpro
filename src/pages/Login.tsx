@@ -94,7 +94,7 @@ export function Login({ initialMode = 'login' }: { initialMode?: 'login' | 'sign
         <div className="min-h-screen bg-bg-app flex items-center justify-center p-4">
             <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-100 max-h-[90vh] overflow-y-auto">
                 <div className="flex flex-col items-center mb-8">
-                    <div className="w-12 h-12 rounded-xl bg-emerald-500 flex items-center justify-center mb-4">
+                    <div className="w-12 h-12 rounded-full bg-emerald-500 flex items-center justify-center mb-4">
                         <LayoutDashboard className="w-6 h-6 text-white" />
                     </div>
                     <h1 className="text-2xl font-bold text-navy-900">{isSignUp ? 'Create Account' : 'Welcome Back'}</h1>
@@ -116,7 +116,7 @@ export function Login({ initialMode = 'login' }: { initialMode?: 'login' | 'sign
                                     type="text"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
-                                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-navy-900"
+                                    className="w-full px-4 py-3 rounded-full bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-navy-900"
                                     placeholder="John Doe"
                                     required
                                 />
@@ -127,7 +127,7 @@ export function Login({ initialMode = 'login' }: { initialMode?: 'login' | 'sign
                                     type="tel"
                                     value={phone}
                                     onChange={(e) => setPhone(e.target.value)}
-                                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-navy-900"
+                                    className="w-full px-4 py-3 rounded-full bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-navy-900"
                                     placeholder="+61 400 000 000"
                                     required
                                 />
@@ -139,14 +139,14 @@ export function Login({ initialMode = 'login' }: { initialMode?: 'login' | 'sign
                                         type="text"
                                         value={company}
                                         onChange={(e) => setCompany(e.target.value)}
-                                        className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-navy-900"
+                                        className="w-full px-4 py-3 rounded-full bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-navy-900"
                                         placeholder="Acme Construction"
                                         required
                                     />
                                 </div>
                             )}
                             {inviteOrgId && (
-                                <div className="p-3 bg-emerald-50 text-emerald-700 text-sm rounded-xl border border-emerald-100 flex items-center gap-2">
+                                <div className="p-3 bg-emerald-50 text-emerald-700 text-sm rounded-full border border-emerald-100 flex items-center gap-2">
                                     <span className="font-bold">Joining Team</span>
                                     <span className="text-emerald-600 text-xs">(Organization ID applied)</span>
                                 </div>
@@ -160,7 +160,7 @@ export function Login({ initialMode = 'login' }: { initialMode?: 'login' | 'sign
                             type="email"
                             value={isSignUp ? signupEmail : email}
                             onChange={(e) => isSignUp ? setSignupEmail(e.target.value) : setEmail(e.target.value)}
-                            className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-navy-900"
+                            className="w-full px-4 py-3 rounded-full bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-navy-900"
                             placeholder="john@example.com"
                             required
                         />
@@ -172,7 +172,7 @@ export function Login({ initialMode = 'login' }: { initialMode?: 'login' | 'sign
                             type="password"
                             value={isSignUp ? signupPassword : password}
                             onChange={(e) => isSignUp ? setSignupPassword(e.target.value) : setPassword(e.target.value)}
-                            className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-navy-900"
+                            className="w-full px-4 py-3 rounded-full bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-navy-900"
                             placeholder="••••••••"
                             required
                         />
@@ -184,7 +184,7 @@ export function Login({ initialMode = 'login' }: { initialMode?: 'login' | 'sign
                             <select
                                 value={role}
                                 onChange={(e) => setRole(e.target.value as UserRole)}
-                                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-navy-900 appearance-none disabled:opacity-60 disabled:cursor-not-allowed"
+                                className="w-full px-4 py-3 rounded-full bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-navy-900 appearance-none disabled:opacity-60 disabled:cursor-not-allowed"
                                 disabled={!!inviteRole}
                             >
                                 <option value="builder">Builder</option>
@@ -196,7 +196,7 @@ export function Login({ initialMode = 'login' }: { initialMode?: 'login' | 'sign
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-emerald-600/20 disabled:opacity-70 flex items-center justify-center mt-6"
+                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-full transition-colors shadow-lg shadow-emerald-600/20 disabled:opacity-70 flex items-center justify-center mt-6"
                     >
                         {isLoading ? (
                             <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

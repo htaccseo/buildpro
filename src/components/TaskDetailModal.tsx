@@ -97,7 +97,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
 
                     {/* Completion Report */}
                     {task.status === 'completed' && (task.completionNote || task.completionImage) && (
-                        <div className="bg-emerald-50/50 border border-emerald-100 p-4 rounded-xl space-y-3">
+                        <div className="bg-emerald-50/50 border border-emerald-100 p-4 rounded-full space-y-3">
                             <div className="flex items-center gap-2 text-emerald-700 text-sm font-bold">
                                 <FileText className="w-4 h-4" />
                                 Completion Report
@@ -147,7 +147,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
 
                     {/* Meta Info Grid */}
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 relative">
+                        <div className="bg-slate-50 p-3 rounded-full border border-slate-100 relative">
                             <span className="text-xs font-medium text-slate-400 uppercase tracking-wider block mb-2">Assigned To</span>
                             <div className="flex items-center gap-2 overflow-hidden relative pr-6">
                                 {assignee ? (
@@ -177,7 +177,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                             </div>
                         </div>
 
-                        <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                        <div className="bg-slate-50 p-3 rounded-full border border-slate-100">
                             <span className="text-xs font-medium text-slate-400 uppercase tracking-wider block mb-2">Created By</span>
                             <div className="flex items-center gap-2 overflow-hidden">
                                 {creator ? (
@@ -209,7 +209,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                                             download
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-xl hover:border-emerald-200 hover:bg-emerald-50/50 transition-all group"
+                                            className="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-full hover:border-emerald-200 hover:bg-emerald-50/50 transition-all group"
                                             onClick={(e) => e.stopPropagation()}
                                         >
                                             <div className="flex items-center gap-3 min-w-0">
@@ -237,7 +237,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                                 onComplete(task.id);
                                 onClose();
                             }}
-                            className="w-full px-4 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 font-bold shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2 transition-colors mb-1"
+                            className="w-full px-4 py-3 bg-emerald-600 text-white rounded-full hover:bg-emerald-700 font-bold shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2 transition-colors mb-1"
                         >
                             <CheckCircle className="w-4 h-4" />
                             Mark as Complete
@@ -250,7 +250,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                                     onClose();
                                 }
                             }}
-                            className="w-full px-4 py-3 bg-white border border-slate-200 text-slate-600 hover:text-navy-900 rounded-xl hover:bg-slate-50 font-medium flex items-center justify-center gap-2 transition-colors mb-1"
+                            className="w-full px-4 py-3 bg-white border border-slate-200 text-slate-600 hover:text-navy-900 rounded-full hover:bg-slate-50 font-medium flex items-center justify-center gap-2 transition-colors mb-1"
                         >
                             <RotateCcw className="w-4 h-4" />
                             Reopen Task
@@ -262,7 +262,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                                 onEdit(task);
                                 onClose();
                             }}
-                            className="flex-1 px-4 py-3 bg-white border border-slate-200 text-navy-700 rounded-xl hover:bg-slate-50 font-medium shadow-sm flex items-center justify-center gap-2 transition-colors"
+                            className="flex-1 px-4 py-3 bg-white border border-slate-200 text-navy-700 rounded-full hover:bg-slate-50 font-medium shadow-sm flex items-center justify-center gap-2 transition-colors"
                         >
                             <Pencil className="w-4 h-4" />
                             Edit details
@@ -272,7 +272,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                                 onDelete(task.id);
                                 onClose();
                             }}
-                            className="px-4 py-3 bg-white border border-rose-100 text-rose-600 rounded-xl hover:bg-rose-50 font-medium shadow-sm flex items-center justify-center gap-2 transition-colors"
+                            className="px-4 py-3 bg-white border border-rose-100 text-rose-600 rounded-full hover:bg-rose-50 font-medium shadow-sm flex items-center justify-center gap-2 transition-colors"
                         >
                             <Trash2 className="w-5 h-5" />
                         </button>

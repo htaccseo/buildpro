@@ -95,7 +95,7 @@ export function ReminderModal({ isOpen, onClose, initialDate, existingReminder }
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900 placeholder:text-slate-400"
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900 placeholder:text-slate-400"
                             placeholder="e.g., Call supplier"
                             required
                         />
@@ -106,7 +106,7 @@ export function ReminderModal({ isOpen, onClose, initialDate, existingReminder }
                         <textarea
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900 placeholder:text-slate-400 min-h-[80px]"
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900 placeholder:text-slate-400 min-h-[80px]"
                             placeholder="Add details..."
                         />
                     </div>
@@ -117,7 +117,7 @@ export function ReminderModal({ isOpen, onClose, initialDate, existingReminder }
                             type="date"
                             value={date}
                             onChange={(e) => setDate(e.target.value)}
-                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900"
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900"
                             required
                         />
                     </div>
@@ -127,7 +127,7 @@ export function ReminderModal({ isOpen, onClose, initialDate, existingReminder }
                         <select
                             value={assignedTo}
                             onChange={(e) => setAssignedTo(e.target.value)}
-                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900 appearance-none"
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900 appearance-none"
                         >
                             <option value="">Select User...</option>
                             {users.map((user) => (
@@ -142,13 +142,13 @@ export function ReminderModal({ isOpen, onClose, initialDate, existingReminder }
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium transition-colors text-sm"
+                            className="flex-1 px-4 py-2.5 rounded-full border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium transition-colors text-sm"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
-                            className="flex-1 px-4 py-2.5 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 font-bold transition-all shadow-lg shadow-emerald-600/20 text-sm"
+                            className="flex-1 px-4 py-2.5 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 font-bold transition-all shadow-lg shadow-emerald-600/20 text-sm"
                         >
                             {existingReminder ? 'Save Changes' : 'Create Reminder'}
                         </button>

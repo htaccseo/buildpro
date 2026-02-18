@@ -65,7 +65,7 @@ export const ProjectUpdateModal: React.FC<ProjectUpdateModalProps> = ({
                         <textarea
                             value={message}
                             onChange={(e) => setMessage(e.target.value)}
-                            className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all placeholder:text-slate-400 h-40 resize-none text-base"
+                            className="w-full px-4 py-3 rounded-full bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all placeholder:text-slate-400 h-40 resize-none text-base"
                             placeholder="What's the latest progress..."
                             required
                             autoFocus
@@ -76,14 +76,14 @@ export const ProjectUpdateModal: React.FC<ProjectUpdateModalProps> = ({
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 px-4 py-3 bg-white border border-slate-200 text-navy-700 rounded-xl hover:bg-slate-50 font-medium transition-colors"
+                            className="flex-1 px-4 py-3 bg-white border border-slate-200 text-navy-700 rounded-full hover:bg-slate-50 font-medium transition-colors"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={!message.trim()}
-                            className="flex-1 px-4 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 font-bold shadow-lg shadow-emerald-600/20 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex-1 px-4 py-3 bg-emerald-600 text-white rounded-full hover:bg-emerald-700 font-bold shadow-lg shadow-emerald-600/20 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <Send className="w-4 h-4" />
                             {initialData ? 'Save Changes' : 'Post Update'}

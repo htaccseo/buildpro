@@ -138,7 +138,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                             value={sidebarSearch}
                             onChange={(e) => setSidebarSearch(e.target.value)}
                             onKeyDown={handleSidebarSearch}
-                            className="w-full bg-slate-50 text-sm text-navy-900 placeholder-slate-400 pl-9 pr-3 py-2.5 rounded-xl border border-transparent focus:border-emerald-500 focus:outline-none transition-all hover:bg-slate-100"
+                            className="w-full bg-slate-50 text-sm text-navy-900 placeholder-slate-400 pl-9 pr-3 py-2.5 rounded-full border border-transparent focus:border-emerald-500 focus:outline-none transition-all hover:bg-slate-100"
                         />
                     </div>
                 </div>
@@ -150,13 +150,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
                             to={item.path}
                             onClick={() => setIsMobileMenuOpen(false)}
                             className={cn(
-                                "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group text-sm font-medium",
+                                "flex items-center gap-3 px-4 py-3 rounded-full transition-all duration-200 group text-sm font-medium",
                                 location.pathname === item.path
-                                    ? "bg-emerald-50 text-emerald-600 font-semibold ring-1 ring-emerald-100"
+                                    ? "bg-black text-white font-bold shadow-lg shadow-black/10"
                                     : "text-slate-500 hover:bg-slate-50 hover:text-navy-900"
                             )}
                         >
-                            <item.icon className={cn("w-5 h-5 transition-transform group-hover:scale-105", location.pathname === item.path && "stroke-[2.5px]")} />
+                            <item.icon className={cn("w-5 h-5 transition-transform group-hover:scale-105", location.pathname === item.path && "text-emerald-400")} />
                             <span>{item.label}</span>
                         </Link>
                     ))}

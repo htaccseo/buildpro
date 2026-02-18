@@ -31,7 +31,7 @@ export function SuperAdminDashboard() {
             </div>
 
             {/* Tabs */}
-            <div className="flex space-x-1 bg-slate-100 p-1 rounded-xl w-fit">
+            <div className="flex space-x-1 bg-slate-100 p-1 rounded-full w-fit">
                 <button
                     onClick={() => setActiveTab('orgs')}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'orgs' ? 'bg-white text-navy-900 shadow-sm' : 'text-slate-500 hover:text-navy-900'}`}
@@ -63,7 +63,7 @@ export function SuperAdminDashboard() {
                                 placeholder="Search organizations..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                                className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
                             />
                         </div>
                     </div>
@@ -139,7 +139,7 @@ export function SuperAdminDashboard() {
                             placeholder="Search users..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                            className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
                         />
                     </div>
 
@@ -182,12 +182,12 @@ export function SuperAdminDashboard() {
             {activeTab === 'stats' && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <Card className="p-6 border-none shadow-sm flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center">
                             <Building className="w-6 h-6" />
                         </div>
                         <div>
                             <p className="text-sm font-medium text-text-muted">Total Organizations</p>
-                            <h3 className="text-2xl font-bold text-navy-900">{organizations.length}</h3>
+                            <h3 className="text-5xl font-extrabold text-navy-900">{organizations.length}</h3>
                             <p className="text-xs text-emerald-600 font-medium mt-1">
                                 {activeOrgs} active
                             </p>
@@ -195,22 +195,22 @@ export function SuperAdminDashboard() {
                     </Card>
 
                     <Card className="p-6 border-none shadow-sm flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center">
                             <Users className="w-6 h-6" />
                         </div>
                         <div>
                             <p className="text-sm font-medium text-text-muted">Total Users</p>
-                            <h3 className="text-2xl font-bold text-navy-900">{users.length}</h3>
+                            <h3 className="text-5xl font-extrabold text-navy-900">{users.length}</h3>
                         </div>
                     </Card>
 
                     <Card className="p-6 border-none shadow-sm flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center">
                             <TrendingUp className="w-6 h-6" />
                         </div>
                         <div>
                             <p className="text-sm font-medium text-text-muted">Total ARR (Est.)</p>
-                            <h3 className="text-2xl font-bold text-navy-900">${(totalRevenue * 12).toLocaleString()}</h3>
+                            <h3 className="text-5xl font-extrabold text-navy-900">${(totalRevenue * 12).toLocaleString()}</h3>
                             <p className="text-xs text-slate-400 mt-1">Based on mock pricing</p>
                         </div>
                     </Card>

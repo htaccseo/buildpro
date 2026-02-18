@@ -76,7 +76,7 @@ export const TaskFormModal: React.FC<TaskFormModalProps> = ({
                             type="text"
                             value={formData.title}
                             onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                            className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all placeholder:text-slate-400"
+                            className="w-full px-4 py-3 rounded-full bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all placeholder:text-slate-400"
                             placeholder="e.g. Install Windows"
                             required
                             autoFocus
@@ -91,7 +91,7 @@ export const TaskFormModal: React.FC<TaskFormModalProps> = ({
                         <textarea
                             value={formData.description}
                             onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                            className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all placeholder:text-slate-400 h-32 resize-none"
+                            className="w-full px-4 py-3 rounded-full bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all placeholder:text-slate-400 h-32 resize-none"
                             placeholder="Details about the task..."
                             required
                         />
@@ -106,7 +106,7 @@ export const TaskFormModal: React.FC<TaskFormModalProps> = ({
                             type="date"
                             value={formData.requiredDate}
                             onChange={(e) => setFormData(prev => ({ ...prev, requiredDate: e.target.value }))}
-                            className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all"
+                            className="w-full px-4 py-3 rounded-full bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all"
                             required
                         />
                     </div>
@@ -115,13 +115,13 @@ export const TaskFormModal: React.FC<TaskFormModalProps> = ({
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 px-4 py-3 bg-white border border-slate-200 text-navy-700 rounded-xl hover:bg-slate-50 font-medium transition-colors"
+                            className="flex-1 px-4 py-3 bg-white border border-slate-200 text-navy-700 rounded-full hover:bg-slate-50 font-medium transition-colors"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
-                            className="flex-1 px-4 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 font-bold shadow-lg shadow-emerald-600/20 transition-colors"
+                            className="flex-1 px-4 py-3 bg-emerald-600 text-white rounded-full hover:bg-emerald-700 font-bold shadow-lg shadow-emerald-600/20 transition-colors"
                         >
                             {initialData ? 'Save Changes' : 'Create Requirement'}
                         </button>

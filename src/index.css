@@ -5,24 +5,26 @@
   --font-sans: "Inter", system-ui, sans-serif;
 
   /* Brand Colors */
-  --color-navy-900: #020617;
-  /* Darker, richer slate/black */
-  --color-navy-800: #0f172a;
-  --color-navy-700: #1e293b;
+  --color-navy-900: #000000;
+  /* Solid Black */
+  --color-navy-800: #1e293b;
+  /* Slate 800 (Secondary Dark) */
+  --color-navy-700: #334155;
 
-  --color-emerald-500: #22c55e;
-  /* Vibrant Green (Tailwind Green-500) */
-  --color-emerald-600: #16a34a;
+  --color-emerald-500: #4ADE80;
+  /* Vibrant Mint Green */
+  --color-emerald-600: #22c55e;
+  /* Slightly Darker Mint for Hover */
 
   /* Semantic Colors */
   --color-primary: var(--color-navy-900);
   --color-accent: var(--color-emerald-500);
 
-  --color-bg-app: #F1F5F9;
-  /* Clean Slate 100 */
+  --color-bg-app: #F3F4F6;
+  /* Soft Off-White */
   --color-bg-card: #FFFFFF;
-  --color-text-main: #020617;
-  /* Slate 950 */
+  --color-text-main: #000000;
+  /* Black */
   --color-text-muted: #64748B;
   /* Slate 500 */
 }

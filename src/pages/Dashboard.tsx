@@ -163,7 +163,7 @@ export function Dashboard() {
                                         <div
                                             key={reminder.id}
                                             className={cn(
-                                                "p-4 rounded-xl border flex gap-4 hover:shadow-sm transition-all group cursor-pointer",
+                                                "p-4 rounded-full border flex gap-4 hover:shadow-sm transition-all group cursor-pointer",
                                                 reminder.completed
                                                     ? "bg-slate-50 border-slate-100 opacity-75"
                                                     : "bg-indigo-50 border-indigo-100"
@@ -210,7 +210,7 @@ export function Dashboard() {
                                         <div
                                             key={task.id}
                                             className={cn(
-                                                "p-4 rounded-xl border flex gap-4 hover:shadow-sm transition-all group cursor-pointer",
+                                                "p-4 rounded-full border flex gap-4 hover:shadow-sm transition-all group cursor-pointer",
                                                 task.status === 'completed'
                                                     ? "bg-slate-50 border-slate-100 opacity-75"
                                                     : "bg-amber-50 border-amber-100/50" // Differentiate from personal reminders (indigo)
@@ -258,7 +258,7 @@ export function Dashboard() {
                                         <div className="absolute top-4 right-4 sm:static hidden sm:block">
                                             <UserAvatar userId={project.createdBy} />
                                         </div>
-                                        <div className={cn("w-12 h-12 sm:w-16 sm:h-16 rounded-xl flex items-center justify-center text-white shadow-inner shrink-0 mr-3 sm:mr-0", project.color)}>
+                                        <div className={cn("w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-white shadow-inner shrink-0 mr-3 sm:mr-0", project.color)}>
                                             <Activity className="w-6 h-6 sm:w-8 sm:h-8 opacity-80" />
                                         </div>
 
@@ -305,7 +305,7 @@ export function Dashboard() {
                                 <div
                                     key={meeting.id}
                                     onClick={() => openMeetingModal(meeting)}
-                                    className="group relative flex items-center gap-4 p-3 rounded-xl bg-slate-50 border border-slate-100 pr-8 cursor-pointer hover:bg-slate-100 transition-colors"
+                                    className="group relative flex items-center gap-4 p-3 rounded-full bg-slate-50 border border-slate-100 pr-8 cursor-pointer hover:bg-slate-100 transition-colors"
                                 >
                                     <button
                                         onClick={(e) => {
@@ -378,7 +378,7 @@ export function Dashboard() {
                         </div>
 
                         {invoices.filter(i => i.status === 'pending' || i.status === 'overdue').slice(0, 3).map(inv => (
-                            <div key={inv.id} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
+                            <div key={inv.id} className="flex items-center justify-between p-3 rounded-full bg-slate-50 border border-slate-100">
                                 <div className="flex gap-3 items-center">
                                     <div className={cn("w-1.5 h-10 rounded-full", inv.type === 'received' ? "bg-rose-500" : "bg-emerald-500")} />
                                     <div>
@@ -419,7 +419,7 @@ export function Dashboard() {
                                 <div
                                     key={matter.id}
                                     onClick={() => openMatterModal(matter)}
-                                    className="p-4 rounded-xl bg-amber-50 border border-amber-100 space-y-2 cursor-pointer hover:shadow-md transition-all relative"
+                                    className="p-4 rounded-full bg-amber-50 border border-amber-100 space-y-2 cursor-pointer hover:shadow-md transition-all relative"
                                 >
                                     <div className="flex items-center justify-between gap-3">
                                         <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -486,7 +486,7 @@ export function Dashboard() {
                                         type="text"
                                         value={matterTitle}
                                         onChange={(e) => setMatterTitle(e.target.value)}
-                                        className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-amber-500 outline-none"
+                                        className="w-full px-4 py-2 rounded-full bg-slate-50 border border-slate-200 focus:border-amber-500 outline-none"
                                         placeholder="e.g., Brick Calculation"
                                         required
                                     />
@@ -496,7 +496,7 @@ export function Dashboard() {
                                     <select
                                         value={matterAssignedTo}
                                         onChange={(e) => setMatterAssignedTo(e.target.value)}
-                                        className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-amber-500 outline-none"
+                                        className="w-full px-4 py-2 rounded-full bg-slate-50 border border-slate-200 focus:border-amber-500 outline-none"
                                     >
                                         <option value="">Select User...</option>
                                         {users.map(u => (
@@ -512,7 +512,7 @@ export function Dashboard() {
                                         type="text"
                                         value={matterAddress}
                                         onChange={(e) => setMatterAddress(e.target.value)}
-                                        className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-amber-500 outline-none"
+                                        className="w-full px-4 py-2 rounded-full bg-slate-50 border border-slate-200 focus:border-amber-500 outline-none"
                                         placeholder="e.g., 123 Site St"
                                     />
                                 </div>
@@ -521,7 +521,7 @@ export function Dashboard() {
                                     <textarea
                                         value={matterNote}
                                         onChange={(e) => setMatterNote(e.target.value)}
-                                        className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-amber-500 outline-none min-h-[100px] resize-none"
+                                        className="w-full px-4 py-3 rounded-full bg-slate-50 border border-slate-200 focus:border-amber-500 outline-none min-h-[100px] resize-none"
                                         placeholder="e.g., Need 5000 bricks..."
                                         required
                                     />
@@ -536,7 +536,7 @@ export function Dashboard() {
                                                     setIsMatterModalOpen(false);
                                                 }
                                             }}
-                                            className="px-4 py-2 rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50"
+                                            className="px-4 py-2 rounded-full border border-rose-200 text-rose-600 hover:bg-rose-50"
                                         >
                                             Delete
                                         </button>
@@ -544,13 +544,13 @@ export function Dashboard() {
                                     <button
                                         type="button"
                                         onClick={() => setIsMatterModalOpen(false)}
-                                        className="flex-1 px-4 py-2 rounded-xl border border-slate-200 text-navy-900 hover:bg-slate-50"
+                                        className="flex-1 px-4 py-2 rounded-full border border-slate-200 text-navy-900 hover:bg-slate-50"
                                     >
                                         Cancel
                                     </button>
                                     <button
                                         type="submit"
-                                        className="flex-1 px-4 py-2 rounded-xl bg-amber-500 text-white hover:bg-amber-600 shadow-lg shadow-amber-500/20"
+                                        className="flex-1 px-4 py-2 rounded-full bg-amber-500 text-white hover:bg-amber-600 shadow-lg shadow-amber-500/20"
                                     >
                                         {matterToEdit ? 'Save Changes' : 'Add Note'}
                                     </button>

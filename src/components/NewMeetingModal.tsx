@@ -108,7 +108,7 @@ export function NewMeetingModal({ isOpen, onClose, initialDate, meeting }: NewMe
                         <input
                             type="text"
                             required
-                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900 placeholder:text-slate-400"
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900 placeholder:text-slate-400"
                             placeholder="Meeting title"
                             value={title}
                             onChange={e => setTitle(e.target.value)}
@@ -121,7 +121,7 @@ export function NewMeetingModal({ isOpen, onClose, initialDate, meeting }: NewMe
                             <input
                                 type="date"
                                 required
-                                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900"
+                                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900"
                                 value={date}
                                 onChange={e => setDate(e.target.value)}
                             />
@@ -131,7 +131,7 @@ export function NewMeetingModal({ isOpen, onClose, initialDate, meeting }: NewMe
                             <input
                                 type="time"
                                 required
-                                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900"
+                                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900"
                                 value={time}
                                 onChange={e => setTime(e.target.value)}
                             />
@@ -142,7 +142,7 @@ export function NewMeetingModal({ isOpen, onClose, initialDate, meeting }: NewMe
                         <label className="block text-sm font-medium text-navy-900 mb-1">Location</label>
                         <input
                             type="text"
-                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900 placeholder:text-slate-400"
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900 placeholder:text-slate-400"
                             placeholder="Address or link"
                             value={address}
                             onChange={e => setAddress(e.target.value)}
@@ -152,7 +152,7 @@ export function NewMeetingModal({ isOpen, onClose, initialDate, meeting }: NewMe
                     <div>
                         <label className="block text-sm font-medium text-navy-900 mb-1">Description</label>
                         <textarea
-                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900 placeholder:text-slate-400 min-h-[80px]"
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900 placeholder:text-slate-400 min-h-[80px]"
                             placeholder="Meeting details..."
                             value={description}
                             onChange={e => setDescription(e.target.value)}
@@ -162,7 +162,7 @@ export function NewMeetingModal({ isOpen, onClose, initialDate, meeting }: NewMe
                     <div>
                         <label className="block text-sm font-medium text-navy-900 mb-1">Assign To</label>
                         <select
-                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900 appearance-none"
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900 appearance-none"
                             value={assignedTo}
                             onChange={e => setAssignedTo(e.target.value)}
                         >
@@ -178,7 +178,7 @@ export function NewMeetingModal({ isOpen, onClose, initialDate, meeting }: NewMe
                             <button
                                 type="button"
                                 onClick={() => setIsCompleted(!isCompleted)}
-                                className={`flex-1 py-2.5 px-4 rounded-xl text-sm font-semibold transition-colors flex items-center justify-center gap-2 ${isCompleted
+                                className={`flex-1 py-2.5 px-4 rounded-full text-sm font-semibold transition-colors flex items-center justify-center gap-2 ${isCompleted
                                     ? 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-emerald-600/20 shadow-lg font-bold'
                                     : 'bg-slate-100 text-slate-600 hover:bg-slate-200 font-medium'
                                     }`}
@@ -193,13 +193,13 @@ export function NewMeetingModal({ isOpen, onClose, initialDate, meeting }: NewMe
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium transition-colors text-sm"
+                            className="flex-1 px-4 py-2.5 rounded-full border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium transition-colors text-sm"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
-                            className="flex-1 px-4 py-2.5 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 font-bold transition-all shadow-lg shadow-emerald-600/20 text-sm"
+                            className="flex-1 px-4 py-2.5 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 font-bold transition-all shadow-lg shadow-emerald-600/20 text-sm"
                         >
                             {meeting ? 'Save Changes' : 'Create Meeting'}
                         </button>

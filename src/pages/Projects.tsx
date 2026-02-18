@@ -52,12 +52,12 @@ export function Projects() {
                             placeholder="Search projects..."
                             value={query}
                             onChange={(e) => setSearchParams(e.target.value ? { q: e.target.value } : {})}
-                            className="bg-white border border-slate-200 text-navy-900 pl-10 pr-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 w-full md:w-64 placeholder:text-gray-400 shadow-sm"
+                            className="bg-white border border-slate-200 text-navy-900 pl-10 pr-4 py-2.5 rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-500/50 w-full md:w-64 placeholder:text-gray-400 shadow-sm"
                         />
                     </div>
                     <button
                         onClick={() => setIsModalOpen(true)}
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl font-medium flex items-center gap-2 transition-colors shadow-lg shadow-emerald-500/20"
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-full font-medium flex items-center gap-2 transition-colors shadow-lg shadow-emerald-500/20"
                     >
                         <Plus className="w-5 h-5" />
                         <span>New Project</span>

@@ -201,7 +201,7 @@ export function ProjectDetails() {
             <div className="flex items-center justify-between mb-5">
                 <button
                     onClick={() => navigate('/projects')}
-                    className="flex items-center justify-center md:justify-start gap-2 text-navy-700 hover:text-navy-900 transition-colors w-10 h-10 md:w-auto md:h-auto bg-white border border-slate-200 rounded-xl md:rounded-lg shadow-sm font-medium md:px-4 md:py-2"
+                    className="flex items-center justify-center md:justify-start gap-2 text-navy-700 hover:text-navy-900 transition-colors w-10 h-10 md:w-auto md:h-auto bg-white border border-slate-200 rounded-full md:rounded-full shadow-sm font-medium md:px-6 md:py-2.5"
                     aria-label="Back to Projects"
                 >
                     <ArrowLeft className="w-5 h-5 md:w-4 md:h-4" />
@@ -210,7 +210,7 @@ export function ProjectDetails() {
                 <div className="flex gap-3">
                     <button
                         onClick={() => setIsEditModalOpen(true)}
-                        className="flex items-center justify-center gap-2 w-10 h-10 md:w-auto md:h-auto p-0 md:px-4 md:py-2 bg-white text-navy-700 border border-slate-200 rounded-xl md:rounded-lg hover:bg-slate-50 transition-colors shadow-sm font-medium"
+                        className="flex items-center justify-center gap-2 w-10 h-10 md:w-auto md:h-auto p-0 md:px-6 md:py-2.5 bg-white text-navy-700 border border-slate-200 rounded-full md:rounded-full hover:bg-slate-50 transition-colors shadow-sm font-medium"
                         aria-label="Edit Project"
                     >
                         <Pencil className="w-5 h-5 md:w-4 md:h-4" />
@@ -218,7 +218,7 @@ export function ProjectDetails() {
                     </button>
                     <button
                         onClick={handleDeleteProject}
-                        className="flex items-center justify-center gap-2 w-10 h-10 md:w-auto md:h-auto p-0 md:px-4 md:py-2 bg-rose-50 text-rose-600 border border-rose-100 rounded-xl md:rounded-lg hover:bg-rose-100 transition-colors shadow-sm font-medium"
+                        className="flex items-center justify-center gap-2 w-10 h-10 md:w-auto md:h-auto p-0 md:px-6 md:py-2.5 bg-rose-50 text-rose-600 border border-rose-100 rounded-full md:rounded-full hover:bg-rose-100 transition-colors shadow-sm font-medium"
                         aria-label="Delete Project"
                     >
                         <Trash2 className="w-5 h-5 md:w-4 md:h-4" />
@@ -228,11 +228,7 @@ export function ProjectDetails() {
             </div>
 
             {/* Header */}
-            <div className={cn("relative min-h-[300px] md:min-h-[256px] h-auto rounded-3xl overflow-hidden group shadow-sm transition-all mt-[30px] md:mt-0 md:block flex flex-col justify-end pt-[60px] pb-6 px-6 bg-emerald-600", project.color)}>
-                {/* Removed bg-black/10 and gradient for flat matte look */}
-                {/* If project.color provides a gradient, it might still override. We should ensure project.color is just a base if possible, or override here if we want strictly matte. 
-                    However, implementation plan said "Remove gradient". I will remove the gradient overlay div. 
-                */}
+            <div className={cn("relative min-h-[300px] md:min-h-[256px] h-auto rounded-3xl overflow-hidden group border border-slate-900 transition-all mt-[30px] md:mt-0 md:block flex flex-col justify-end pt-[60px] pb-6 px-6 bg-black")}>
                 {/* Content Wrapper */}
                 <div className="w-full relative z-10 md:absolute md:bottom-0 md:left-0 md:p-8 md:w-full">
                     <div className="flex flex-col md:flex-row justify-end md:justify-between items-end gap-3 md:gap-6">
@@ -304,9 +300,9 @@ export function ProjectDetails() {
                             <div className="flex justify-end">
                                 <button
                                     onClick={() => openTaskForm()}
-                                    className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-600/20 text-sm font-bold"
+                                    className="flex items-center gap-2 px-6 py-2.5 bg-black text-white rounded-full hover:bg-slate-800 transition-colors shadow-lg shadow-black/20 text-sm font-bold"
                                 >
-                                    <Plus className="w-4 h-4" />
+                                    <Plus className="w-4 h-4 text-emerald-400" />
                                     Add Requirement
                                 </button>
                             </div>
@@ -448,13 +444,13 @@ export function ProjectDetails() {
                                                 <button
                                                     type="button"
                                                     onClick={() => setIsCompleteModalOpen(false)}
-                                                    className="flex-1 px-4 py-2 rounded-xl border border-slate-200 text-navy-700 hover:bg-slate-50 transition-colors font-medium"
+                                                    className="flex-1 px-6 py-2.5 rounded-full border border-slate-200 text-navy-700 hover:bg-slate-50 transition-colors font-medium"
                                                 >
                                                     Cancel
                                                 </button>
                                                 <button
                                                     type="submit"
-                                                    className="flex-1 px-4 py-2 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-600/20 font-bold transition-colors"
+                                                    className="flex-1 px-6 py-2.5 rounded-full bg-black text-white hover:bg-slate-800 shadow-lg shadow-black/20 font-bold transition-colors"
                                                 >
                                                     Complete Task
                                                 </button>
@@ -471,9 +467,9 @@ export function ProjectDetails() {
                             <div className="flex justify-end">
                                 <button
                                     onClick={() => openUpdateForm()}
-                                    className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-600/20 text-sm font-bold"
+                                    className="flex items-center gap-2 px-6 py-2.5 bg-black text-white rounded-full hover:bg-slate-800 transition-colors shadow-lg shadow-black/20 text-sm font-bold"
                                 >
-                                    <Plus className="w-4 h-4" />
+                                    <Plus className="w-4 h-4 text-emerald-400" />
                                     Add Notification
                                 </button>
                             </div>

@@ -195,25 +195,31 @@ export function ProjectDetails() {
             )}
 
             {/* ... Header and other parts ... */}
-            <div className="flex items-center justify-between">
-                <button onClick={() => navigate('/projects')} className="flex items-center gap-2 text-text-muted hover:text-navy-900 transition-colors">
-                    <ArrowLeft className="w-4 h-4" />
-                    Back to Projects
+            <div className="flex items-center justify-between mb-5">
+                <button
+                    onClick={() => navigate('/projects')}
+                    className="flex items-center justify-center md:justify-start gap-2 text-text-muted hover:text-navy-900 transition-colors w-10 h-10 md:w-auto md:h-auto bg-white md:bg-transparent border border-slate-200 md:border-none rounded-xl md:rounded-none shadow-sm md:shadow-none"
+                    aria-label="Back to Projects"
+                >
+                    <ArrowLeft className="w-5 h-5 md:w-4 md:h-4" />
+                    <span className="hidden md:inline">Back to Projects</span>
                 </button>
                 <div className="flex gap-3">
                     <button
                         onClick={() => setIsEditModalOpen(true)}
-                        className="flex items-center gap-2 px-4 py-2 bg-white text-navy-900 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm font-medium"
+                        className="flex items-center justify-center gap-2 w-10 h-10 md:w-auto md:h-auto p-0 md:px-4 md:py-2 bg-white text-navy-900 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm font-medium"
+                        aria-label="Edit Project"
                     >
-                        <Pencil className="w-4 h-4" />
-                        Edit Project
+                        <Pencil className="w-5 h-5 md:w-4 md:h-4" />
+                        <span className="hidden md:inline">Edit Project</span>
                     </button>
                     <button
                         onClick={handleDeleteProject}
-                        className="flex items-center gap-2 px-4 py-2 bg-rose-50 text-rose-600 border border-rose-100 rounded-xl hover:bg-rose-100 transition-colors shadow-sm font-medium"
+                        className="flex items-center justify-center gap-2 w-10 h-10 md:w-auto md:h-auto p-0 md:px-4 md:py-2 bg-rose-50 text-rose-600 border border-rose-100 rounded-xl hover:bg-rose-100 transition-colors shadow-sm font-medium"
+                        aria-label="Delete Project"
                     >
-                        <Trash2 className="w-4 h-4" />
-                        Delete
+                        <Trash2 className="w-5 h-5 md:w-4 md:h-4" />
+                        <span className="hidden md:inline">Delete</span>
                     </button>
                 </div>
             </div>

@@ -78,7 +78,6 @@ export function InviteMemberModal({ isOpen, onClose }: InviteMemberModalProps) {
                                 <input
                                     required
                                     type="text"
-                                    type="text"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
                                     className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
@@ -93,7 +92,6 @@ export function InviteMemberModal({ isOpen, onClose }: InviteMemberModalProps) {
                                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                                 <input
                                     required
-                                    type="email"
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}

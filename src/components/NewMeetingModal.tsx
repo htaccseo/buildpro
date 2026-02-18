@@ -108,10 +108,7 @@ export function NewMeetingModal({ isOpen, onClose, initialDate, meeting }: NewMe
                         <input
                             type="text"
                             required
-                            type="text"
-                            required
                             className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900 placeholder:text-slate-400"
-                            placeholder="Meeting title"
                             placeholder="Meeting title"
                             value={title}
                             onChange={e => setTitle(e.target.value)}
@@ -124,10 +121,7 @@ export function NewMeetingModal({ isOpen, onClose, initialDate, meeting }: NewMe
                             <input
                                 type="date"
                                 required
-                                type="date"
-                                required
                                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900"
-                                value={date}
                                 value={date}
                                 onChange={e => setDate(e.target.value)}
                             />
@@ -137,10 +131,7 @@ export function NewMeetingModal({ isOpen, onClose, initialDate, meeting }: NewMe
                             <input
                                 type="time"
                                 required
-                                type="time"
-                                required
                                 className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900"
-                                value={time}
                                 value={time}
                                 onChange={e => setTime(e.target.value)}
                             />
@@ -151,9 +142,7 @@ export function NewMeetingModal({ isOpen, onClose, initialDate, meeting }: NewMe
                         <label className="block text-sm font-medium text-navy-900 mb-1">Location</label>
                         <input
                             type="text"
-                            type="text"
                             className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900 placeholder:text-slate-400"
-                            placeholder="Address or link"
                             placeholder="Address or link"
                             value={address}
                             onChange={e => setAddress(e.target.value)}
@@ -165,7 +154,6 @@ export function NewMeetingModal({ isOpen, onClose, initialDate, meeting }: NewMe
                         <textarea
                             className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900 placeholder:text-slate-400 min-h-[80px]"
                             placeholder="Meeting details..."
-                            placeholder="Meeting details..."
                             value={description}
                             onChange={e => setDescription(e.target.value)}
                         />
@@ -175,7 +163,6 @@ export function NewMeetingModal({ isOpen, onClose, initialDate, meeting }: NewMe
                         <label className="block text-sm font-medium text-navy-900 mb-1">Assign To</label>
                         <select
                             className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-navy-900 appearance-none"
-                            value={assignedTo}
                             value={assignedTo}
                             onChange={e => setAssignedTo(e.target.value)}
                         >

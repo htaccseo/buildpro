@@ -37,6 +37,16 @@ export interface Task {
     createdBy?: string;
     completedBy?: string;
     attachments?: string[];
+    comments?: TaskComment[];
+}
+
+export interface TaskComment {
+    id: string;
+    taskId: string;
+    userId: string;
+    message: string;
+    images?: string[];
+    createdAt: string;
 }
 
 export interface ProjectUpdate {

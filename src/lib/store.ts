@@ -32,6 +32,9 @@ interface AppState {
     isLoading: boolean;
     error: string | null;
 
+    // Comment Actions
+    addComment: (taskId: string, message: string, images?: string[]) => Promise<void>;
+
     // Organization Actions
     deleteOrganization: (id: string) => void;
     updateOrganizationStatus: (id: string, status: 'active' | 'suspended') => void;
@@ -104,6 +107,43 @@ export const useStore = create<AppState>((set, get) => ({
     error: null,
     reminders: [],
     otherMatters: [],
+
+    addComment: async (taskId: string, message: string, images?: string[]) => {
+        const currentUser = get().currentUser;
+        if (!currentUser) return;
+
+        const newComment = {
+            id: Math.random().toString(36).substr(2, 9),
+            taskId,
+            userId: currentUser.id,
+            message,
+            images,
+            createdAt: new Date().toISOString()
+        };
+
+        // Optimistic Update
+        set((state) => ({
+            projects: state.projects.map(p => ({
+                ...p,
+                tasks: p.tasks.map(t => t.id === taskId ? {
+                    ...t,
+                    comments: [...(t.comments || []), newComment]
+                } : t)
+            }))
+        }));
+
+        try {
+            await apiRequest('/task/comment', 'POST', {
+                taskId,
+                userId: currentUser.id,
+                message,
+                images
+            });
+        } catch (e) {
+            console.error("Failed to add comment", e);
+            // Revert on failure? For now, just log.
+        }
+    },
 
     fetchData: async (email) => {
         set({ isLoading: true, error: null });

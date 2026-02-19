@@ -127,6 +127,31 @@ export default {
                         const { results: otherMatters } = await env.DB.prepare('SELECT * FROM other_matters WHERE organization_id = ?').bind(orgId).all();
                         logs.push('All data fetched');
 
+                        // Map comments to tasks
+                        tasks = tasks.map(t => ({
+                            ...t,
+                            projectId: t.project_id,
+                            requiredDate: t.required_date,
+                            assignedTo: t.assigned_to,
+                            createdBy: t.created_by,
+                            completedAt: t.completed_at,
+                            completionNote: t.completion_note,
+                            completionImages: t.completion_images ? JSON.parse(t.completion_images) : [],
+                            attachments: t.attachments ? JSON.parse(t.attachments) : [],
+                            comments: comments
+                                ? comments
+                                    .filter((c: any) => c.task_id === t.id)
+                                    .map((c: any) => ({
+                                        id: c.id,
+                                        taskId: c.task_id,
+                                        userId: c.user_id,
+                                        message: c.message,
+                                        images: c.images ? JSON.parse(c.images) : [],
+                                        createdAt: c.created_at
+                                    }))
+                                : []
+                        }));
+
                         return withCors(Response.json({
                             user,
                             organization,
@@ -688,8 +713,23 @@ export default {
                     }
                 }
 
-                // 404 for unknown API
+                // POST /api/task/comment
+                if (url.pathname === '/api/task/comment' && request.method === 'POST') {
+                    const { taskId, userId, message, images } = await request.json() as any;
+                    const id = generateUUID();
+                    const createdAt = new Date().toISOString();
 
+                    await env.DB.prepare(`
+                        INSERT INTO task_comments (id, task_id, user_id, message, images, created_at)
+                        VALUES (?, ?, ?, ?, ?, ?)
+                    `).bind(
+                        id, taskId, userId, message, JSON.stringify(images || []), createdAt
+                    ).run();
+
+                    return withCors(Response.json({ success: true, id }));
+                }
+
+                // 404 for unknown API
                 return new Response('API Endpoint Not Found', { status: 404 });
             }
 

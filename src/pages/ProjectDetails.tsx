@@ -240,7 +240,8 @@ export function ProjectDetails() {
                             )}>{project.name}</h1>
                             <div className={cn(
                                 "flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6",
-                                project.color.includes('emerald') ? "text-navy-800" : "text-slate-200"
+                                project.color.includes('emerald') ? "text-navy-800" :
+                                    (project.color.includes('blue') || project.color.includes('navy') || project.color.includes('black')) ? "text-emerald-500" : "text-slate-200"
                             )}>
                                 <div className="flex items-center gap-2">
                                     <MapPin className="w-4 h-4 shrink-0" />
@@ -261,7 +262,8 @@ export function ProjectDetails() {
                         )}>
                             <div className={cn(
                                 "flex items-center gap-2 text-sm",
-                                project.color.includes('emerald') ? "text-navy-800" : "text-slate-200"
+                                project.color.includes('emerald') ? "text-navy-800" :
+                                    (project.color.includes('blue') || project.color.includes('navy') || project.color.includes('black')) ? "text-emerald-500" : "text-slate-200"
                             )}>
                                 <Calendar className="w-4 h-4 shrink-0" />
                                 Due {format(new Date(project.endDate), 'MMM d, yyyy')}

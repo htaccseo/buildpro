@@ -49,7 +49,7 @@ interface AppState {
     addTask: (projectId: string, task: Task) => Promise<void>;
     updateTask: (projectId: string, task: Task) => void;
     assignTask: (taskId: string, userId: string) => void;
-    completeTask: (taskId: string, note?: string, image?: string) => void;
+    completeTask: (taskId: string, note?: string, images?: string[] | string) => void;
     uncompleteTask: (taskId: string) => Promise<void>;
     deleteTask: (projectId: string, taskId: string) => Promise<void>;
     addProjectUpdate: (projectId: string, update: ProjectUpdate) => void;
@@ -496,7 +496,7 @@ export const useStore = create<AppState>((set, get) => ({
         }
     },
 
-    completeTask: async (taskId, note, image) => {
+    completeTask: async (taskId, note, images) => {
         const project = get().projects.find(p => (p.tasks || []).some(t => t.id === taskId));
         const task = project?.tasks.find(t => t.id === taskId);
         const currentOrgId = get().currentOrganization?.id;
@@ -530,14 +530,27 @@ export const useStore = create<AppState>((set, get) => ({
                 return {
                     projects: state.projects.map((p) => ({
                         ...p,
-                        tasks: (p.tasks || []).map((t) => t.id === taskId ? { ...t, status: 'completed' as const, completedAt: new Date().toISOString(), completionNote: note, completionImage: image, completedBy } : t)
+                        tasks: (p.tasks || []).map((t) => t.id === taskId ? {
+                            ...t,
+                            status: 'completed' as const,
+                            completedAt: new Date().toISOString(),
+                            completionNote: note,
+                            completionImages: Array.isArray(images) ? images : (images ? [images] : []),
+                            completionImage: Array.isArray(images) ? images[0] : images,
+                            completedBy
+                        } : t)
                     })),
                     // notifications: [newNotification, ...state.notifications] // Removed
                 };
             });
 
             try {
-                await apiRequest('/task/complete', 'POST', { taskId, note, image, completedBy });
+                await apiRequest('/task/complete', 'POST', {
+                    taskId,
+                    note,
+                    images: Array.isArray(images) ? images : (images ? [images] : []),
+                    completedBy
+                });
             } catch (e) {
                 console.error("Failed to complete task", e);
             }

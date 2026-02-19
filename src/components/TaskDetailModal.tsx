@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Task, User } from '../lib/types';
 import { format } from 'date-fns';
-import { X, Calendar, CheckCircle, Clock, Paperclip, Pencil, Trash2, Download, FileText, Camera, RotateCcw, ChevronDown } from 'lucide-react';
+import { X, Calendar, CheckCircle, Clock, Paperclip, Pencil, Trash2, Download, FileText, RotateCcw, ChevronDown } from 'lucide-react';
 import { UserAvatar } from './UserAvatar';
 import { cn } from '../lib/utils';
 
@@ -95,8 +95,30 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                         </div>
                     )}
 
+                    {/* Attachments */}
+                    {task.attachments && task.attachments.length > 0 && (
+                        <div className="space-y-3">
+                            <h3 className="text-sm font-semibold text-navy-900 flex items-center gap-2">
+                                <Paperclip className="w-4 h-4 text-emerald-600" />
+                                Attachments
+                            </h3>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                {task.attachments.map((img, index) => (
+                                    <div key={index} className="relative group aspect-video rounded-lg overflow-hidden bg-slate-100 border border-slate-200 cursor-pointer" onClick={() => window.open(img, '_blank')}>
+                                        <img
+                                            src={img}
+                                            alt={`Attachment ${index + 1}`}
+                                            className="w-full h-full object-cover"
+                                        />
+                                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
                     {/* Completion Report */}
-                    {task.status === 'completed' && (task.completionNote || task.completionImage) && (
+                    {task.status === 'completed' && (task.completionNote || (task.completionImages && task.completionImages.length > 0) || task.completionImage) && (
                         <div className="bg-emerald-50/50 border border-emerald-100 p-4 rounded-xl space-y-3">
                             <div className="flex items-center gap-2 text-emerald-700 text-sm font-bold">
                                 <FileText className="w-4 h-4" />
@@ -115,31 +137,26 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                             </div>
 
                             {task.completionNote && (
-                                <p className="text-sm text-navy-700">{task.completionNote}</p>
+                                <p className="text-sm text-navy-700 whitespace-pre-wrap">{task.completionNote}</p>
                             )}
 
-                            {task.completionImage && (
-                                <div className="relative group w-fit">
-                                    <img
-                                        src={task.completionImage}
-                                        alt="Proof"
-                                        className="w-full max-w-[200px] h-auto rounded-lg border border-emerald-100 shadow-sm"
-                                        onClick={() => window.open(task.completionImage, '_blank')}
-                                    />
-                                    <div className="absolute inset-0 flex items-center justify-center bg-black/0 md:group-hover:bg-black/10 transition-colors rounded-lg cursor-pointer">
-                                        <Camera className="w-6 h-6 text-white opacity-0 md:group-hover:opacity-100 drop-shadow-md" />
-                                        <a
-                                            href={task.completionImage}
-                                            download
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            onClick={(e) => e.stopPropagation()}
-                                            className="absolute bottom-2 right-2 p-1.5 bg-white/90 text-slate-700 rounded-full shadow-sm opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity hover:bg-white hover:text-emerald-600"
-                                            title="Download Image"
-                                        >
-                                            <Download className="w-4 h-4" />
-                                        </a>
-                                    </div>
+                            {/* Handle both new array format and legacy string format */}
+                            {((task.completionImages && task.completionImages.length > 0) || task.completionImage) && (
+                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
+                                    {(task.completionImages || (task.completionImage ? [task.completionImage] : [])).map((img, idx) => (
+                                        <div key={idx} className="relative group aspect-video rounded-lg overflow-hidden bg-white border border-emerald-100 cursor-pointer shadow-sm hover:shadow-md transition-all" onClick={() => window.open(img, '_blank')}>
+                                            <img
+                                                src={img}
+                                                alt={`Completion ${idx + 1}`}
+                                                className="w-full h-full object-cover"
+                                            />
+                                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                                                <div className="bg-white/90 p-2 rounded-full shadow-sm">
+                                                    <Download className="w-4 h-4 text-navy-900" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
                             )}
                         </div>

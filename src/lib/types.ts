@@ -32,7 +32,8 @@ export interface Task {
     requiredDate: string; // ISO Date
     completedAt?: string;
     completionNote?: string;
-    completionImage?: string;
+    completionImage?: string; // Deprecated, use completionImages
+    completionImages?: string[];
     createdBy?: string;
     completedBy?: string;
     attachments?: string[];

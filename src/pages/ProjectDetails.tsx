@@ -120,23 +120,30 @@ export function ProjectDetails() {
     const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
     const [completionTaskId, setCompletionTaskId] = useState<string | null>(null);
     const [completionNote, setCompletionNote] = useState('');
-    const [completionImage, setCompletionImage] = useState('');
+    const [completionImages, setCompletionImages] = useState<string[]>([]);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [expandedImage, setExpandedImage] = useState<string | null>(null);
 
-    const openCompletionModal = (taskId: string, currentNote?: string, currentImage?: string) => {
+    const openCompletionModal = (taskId: string, currentNote?: string, currentImages?: string[] | string) => {
         setCompletionTaskId(taskId);
         setCompletionNote(currentNote || '');
-        setCompletionImage(currentImage || '');
+        // Handle both array (new) and string (old) formats
+        if (Array.isArray(currentImages)) {
+            setCompletionImages(currentImages);
+        } else if (typeof currentImages === 'string' && currentImages) {
+            setCompletionImages([currentImages]);
+        } else {
+            setCompletionImages([]);
+        }
         setIsCompleteModalOpen(true);
     };
 
     const handleCompletionSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (completionTaskId) {
-            completeTask(completionTaskId, completionNote, completionImage);
+            completeTask(completionTaskId, completionNote, completionImages);
             setIsCompleteModalOpen(false);
             setCompletionTaskId(null);
         }
@@ -148,17 +155,15 @@ export function ProjectDetails() {
             try {
                 // Resize image to max 800px width and compress to 0.7 quality
                 const resizedImage = await resizeImage(file, 800, 0.7);
-                setCompletionImage(resizedImage);
+                setCompletionImages(prev => [...prev, resizedImage]);
             } catch (error) {
                 console.error("Error resizing image:", error);
-                // Fallback to original if resize fails (though unlikely)
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                    setCompletionImage(reader.result as string);
-                };
-                reader.readAsDataURL(file);
             }
         }
+    };
+
+    const removeCompletionImage = (index: number) => {
+        setCompletionImages(prev => prev.filter((_, i) => i !== index));
     };
 
     const triggerFileInput = () => {
@@ -436,15 +441,27 @@ export function ProjectDetails() {
                                                     accept="image/*"
                                                     className="hidden"
                                                 />
-                                                {completionImage ? (
-                                                    <div className="relative group rounded-xl overflow-hidden border border-slate-200">
-                                                        <img src={completionImage} alt="Completion" className="w-full h-48 object-cover" />
+                                                {completionImages.length > 0 ? (
+                                                    <div className="grid grid-cols-2 gap-2">
+                                                        {completionImages.map((img, idx) => (
+                                                            <div key={idx} className="relative group rounded-xl overflow-hidden border border-slate-200 aspect-video">
+                                                                <img src={img} alt={`Completion ${idx + 1}`} className="w-full h-full object-cover" />
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => removeCompletionImage(idx)}
+                                                                    className="absolute top-1 right-1 bg-black/50 hover:bg-black/70 text-white p-1 rounded-full transition-colors"
+                                                                >
+                                                                    <X className="w-3 h-3" />
+                                                                </button>
+                                                            </div>
+                                                        ))}
                                                         <button
                                                             type="button"
-                                                            onClick={() => setCompletionImage('')}
-                                                            className="absolute top-2 right-2 bg-black/50 hover:bg-black/70 text-white p-1.5 rounded-full transition-colors"
+                                                            onClick={triggerFileInput}
+                                                            className="border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center text-slate-400 hover:text-emerald-600 hover:border-emerald-200 hover:bg-emerald-50 transition-all aspect-video"
                                                         >
-                                                            <div className="w-4 h-4 rotate-45">+</div>
+                                                            <Camera className="w-5 h-5" />
+                                                            <span className="text-xs font-medium">Add Photo</span>
                                                         </button>
                                                     </div>
                                                 ) : (
@@ -589,7 +606,7 @@ export function ProjectDetails() {
                     onComplete={(taskId) => openCompletionModal(taskId)}
                     onUncomplete={(taskId) => uncompleteTask(taskId)}
                     onAssign={(userId) => assignTask(selectedTask.id, userId)}
-                    onEditReport={(task) => openCompletionModal(task.id, task.completionNote, task.completionImage)}
+                    onEditReport={(task) => openCompletionModal(task.id, task.completionNote, task.completionImages || task.completionImage)}
                 />
             )}
         </div>

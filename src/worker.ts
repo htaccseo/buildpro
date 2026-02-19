@@ -101,7 +101,11 @@ export default {
                             const placeholders = projectIds.map(() => '?').join(',');
                             logs.push(`Fetching tasks with placeholders: ${placeholders}`);
                             const { results: taskResults } = await env.DB.prepare(`SELECT * FROM tasks WHERE project_id IN (${placeholders})`).bind(...projectIds).all();
-                            tasks = taskResults || [];
+                            tasks = (taskResults || []).map((t: any) => ({
+                                ...t,
+                                attachments: t.attachments ? JSON.parse(t.attachments) : [],
+                                completionImages: t.completion_images ? JSON.parse(t.completion_images) : []
+                            }));
 
                             logs.push(`Fetching project updates...`);
                             const { results: updateResults } = await env.DB.prepare(`SELECT * FROM project_updates WHERE project_id IN (${placeholders})`).bind(...projectIds).all();
@@ -242,10 +246,10 @@ export default {
                     try {
                         const task = await request.json();
                         await env.DB.prepare(`
-                            INSERT INTO tasks (id, project_id, title, description, status, required_date, assigned_to, created_by)
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                            INSERT INTO tasks (id, project_id, title, description, status, required_date, assigned_to, created_by, attachments)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                         `).bind(
-                            task.id, task.projectId, task.title, task.description || null, task.status || 'pending', task.requiredDate || null, task.assignedTo || null, task.createdBy || null
+                            task.id, task.projectId, task.title, task.description || null, task.status || 'pending', task.requiredDate || null, task.assignedTo || null, task.createdBy || null, JSON.stringify(task.attachments || [])
                         ).run();
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {
@@ -277,10 +281,10 @@ export default {
                         const task = await request.json();
                         await env.DB.prepare(`
                             UPDATE tasks 
-                            SET title = ?, description = ?, status = ?, required_date = ?, assigned_to = ?
+                            SET title = ?, description = ?, status = ?, required_date = ?, assigned_to = ?, attachments = ?
                             WHERE id = ?
                         `).bind(
-                            task.title, task.description || null, task.status || 'pending', task.requiredDate || null, task.assignedTo || null, task.id
+                            task.title, task.description || null, task.status || 'pending', task.requiredDate || null, task.assignedTo || null, JSON.stringify(task.attachments || []), task.id
                         ).run();
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {
@@ -302,10 +306,10 @@ export default {
 
                         await env.DB.prepare(`
                             UPDATE tasks 
-                            SET status = 'completed', completed_at = ?, completion_note = ?, completion_image = ?, completed_by = ?
+                            SET status = 'completed', completed_at = ?, completion_note = ?, completion_image = ?, completion_images = ?, completed_by = ?
                             WHERE id = ?
                         `).bind(
-                            now, data.note || null, data.image || null, data.completedBy || null, data.taskId
+                            now, data.note || null, data.image || null, JSON.stringify(data.completionImages || []), data.completedBy || null, data.taskId
                         ).run();
 
                         // Create Notification for the Task Creator (if they didn't complete it themselves)
@@ -334,7 +338,7 @@ export default {
                         const data = await request.json();
                         await env.DB.prepare(`
                             UPDATE tasks 
-                            SET status = 'pending', completed_at = NULL, completion_note = NULL, completion_image = NULL
+                            SET status = 'pending', completed_at = NULL, completion_note = NULL, completion_image = NULL, completion_images = NULL
                             WHERE id = ?
                         `).bind(data.taskId).run();
                         return withCors(Response.json({ success: true }));

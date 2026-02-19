@@ -9,7 +9,7 @@ import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, MapPin, Plu
 import { NewMeetingModal } from '../components/NewMeetingModal';
 import { UserAvatar } from '../components/UserAvatar';
 import { ReminderModal } from '../components/ReminderModal';
-import type { Reminder } from '../lib/types';
+import type { Reminder, Meeting } from '../lib/types';
 
 export function Schedule() {
     const navigate = useNavigate();
@@ -20,6 +20,7 @@ export function Schedule() {
 
     const [currentDate, setCurrentDate] = React.useState(new Date());
     const [isMeetingModalOpen, setIsMeetingModalOpen] = React.useState(false);
+    const [selectedMeeting, setSelectedMeeting] = React.useState<Meeting | null>(null);
     const [selectedReminder, setSelectedReminder] = React.useState<Reminder | null>(null);
     const [isReminderModalOpen, setIsReminderModalOpen] = React.useState(false);
 
@@ -60,7 +61,10 @@ export function Schedule() {
                         <span>Reminder</span>
                     </button>
                     <button
-                        onClick={() => setIsMeetingModalOpen(true)}
+                        onClick={() => {
+                            setSelectedMeeting(null);
+                            setIsMeetingModalOpen(true);
+                        }}
                         className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-emerald-600 text-white rounded-full hover:bg-emerald-700 transition-colors font-medium shadow-lg shadow-emerald-500/20 text-sm sm:text-base"
                     >
                         <Plus className="w-4 h-4" />
@@ -118,7 +122,11 @@ export function Schedule() {
                                     {dayMeetings.map(meeting => (
                                         <div
                                             key={meeting.id}
-                                            className="bg-emerald-50 border border-emerald-100 p-3 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-default group"
+                                            onClick={() => {
+                                                setSelectedMeeting(meeting);
+                                                setIsMeetingModalOpen(true);
+                                            }}
+                                            className="bg-emerald-50 border border-emerald-100 p-3 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer group"
                                         >
                                             <div className="flex justify-between items-start mb-1">
                                                 <div className="flex items-center gap-2">
@@ -127,7 +135,7 @@ export function Schedule() {
                                                 </div>
                                                 <UserAvatar userId={meeting.createdBy} className="h-4 w-4 text-[8px]" />
                                             </div>
-                                            <h4 className="font-semibold text-sm text-navy-900 line-clamp-2">{meeting.title}</h4>
+                                            <h4 className={cn("font-semibold text-sm text-navy-900 line-clamp-2", meeting.completed && "line-through text-text-muted")}>{meeting.title}</h4>
                                             {meeting.address && (
                                                 <div className="flex items-center gap-1 mt-1 text-xs text-text-muted truncate">
                                                     <MapPin className="w-3 h-3" />
@@ -205,6 +213,7 @@ export function Schedule() {
             <NewMeetingModal
                 isOpen={isMeetingModalOpen}
                 onClose={() => setIsMeetingModalOpen(false)}
+                meeting={selectedMeeting}
             />
 
             {/* Reminder Modal (Add/Edit) */}

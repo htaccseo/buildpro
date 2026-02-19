@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useStore } from '../lib/store';
 import { useOrganizationData } from '../lib/hooks';
 import { Card } from '../components/ui/Card';
-import { Plus, FileText, ArrowUpRight, ArrowDownLeft, Trash2, Edit2, Paperclip } from 'lucide-react';
+import { Plus, FileText, ArrowUpRight, ArrowDownLeft, Trash2, Edit2, Paperclip, Calendar } from 'lucide-react';
 import { cn, formatDate, resizeImage } from '../lib/utils';
 import type { Invoice } from '../lib/types';
 import { UserAvatar } from '../components/UserAvatar';
@@ -13,6 +13,8 @@ export function Invoices() {
     // Store actions
     const { addInvoice, updateInvoice, updateInvoiceStatus, deleteInvoice } = useStore();
     const [activeTab, setActiveTab] = useState<'sent' | 'received'>('sent');
+    const [viewMode, setViewMode] = useState<'pending' | 'history'>('pending');
+    const [dateFilter, setDateFilter] = useState<'this_month' | 'last_month' | 'all_time'>('this_month');
     const [isFormOpen, setIsFormOpen] = useState(false);
 
     // Form State
@@ -26,11 +28,41 @@ export function Invoices() {
     const [invoiceType, setInvoiceType] = useState<'sent' | 'received'>('sent');
     const [attachment, setAttachment] = useState<string | null>(null);
 
-    const filteredInvoices = invoices.filter(inv => inv.type === activeTab);
+    // Filter Logic
+    const filteredInvoices = invoices.filter(inv => {
+        // 1. Filter by Sent/Received (Tab)
+        if (inv.type !== activeTab) return false;
 
-    // Calculate totals
+        // 2. Filter by View Mode (Pending vs History)
+        if (viewMode === 'pending') {
+            return inv.status === 'pending' || inv.status === 'overdue';
+        } else {
+            // History (Paid)
+            if (inv.status !== 'paid') return false;
+
+            // 3. Date Filter (Only for History)
+            if (dateFilter === 'all_time') return true;
+
+            const invDate = new Date(inv.date); // Issue Date
+            const now = new Date();
+            const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+            const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+            const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+
+            if (dateFilter === 'this_month') {
+                return invDate >= startOfThisMonth;
+            } else if (dateFilter === 'last_month') {
+                return invDate >= startOfLastMonth && invDate <= endOfLastMonth;
+            }
+            return true;
+        }
+    });
+
+    // Calculate totals based on CURRENT VIEW
     const totalAmount = filteredInvoices.reduce((sum, inv) => sum + inv.amount, 0);
-    const pendingAmount = filteredInvoices.filter(inv => inv.status === 'pending' || inv.status === 'overdue').reduce((sum, inv) => sum + inv.amount, 0);
+
+    // For pending tab, we show total outstanding. For history tab, we show total revenue/paid.
+    // The card title and value should reflect the CURRENT filtered list.
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -119,11 +151,10 @@ export function Invoices() {
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
-            {/* ... rest of the component ... */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-bold text-navy-900">Invoices</h1>
-                    <p className="text-text-muted mt-1">Manage your receivables and payables.</p>
+                    <p className="text-text-muted mt-1">Manage your {activeTab === 'sent' ? 'receivables' : 'payables'}.</p>
                 </div>
                 <button
                     onClick={() => {
@@ -133,15 +164,15 @@ export function Invoices() {
                     className="flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-full hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-600/20 font-bold"
                 >
                     <Plus className="w-5 h-5" />
-                    New Invoice
+                    {activeTab === 'sent' ? 'New Invoice' : 'New Bill'}
                 </button>
             </div>
 
-            {/* ... Summary Cards ... */}
+            {/* Summary Card */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card className={cn("p-6 border-none shadow-sm text-white",
                     activeTab === 'sent'
-                        ? "bg-gradient-to-br from-emerald-500 to-teal-600"
+                        ? (viewMode === 'pending' ? "bg-gradient-to-br from-emerald-500 to-teal-600" : "bg-gradient-to-br from-blue-500 to-indigo-600")
                         : "bg-gradient-to-br from-rose-500 to-orange-600"
                 )}>
                     <div className="flex items-center gap-4 mb-4">
@@ -149,30 +180,40 @@ export function Invoices() {
                             {activeTab === 'sent' ? <ArrowUpRight className="w-6 h-6" /> : <ArrowDownLeft className="w-6 h-6" />}
                         </div>
                         <div>
-                            <p className="text-white/80 text-sm font-medium">{activeTab === 'sent' ? 'Total Receivables' : 'Total Payables'}</p>
+                            <p className="text-white/80 text-sm font-medium">
+                                {viewMode === 'pending'
+                                    ? (activeTab === 'sent' ? 'Total Outstanding Receivables' : 'Total Outstanding Payables')
+                                    : (activeTab === 'sent' ? 'Total Revenue Collected' : 'Total Paid')
+                                }
+                            </p>
                             <h3 className="text-5xl font-extrabold">${totalAmount.toLocaleString()}</h3>
                         </div>
                     </div>
                     <div className="flex items-center justify-between text-sm pt-4 border-t border-white/20">
-                        <span className="text-white/80">Pending</span>
-                        <span className="font-bold text-white">${pendingAmount.toLocaleString()}</span>
+                        <span className="text-white/80">
+                            {viewMode === 'pending'
+                                ? 'Pending & Overdue'
+                                : `Paid (${dateFilter.replace('_', ' ')})`
+                            }
+                        </span>
+                        <span className="font-bold text-white">{filteredInvoices.length} invoices</span>
                     </div>
                 </Card>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-3 space-y-6">
-                    {/* Tabs */}
+                    {/* Main Tabs (Sent vs Received) */}
                     <div className="flex gap-4 border-b border-slate-100 pb-4">
                         <button
-                            onClick={() => setActiveTab('sent')}
+                            onClick={() => { setActiveTab('sent'); setViewMode('pending'); }}
                             className={cn("px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2", activeTab === 'sent' ? "bg-emerald-50 text-emerald-600" : "text-text-muted hover:text-navy-900 hover:bg-slate-50")}
                         >
                             <ArrowUpRight className="w-4 h-4" />
                             Invoices Sent (Receivables)
                         </button>
                         <button
-                            onClick={() => setActiveTab('received')}
+                            onClick={() => { setActiveTab('received'); setViewMode('pending'); }}
                             className={cn("px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2", activeTab === 'received' ? "bg-emerald-50 text-emerald-600" : "text-text-muted hover:text-navy-900 hover:bg-slate-50")}
                         >
                             <ArrowDownLeft className="w-4 h-4" />
@@ -180,12 +221,51 @@ export function Invoices() {
                         </button>
                     </div>
 
+                    {/* Sub-Tabs (Pending vs History) & Filters */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div className="flex p-1 bg-slate-100 rounded-xl self-start">
+                            <button
+                                onClick={() => setViewMode('pending')}
+                                className={cn(
+                                    "px-4 py-2 rounded-lg text-sm font-bold transition-all",
+                                    viewMode === 'pending' ? "bg-white text-navy-900 shadow-sm" : "text-text-muted hover:text-navy-700"
+                                )}
+                            >
+                                Pending
+                            </button>
+                            <button
+                                onClick={() => setViewMode('history')}
+                                className={cn(
+                                    "px-4 py-2 rounded-lg text-sm font-bold transition-all",
+                                    viewMode === 'history' ? "bg-white text-navy-900 shadow-sm" : "text-text-muted hover:text-navy-700"
+                                )}
+                            >
+                                History / Paid
+                            </button>
+                        </div>
+
+                        {viewMode === 'history' && (
+                            <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-slate-200">
+                                <Calendar className="w-4 h-4 text-emerald-600" />
+                                <select
+                                    value={dateFilter}
+                                    onChange={(e) => setDateFilter(e.target.value as any)}
+                                    className="bg-transparent text-sm font-medium text-navy-900 outline-none cursor-pointer"
+                                >
+                                    <option value="this_month">This Month</option>
+                                    <option value="last_month">Last Month</option>
+                                    <option value="all_time">All Time</option>
+                                </select>
+                            </div>
+                        )}
+                    </div>
+
                     {/* Invoice List */}
                     <div className="space-y-4">
                         {filteredInvoices.length === 0 ? (
                             <div className="text-center py-12 bg-white rounded-2xl border border-slate-100">
                                 <FileText className="w-12 h-12 text-slate-200 mx-auto mb-3" />
-                                <p className="text-text-muted">No invoices found.</p>
+                                <p className="text-text-muted">No {viewMode} invoices found for {dateFilter.replace('_', ' ')}.</p>
                             </div>
                         ) : (
                             filteredInvoices.map(invoice => (
@@ -193,7 +273,7 @@ export function Invoices() {
                                     {/* Left Section (Info) */}
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2 md:gap-3 flex-wrap">
-                                            {/* Icon - Hidden on mobile to save space and align name first */}
+                                            {/* Icon */}
                                             <div className={cn("hidden md:flex p-2 rounded-lg shrink-0 items-center justify-center", activeTab === 'sent' ? "bg-emerald-50 text-emerald-600" : "bg-indigo-50 text-indigo-600")}>
                                                 <FileText className="w-5 h-5" />
                                             </div>
@@ -256,7 +336,15 @@ export function Invoices() {
                                                     <Edit2 className="w-3.5 h-3.5" />
                                                 </button>
                                                 <div className="w-px bg-slate-200 my-1 mx-0.5" />
-                                                <button onClick={() => deleteInvoice(invoice.id)} className="p-1.5 text-slate-400 hover:text-rose-500 hover:bg-white rounded-md transition-all shadow-none hover:shadow-sm" title="Delete">
+                                                <button
+                                                    onClick={() => {
+                                                        if (confirm('Delete this invoice? Marking as paid is preferred for history.')) {
+                                                            deleteInvoice(invoice.id);
+                                                        }
+                                                    }}
+                                                    className="p-1.5 text-slate-400 hover:text-rose-500 hover:bg-white rounded-md transition-all shadow-none hover:shadow-sm"
+                                                    title="Delete"
+                                                >
                                                     <Trash2 className="w-3.5 h-3.5" />
                                                 </button>
                                             </div>

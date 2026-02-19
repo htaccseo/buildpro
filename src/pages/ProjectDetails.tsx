@@ -385,7 +385,7 @@ export function ProjectDetails() {
                                         return (
                                             <Card
                                                 key={task.id}
-                                                className="p-5 flex items-start gap-4 border-none shadow-sm hover:shadow-md transition-all group cursor-pointer hover:bg-slate-50/50"
+                                                className="p-4 md:p-5 flex items-start gap-3 md:gap-4 border-none shadow-sm hover:shadow-md transition-all group cursor-pointer hover:bg-slate-50/50"
                                                 onClick={() => {
                                                     setSelectedTask(task);
                                                     setIsTaskDetailOpen(true);
@@ -402,7 +402,7 @@ export function ProjectDetails() {
                                                                     {task.title}
                                                                 </h3>
                                                                 {/* Creator Avatar (Item 4) */}
-                                                                <div className="shrink-0" title={`Created by ${users.find(u => u.id === task.createdBy)?.name || 'Unknown'}`}>
+                                                                <div className="shrink-0 hidden md:block" title={`Created by ${users.find(u => u.id === task.createdBy)?.name || 'Unknown'}`}>
                                                                     <UserAvatar userId={task.createdBy || ''} className="w-5 h-5 border border-white shadow-sm" />
                                                                 </div>
                                                             </div>
@@ -449,7 +449,7 @@ export function ProjectDetails() {
 
                                                             {/* Comments Section (Conversational Thread) */}
                                                             {task.comments && task.comments.length > 0 && (
-                                                                <div className="mt-4 space-y-3 pl-4 border-l-2 border-slate-100">
+                                                                <div className="mt-4 space-y-3 pl-0 md:pl-4 border-l-0 md:border-l-2 border-slate-100">
                                                                     {task.comments.map((comment) => (
                                                                         <div
                                                                             key={comment.id}
@@ -496,7 +496,7 @@ export function ProjectDetails() {
 
 
                                                             {/* Reply Input */}
-                                                            <div className="mt-4 flex gap-2 items-end" onClick={(e) => e.stopPropagation()}>
+                                                            <div className="mt-4 flex gap-2 items-end w-full" onClick={(e) => e.stopPropagation()}>
                                                                 <div className="flex-1 bg-slate-50 rounded-2xl border border-slate-200 focus-within:border-emerald-500 focus-within:ring-1 focus-within:ring-emerald-500 transition-all">
                                                                     <textarea
                                                                         value={replyText[task.id] || ''}

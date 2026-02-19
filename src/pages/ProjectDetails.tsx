@@ -11,6 +11,7 @@ import { UserAvatar } from '../components/UserAvatar';
 import { TaskDetailModal } from '../components/TaskDetailModal';
 import { TaskFormModal } from '../components/TaskFormModal';
 import { ProjectUpdateModal } from '../components/ProjectUpdateModal';
+import { CommentDetailModal } from '../components/CommentDetailModal';
 import type { Task, ProjectUpdate } from '../lib/types';
 
 export function ProjectDetails() {
@@ -23,6 +24,7 @@ export function ProjectDetails() {
     const [replyText, setReplyText] = useState<{ [key: string]: string }>({});
     const [replyImages, setReplyImages] = useState<{ [key: string]: string[] }>({});
     const replyFileInputRefs = useRef<{ [key: string]: HTMLInputElement }>({});
+    const [selectedComment, setSelectedComment] = useState<{ task: Task, comment: any } | null>(null);
 
     // Task Management State
     const [isTaskFormOpen, setIsTaskFormOpen] = useState(false);
@@ -449,7 +451,14 @@ export function ProjectDetails() {
                                                             {task.comments && task.comments.length > 0 && (
                                                                 <div className="mt-4 space-y-3 pl-4 border-l-2 border-slate-100">
                                                                     {task.comments.map((comment) => (
-                                                                        <div key={comment.id} className="bg-slate-50 rounded-xl p-3 group/comment relative">
+                                                                        <div
+                                                                            key={comment.id}
+                                                                            className="bg-slate-50 rounded-xl p-3 group/comment relative cursor-pointer hover:bg-slate-100 transition-colors"
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                setSelectedComment({ task, comment });
+                                                                            }}
+                                                                        >
                                                                             <div className="flex items-start gap-2.5">
                                                                                 <UserAvatar userId={comment.userId} className="w-6 h-6 shrink-0" />
                                                                                 <div className="flex-1 min-w-0">
@@ -458,7 +467,7 @@ export function ProjectDetails() {
                                                                                             {users.find(u => u.id === comment.userId)?.name || 'Unknown'}
                                                                                         </span>
                                                                                         <span className="text-[10px] text-text-muted">
-                                                                                            {format(new Date(comment.createdAt), 'MMM d, h:mm a')}
+                                                                                            {format(new Date(comment.createdAt), 'd/M, h:mm a')}
                                                                                         </span>
                                                                                     </div>
                                                                                     <p className="text-sm text-navy-700 whitespace-pre-wrap">{comment.message}</p>
@@ -480,20 +489,6 @@ export function ProjectDetails() {
                                                                                     )}
                                                                                 </div>
                                                                             </div>
-                                                                            {/* Delete Comment Button */}
-                                                                            {(currentUser?.id === comment.userId || currentUser?.isAdmin) && (
-                                                                                <button
-                                                                                    onClick={(e) => {
-                                                                                        e.stopPropagation();
-                                                                                        if (confirm('Delete this comment?')) {
-                                                                                            deleteComment(task.id, comment.id);
-                                                                                        }
-                                                                                    }}
-                                                                                    className="absolute top-2 right-2 p-1 text-slate-400 hover:text-rose-600 opacity-0 group-hover/comment:opacity-100 transition-opacity"
-                                                                                >
-                                                                                    <Trash2 className="w-3.5 h-3.5" />
-                                                                                </button>
-                                                                            )}
                                                                         </div>
                                                                     ))}
                                                                 </div>
@@ -851,6 +846,20 @@ export function ProjectDetails() {
                         openCompletionModal(task.id, task.completionNote, task.completionImages || task.completionImage);
                     }}
                 />)}
+
+            <CommentDetailModal
+                isOpen={!!selectedComment}
+                onClose={() => setSelectedComment(null)}
+                comment={selectedComment?.comment}
+                user={users.find(u => u.id === selectedComment?.comment.userId)}
+                onDelete={() => {
+                    if (selectedComment) {
+                        deleteComment(selectedComment.task.id, selectedComment.comment.id);
+                        setSelectedComment(null);
+                    }
+                }}
+                canDelete={selectedComment ? !!(currentUser?.id === selectedComment.comment.userId || currentUser?.isAdmin) : false}
+            />
         </div>
     );
 }

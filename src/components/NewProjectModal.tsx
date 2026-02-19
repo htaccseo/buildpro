@@ -104,11 +104,15 @@ export function NewProjectModal({ isOpen, onClose, projectToEdit }: ProjectModal
                     <div className="space-y-4">
                         <h3 className="text-sm font-semibold text-navy-900 uppercase tracking-wider">Project Details</h3>
                         <div>
-                            <label className="block text-sm font-medium text-navy-900 mb-1.5">Project Name</label>
+                            <div className="flex justify-between items-center mb-1.5">
+                                <label className="block text-sm font-medium text-navy-900">Project Name</label>
+                                <span className="text-xs text-text-muted">{name.length}/25</span>
+                            </div>
                             <input
                                 type="text"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
+                                maxLength={25}
                                 className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
                                 placeholder="e.g. Modern Villa Renovation"
                                 required

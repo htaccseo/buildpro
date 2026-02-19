@@ -34,6 +34,7 @@ interface AppState {
 
     // Comment Actions
     addComment: (taskId: string, message: string, images?: string[]) => Promise<void>;
+    deleteComment: (taskId: string, commentId: string) => Promise<void>;
 
     // Organization Actions
     deleteOrganization: (id: string) => void;
@@ -142,6 +143,25 @@ export const useStore = create<AppState>((set, get) => ({
         } catch (e) {
             console.error("Failed to add comment", e);
             // Revert on failure? For now, just log.
+        }
+    },
+
+    deleteComment: async (taskId, commentId) => {
+        // Optimistic Update
+        set((state) => ({
+            projects: state.projects.map(p => ({
+                ...p,
+                tasks: p.tasks.map(t => t.id === taskId ? {
+                    ...t,
+                    comments: (t.comments || []).filter(c => c.id !== commentId)
+                } : t)
+            }))
+        }));
+
+        try {
+            await apiRequest('/task/comment', 'DELETE', { id: commentId });
+        } catch (e) {
+            console.error("Failed to delete comment", e);
         }
     },
 

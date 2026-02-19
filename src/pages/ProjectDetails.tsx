@@ -16,7 +16,7 @@ import type { Task, ProjectUpdate } from '../lib/types';
 export function ProjectDetails() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { projects, users, currentUser, assignTask, completeTask, uncompleteTask, addTask, updateTask, addProjectUpdate, deleteProject, deleteTask, updateProjectUpdate, deleteProjectUpdate, addComment } = useStore();
+    const { projects, users, currentUser, assignTask, completeTask, uncompleteTask, addTask, updateTask, addProjectUpdate, deleteProject, deleteTask, updateProjectUpdate, deleteProjectUpdate, addComment, deleteComment } = useStore();
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     // Comment State
@@ -449,7 +449,7 @@ export function ProjectDetails() {
                                                             {task.comments && task.comments.length > 0 && (
                                                                 <div className="mt-4 space-y-3 pl-4 border-l-2 border-slate-100">
                                                                     {task.comments.map((comment) => (
-                                                                        <div key={comment.id} className="bg-slate-50 rounded-xl p-3">
+                                                                        <div key={comment.id} className="bg-slate-50 rounded-xl p-3 group/comment relative">
                                                                             <div className="flex items-start gap-2.5">
                                                                                 <UserAvatar userId={comment.userId} className="w-6 h-6 shrink-0" />
                                                                                 <div className="flex-1 min-w-0">
@@ -480,13 +480,27 @@ export function ProjectDetails() {
                                                                                     )}
                                                                                 </div>
                                                                             </div>
+                                                                            {/* Delete Comment Button */}
+                                                                            {(currentUser?.id === comment.userId || currentUser?.isAdmin) && (
+                                                                                <button
+                                                                                    onClick={(e) => {
+                                                                                        e.stopPropagation();
+                                                                                        if (confirm('Delete this comment?')) {
+                                                                                            deleteComment(task.id, comment.id);
+                                                                                        }
+                                                                                    }}
+                                                                                    className="absolute top-2 right-2 p-1 text-slate-400 hover:text-rose-600 opacity-0 group-hover/comment:opacity-100 transition-opacity"
+                                                                                >
+                                                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                                                </button>
+                                                                            )}
                                                                         </div>
                                                                     ))}
                                                                 </div>
                                                             )}
 
                                                             {/* Completion Report Section (Final Status) */}
-                                                            {task.status === 'completed' && (task.completionNote || (task.completionImages && task.completionImages.length > 0) || task.completionImage) && (
+                                                            {task.status === 'completed' && (
                                                                 <div
                                                                     className="mt-4 bg-emerald-50/50 border border-emerald-100 rounded-xl p-4 relative group/report"
                                                                     onClick={(e) => {
@@ -509,8 +523,10 @@ export function ProjectDetails() {
                                                                                 </span>
                                                                             </div>
 
-                                                                            {task.completionNote && (
+                                                                            {task.completionNote ? (
                                                                                 <p className="text-sm text-navy-700 whitespace-pre-wrap mb-3">{task.completionNote}</p>
+                                                                            ) : (
+                                                                                <p className="text-sm text-slate-400 italic mb-3">No completion notes added.</p>
                                                                             )}
 
                                                                             {/* Completion Images */}
@@ -550,7 +566,7 @@ export function ProjectDetails() {
                                                                             value={replyText[task.id] || ''}
                                                                             onChange={(e) => setReplyText(prev => ({ ...prev, [task.id]: e.target.value }))}
                                                                             placeholder="Write a reply..."
-                                                                            className="w-full bg-transparent border-none focus:ring-0 px-4 py-2 text-sm min-h-[40px] resize-none"
+                                                                            className="w-full bg-transparent border-none outline-none focus:ring-0 px-4 py-2 text-sm min-h-[40px] resize-none"
                                                                             rows={1}
                                                                             onKeyDown={(e) => {
                                                                                 if (e.key === 'Enter' && !e.shiftKey) {
@@ -813,20 +829,28 @@ export function ProjectDetails() {
             {selectedTask && (
                 <TaskDetailModal
                     isOpen={isTaskDetailOpen}
-                    onClose={() => {
-                        setIsTaskDetailOpen(false);
-                        setSelectedTask(null);
-                    }}
-                    task={selectedTask}
+                    onClose={() => setIsTaskDetailOpen(false)}
+                    task={selectedTask!}
                     users={users}
-                    onEdit={(task) => openTaskForm(task)}
+                    onEdit={(task) => {
+                        setIsTaskDetailOpen(false);
+                        openTaskForm(task);
+                    }}
                     onDelete={(taskId) => handleDeleteTask(taskId)}
-                    onComplete={(taskId) => openCompletionModal(taskId)}
+                    onComplete={(taskId) => {
+                        completeTask(taskId);
+                        setIsTaskDetailOpen(false);
+                    }}
                     onUncomplete={(taskId) => uncompleteTask(taskId)}
-                    onAssign={(userId) => assignTask(selectedTask.id, userId)}
-                    onEditReport={(task) => openCompletionModal(task.id, task.completionNote, task.completionImages || task.completionImage)}
-                />
-            )}
+                    onAssign={(userId) => {
+                        if (selectedTask) {
+                            assignTask(selectedTask.id, userId);
+                        }
+                    }}
+                    onEditReport={(task) => {
+                        openCompletionModal(task.id, task.completionNote, task.completionImages || task.completionImage);
+                    }}
+                />)}
         </div>
     );
 }

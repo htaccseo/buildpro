@@ -45,6 +45,27 @@ function generateUUID() {
     });
 }
 
+// Safe JSON Parse Helper for Lists
+function safeParseList(data: any): string[] {
+    if (!data) return [];
+    if (Array.isArray(data)) return data; // Already an array
+    if (typeof data === 'string') {
+        const trimmed = data.trim();
+        if (trimmed.startsWith('[')) {
+            try {
+                return JSON.parse(trimmed);
+            } catch (e) {
+                console.error("JSON Parse Error:", e, data);
+                return [];
+            }
+        }
+        // Treat as single item if not JSON array
+        return trimmed ? [trimmed] : [];
+    }
+    // Fallback for other types
+    return [];
+}
+
 export default {
     fetch: async (request: Request, env: Env, ctx: ExecutionContext) => {
         // PARANOID GLOBAL TRY-CATCH
@@ -136,8 +157,8 @@ export default {
                             createdBy: t.created_by,
                             completedAt: t.completed_at,
                             completionNote: t.completion_note,
-                            completionImages: t.completion_images ? (t.completion_images.startsWith('[') ? JSON.parse(t.completion_images) : (t.completion_images.trim() ? [t.completion_images] : [])) : [],
-                            attachments: t.attachments ? (t.attachments.startsWith('[') ? JSON.parse(t.attachments) : (t.attachments.trim() ? [t.attachments] : [])) : [],
+                            completionImages: safeParseList(t.completion_images),
+                            attachments: safeParseList(t.attachments),
                             comments: comments
                                 ? comments
                                     .filter((c: any) => c.task_id === t.id)
@@ -146,7 +167,7 @@ export default {
                                         taskId: c.task_id,
                                         userId: c.user_id,
                                         message: c.message,
-                                        images: c.images ? (c.images.startsWith('[') ? JSON.parse(c.images) : []) : [],
+                                        images: safeParseList(c.images),
                                         createdAt: c.created_at
                                     }))
                                 : []

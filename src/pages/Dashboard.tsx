@@ -496,7 +496,7 @@ export function Dashboard() {
                                         type="text"
                                         value={matterTitle}
                                         onChange={(e) => setMatterTitle(e.target.value)}
-                                        className="w-full px-4 py-2 rounded-full bg-slate-50 border border-slate-200 focus:border-amber-500 outline-none"
+                                        className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none"
                                         placeholder="e.g., Brick Calculation"
                                         required
                                     />
@@ -506,7 +506,7 @@ export function Dashboard() {
                                     <select
                                         value={matterAssignedTo}
                                         onChange={(e) => setMatterAssignedTo(e.target.value)}
-                                        className="w-full px-4 py-2 rounded-full bg-slate-50 border border-slate-200 focus:border-amber-500 outline-none"
+                                        className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none"
                                     >
                                         <option value="">Select User...</option>
                                         {users.map(u => (
@@ -522,7 +522,7 @@ export function Dashboard() {
                                         type="text"
                                         value={matterAddress}
                                         onChange={(e) => setMatterAddress(e.target.value)}
-                                        className="w-full px-4 py-2 rounded-full bg-slate-50 border border-slate-200 focus:border-amber-500 outline-none"
+                                        className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none"
                                         placeholder="e.g., 123 Site St"
                                     />
                                 </div>
@@ -531,7 +531,7 @@ export function Dashboard() {
                                     <textarea
                                         value={matterNote}
                                         onChange={(e) => setMatterNote(e.target.value)}
-                                        className="w-full px-4 py-3 rounded-full bg-slate-50 border border-slate-200 focus:border-amber-500 outline-none min-h-[100px] resize-none"
+                                        className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none min-h-[100px] resize-none"
                                         placeholder="e.g., Need 5000 bricks..."
                                         required
                                     />
@@ -560,7 +560,7 @@ export function Dashboard() {
                                     </button>
                                     <button
                                         type="submit"
-                                        className="flex-1 px-4 py-2 rounded-full bg-amber-500 text-white hover:bg-amber-600 shadow-lg shadow-amber-500/20"
+                                        className="flex-1 px-4 py-2 rounded-full bg-emerald-500 text-white hover:bg-emerald-600 shadow-lg shadow-emerald-500/20"
                                     >
                                         {matterToEdit ? 'Save Changes' : 'Add Note'}
                                     </button>

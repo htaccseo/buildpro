@@ -184,8 +184,8 @@ export function Invoices() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card className="p-6 border-none shadow-sm bg-white text-navy-900">
                     <div className="flex items-center gap-4 mb-4">
-                        <div className="p-3 bg-emerald-50 rounded-full">
-                            {activeTab === 'sent' ? <ArrowUpRight className="w-6 h-6 text-emerald-500" /> : <ArrowDownLeft className="w-6 h-6 text-emerald-500" />}
+                        <div className={cn("p-3 rounded-full", activeTab === 'sent' ? "bg-emerald-50" : "bg-rose-50")}>
+                            {activeTab === 'sent' ? <ArrowUpRight className="w-6 h-6 text-emerald-500" /> : <ArrowDownLeft className="w-6 h-6 text-rose-500" />}
                         </div>
                         <div>
                             <p className="text-navy-600 text-sm font-medium">
@@ -197,7 +197,7 @@ export function Invoices() {
                             <h3 className="text-5xl font-extrabold text-navy-900">${totalAmount.toLocaleString()}</h3>
                         </div>
                     </div>
-                    <div className="flex items-center justify-between text-sm pt-4 border-t-4 border-emerald-500">
+                    <div className={cn("flex items-center justify-between text-sm pt-4 border-t-4", activeTab === 'sent' ? "border-emerald-500" : "border-rose-500")}>
                         <span className="text-navy-700">
                             {viewMode === 'pending'
                                 ? 'Pending & Overdue'
@@ -222,7 +222,7 @@ export function Invoices() {
                         </button>
                         <button
                             onClick={() => { setActiveTab('received'); setViewMode('pending'); }}
-                            className={cn("px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2", activeTab === 'received' ? "bg-emerald-50 text-emerald-600" : "text-text-muted hover:text-navy-900 hover:bg-slate-50")}
+                            className={cn("px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2", activeTab === 'received' ? "bg-rose-50 text-rose-600" : "text-text-muted hover:text-navy-900 hover:bg-slate-50")}
                         >
                             <ArrowDownLeft className="w-4 h-4" />
                             Bills to Pay (Payables)
@@ -283,7 +283,7 @@ export function Invoices() {
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2 md:gap-3 flex-wrap">
                                             {/* Icon */}
-                                            <div className={cn("hidden md:flex p-2 rounded-lg shrink-0 items-center justify-center", activeTab === 'sent' ? "bg-emerald-50 text-emerald-600" : "bg-indigo-50 text-indigo-600")}>
+                                            <div className={cn("hidden md:flex p-2 rounded-lg shrink-0 items-center justify-center", activeTab === 'sent' ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600")}>
                                                 <FileText className="w-5 h-5" />
                                             </div>
 

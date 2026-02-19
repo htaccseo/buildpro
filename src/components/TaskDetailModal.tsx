@@ -32,6 +32,8 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
 }) => {
     if (!isOpen) return null;
 
+    const [selectedImage, setSelectedImage] = React.useState<string | null>(null);
+
     const assignee = users.find(u => u.id === task.assignedTo);
     const creator = users.find(u => u.id === task.createdBy);
     const completer = users.find(u => u.id === task.completedBy);
@@ -104,13 +106,17 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                             </h3>
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                                 {task.attachments.map((img, index) => (
-                                    <div key={index} className="relative group aspect-video rounded-lg overflow-hidden bg-slate-100 border border-slate-200 cursor-pointer" onClick={() => window.open(img, '_blank')}>
+                                    <div key={index} className="relative group aspect-video rounded-lg overflow-hidden bg-slate-100 border border-slate-200 cursor-pointer" onClick={() => setSelectedImage(img)}>
                                         <img
                                             src={img}
                                             alt={`Attachment ${index + 1}`}
                                             className="w-full h-full object-cover"
                                         />
-                                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+                                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                                            <div className="bg-white/90 p-2 rounded-full shadow-sm">
+                                                <Download className="w-4 h-4 text-navy-900" />
+                                            </div>
+                                        </div>
                                     </div>
                                 ))}
                             </div>
@@ -144,7 +150,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                             {((task.completionImages && task.completionImages.length > 0) || task.completionImage) && (
                                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
                                     {(task.completionImages || (task.completionImage ? [task.completionImage] : [])).map((img, idx) => (
-                                        <div key={idx} className="relative group aspect-video rounded-lg overflow-hidden bg-white border border-emerald-100 cursor-pointer shadow-sm hover:shadow-md transition-all" onClick={() => window.open(img, '_blank')}>
+                                        <div key={idx} className="relative group aspect-video rounded-lg overflow-hidden bg-white border border-emerald-100 cursor-pointer shadow-sm hover:shadow-md transition-all" onClick={() => setSelectedImage(img)}>
                                             <img
                                                 src={img}
                                                 alt={`Completion ${idx + 1}`}
@@ -210,38 +216,39 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                     </div>
 
                     {/* Attachments */}
-                    {(task.attachments && task.attachments.length > 0) && (
-                        <div>
-                            <h3 className="text-xs font-bold text-navy-900 uppercase tracking-wider mb-3 flex items-center gap-2">
-                                <Paperclip className="w-4 h-4 text-emerald-600" />
-                                Attachments
-                            </h3>
-                            <div className="space-y-2">
-                                {task.attachments.map((url, index) => {
-                                    const filename = url.split('/').pop() || `Attachment ${index + 1}`;
-                                    return (
-                                        <a
-                                            key={index}
-                                            href={url}
-                                            download
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-full hover:border-emerald-200 hover:bg-emerald-50/50 transition-all group"
-                                            onClick={(e) => e.stopPropagation()}
-                                        >
-                                            <div className="flex items-center gap-3 min-w-0">
-                                                <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
-                                                    <Paperclip className="w-4 h-4" />
-                                                </div>
-                                                <span className="text-sm font-medium text-navy-900 truncate group-hover:text-emerald-700">
-                                                    {filename}
-                                                </span>
-                                            </div>
-                                            <Download className="w-4 h-4 text-slate-400 group-hover:text-emerald-600" />
-                                        </a>
-                                    );
-                                })}
-                            </div>
+                    {/* Attachments (Redundant List Removed) */}
+
+                    {/* Lightbox */}
+                    {selectedImage && (
+                        <div
+                            className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 backdrop-blur-sm animate-in fade-in duration-200"
+                            onClick={() => setSelectedImage(null)}
+                        >
+                            <button
+                                onClick={() => setSelectedImage(null)}
+                                className="absolute top-4 right-4 p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-colors"
+                            >
+                                <X className="w-6 h-6" />
+                            </button>
+
+                            <img
+                                src={selectedImage}
+                                alt="Full screen preview"
+                                className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-200"
+                                onClick={(e) => e.stopPropagation()}
+                            />
+
+                            <a
+                                href={selectedImage}
+                                download
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 px-6 py-3 bg-white text-navy-900 rounded-full shadow-lg hover:bg-slate-50 font-bold transition-transform hover:scale-105 active:scale-95"
+                            >
+                                <Download className="w-4 h-4" />
+                                Download Image
+                            </a>
                         </div>
                     )}
                 </div>

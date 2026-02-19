@@ -112,10 +112,10 @@ export default {
                         const { results: projects } = await env.DB.prepare('SELECT * FROM projects WHERE organization_id = ?').bind(orgId).all();
                         logs.push(`Projects found: ${projects?.length}`);
 
-                        // Fetch tasks for all projects
                         const projectIds = (projects || []).map((p: any) => p.id);
                         let tasks: any[] = [];
                         let projectUpdates: any[] = [];
+                        let comments: any[] = [];
                         logs.push(`Project IDs: ${projectIds.join(',')}`);
 
                         if (projectIds.length > 0) {
@@ -135,6 +135,16 @@ export default {
                                 userId: u.user_id,
                                 authorName: u.author_name
                             }));
+
+                            // Fetch Comments
+                            logs.push('Fetching comments');
+                            const { results: commentResults } = await env.DB.prepare(`
+                                SELECT * FROM task_comments WHERE task_id IN (
+                                    SELECT id FROM tasks WHERE project_id IN (${placeholders})
+                                )
+                            `).bind(...projectIds).all();
+                            comments = commentResults || [];
+                            logs.push(`Comments found: ${comments.length}`);
                         }
                         logs.push(`Tasks found: ${tasks.length}`);
                         logs.push(`Project Updates found: ${projectUpdates.length}`);

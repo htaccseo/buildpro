@@ -359,41 +359,101 @@ export function ProjectDetails() {
                                                                 <h3 className={cn("text-lg font-medium truncate pr-2", task.status === 'completed' ? "text-text-muted line-through" : "text-navy-900")}>
                                                                     {task.title}
                                                                 </h3>
-
+                                                                {/* Creator Avatar (Item 4) */}
+                                                                <div className="shrink-0" title={`Created by ${users.find(u => u.id === task.createdBy)?.name || 'Unknown'}`}>
+                                                                    <UserAvatar userId={task.createdBy || ''} className="w-5 h-5 border border-white shadow-sm" />
+                                                                </div>
                                                             </div>
                                                             <p className="text-text-muted text-sm line-clamp-2">{task.description}</p>
 
-                                                            {/* Attachments List */}
+                                                            {/* Attachments List (Item 1) */}
                                                             {task.attachments && task.attachments.length > 0 && (
                                                                 <div className="mt-2 flex flex-wrap gap-2">
                                                                     {task.attachments.map((url, idx) => {
                                                                         const filename = url.split('/').pop() || 'Attachment';
                                                                         return (
-                                                                            <a
+                                                                            <button
                                                                                 key={idx}
-                                                                                href={url}
-                                                                                download
-                                                                                onClick={(e) => e.stopPropagation()}
+                                                                                onClick={(e) => {
+                                                                                    e.stopPropagation();
+                                                                                    setExpandedImage(url);
+                                                                                }}
                                                                                 className="inline-flex items-center gap-1 px-2 py-1 bg-white border border-slate-200 rounded-md text-xs font-medium text-emerald-600 hover:bg-emerald-50 hover:border-emerald-200 transition-colors"
                                                                             >
                                                                                 <Paperclip className="w-3 h-3" />
                                                                                 <span className="truncate max-w-[150px]">{filename}</span>
-                                                                            </a>
+                                                                            </button>
                                                                         );
                                                                     })}
+                                                                </div>
+                                                            )}
+
+                                                            {/* Completion Report Section (Item 2 & 5) */}
+                                                            {task.status === 'completed' && (task.completionNote || (task.completionImages && task.completionImages.length > 0) || task.completionImage) && (
+                                                                <div
+                                                                    className="mt-4 bg-emerald-50/50 border border-emerald-100 rounded-xl p-4 relative group/report"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation(); // Prevent opening task detail
+                                                                        // Open completion modal for editing
+                                                                        openCompletionModal(task.id, task.completionNote, task.completionImages || task.completionImage);
+                                                                    }}
+                                                                >
+                                                                    <div className="flex items-start gap-3">
+                                                                        <div className="shrink-0">
+                                                                            <UserAvatar userId={task.completedBy || ''} className="w-8 h-8 border-2 border-white shadow-sm" />
+                                                                        </div>
+                                                                        <div className="flex-1 min-w-0">
+                                                                            <div className="flex items-center justify-between mb-1">
+                                                                                <span className="text-sm font-bold text-navy-900">
+                                                                                    {users.find(u => u.id === task.completedBy)?.name || 'Unknown'}
+                                                                                </span>
+                                                                                <span className="text-xs text-emerald-600 font-medium bg-emerald-100 px-2 py-0.5 rounded-full">
+                                                                                    Completed
+                                                                                </span>
+                                                                            </div>
+
+                                                                            {task.completionNote && (
+                                                                                <p className="text-sm text-navy-700 whitespace-pre-wrap mb-3">{task.completionNote}</p>
+                                                                            )}
+
+                                                                            {/* Completion Images */}
+                                                                            {((task.completionImages && task.completionImages.length > 0) || task.completionImage) && (
+                                                                                <div className="flex flex-wrap gap-2">
+                                                                                    {(task.completionImages || (task.completionImage ? [task.completionImage] : [])).map((img, idx) => (
+                                                                                        <div
+                                                                                            key={idx}
+                                                                                            className="relative group/image w-16 h-16 rounded-lg overflow-hidden border border-emerald-200 cursor-pointer shadow-sm hover:shadow-md transition-all"
+                                                                                            onClick={(e) => {
+                                                                                                e.stopPropagation();
+                                                                                                setExpandedImage(img);
+                                                                                            }}
+                                                                                        >
+                                                                                            <img src={img} alt="Completion" className="w-full h-full object-cover" />
+                                                                                            <div className="absolute inset-0 bg-black/0 group-hover/image:bg-black/10 transition-colors" />
+                                                                                        </div>
+                                                                                    ))}
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div className="absolute top-2 right-2 opacity-0 group-hover/report:opacity-100 transition-opacity">
+                                                                        <button className="p-1.5 bg-white text-emerald-600 rounded-lg shadow-sm hover:bg-emerald-50 border border-emerald-100">
+                                                                            <Pencil className="w-3.5 h-3.5" />
+                                                                        </button>
+                                                                    </div>
                                                                 </div>
                                                             )}
                                                         </div>
                                                         <div className="text-right shrink-0">
                                                             <div className="text-sm font-medium text-navy-900 mb-1">
+                                                                {/* Assignee (Item 3 - Avatar Only) */}
                                                                 {assignee ? (
-                                                                    <div className="flex items-center justify-end gap-2">
-                                                                        <span className="hidden sm:inline text-navy-700">{assignee.name}</span>
+                                                                    <div className="flex items-center justify-end gap-2" title={`Assigned to ${assignee.name}`}>
                                                                         <UserAvatar userId={assignee.id} />
                                                                     </div>
                                                                 ) : (
-                                                                    <div className="flex items-center justify-end gap-2 opacity-50">
-                                                                        <span className="hidden sm:inline text-text-muted">Unassigned</span>
+                                                                    <div className="flex items-center justify-end gap-2 opacity-50" title="Unassigned">
                                                                         <div className="w-8 h-8 rounded-full bg-slate-100 border border-dashed border-slate-300 flex items-center justify-center">
                                                                             <UserPlus className="w-4 h-4 text-slate-400" />
                                                                         </div>

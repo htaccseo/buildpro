@@ -233,8 +233,15 @@ export function ProjectDetails() {
                 <div className="w-full relative z-10 md:absolute md:bottom-0 md:left-0 md:p-8 md:w-full">
                     <div className="flex flex-col md:flex-row justify-end md:justify-between items-end gap-3 md:gap-6">
                         <div className="w-full md:w-auto">
-                            <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">{project.name}</h1>
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 text-slate-200">
+                            <h1 className={cn(
+                                "text-3xl md:text-4xl font-bold mb-2",
+                                project.color.includes('emerald') ? "text-navy-900" :
+                                    (project.color.includes('blue') || project.color.includes('navy') || project.color.includes('black')) ? "text-emerald-500" : "text-white"
+                            )}>{project.name}</h1>
+                            <div className={cn(
+                                "flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6",
+                                project.color.includes('emerald') ? "text-navy-800" : "text-slate-200"
+                            )}>
                                 <div className="flex items-center gap-2">
                                     <MapPin className="w-4 h-4 shrink-0" />
                                     {project.address}
@@ -248,12 +255,21 @@ export function ProjectDetails() {
                         </div>
 
                         {/* Mobile Bottom Row: Due Date + Progress */}
-                        <div className="flex md:hidden w-full justify-between items-end mt-4 border-t border-white/20 pt-4">
-                            <div className="flex items-center gap-2 text-slate-200 text-sm">
+                        <div className={cn(
+                            "flex md:hidden w-full justify-between items-end mt-4 pt-4 border-t",
+                            project.color.includes('emerald') ? "border-navy-900/10" : "border-white/20"
+                        )}>
+                            <div className={cn(
+                                "flex items-center gap-2 text-sm",
+                                project.color.includes('emerald') ? "text-navy-800" : "text-slate-200"
+                            )}>
                                 <Calendar className="w-4 h-4 shrink-0" />
                                 Due {format(new Date(project.endDate), 'MMM d, yyyy')}
                             </div>
-                            <div className="text-white font-bold text-sm">
+                            <div className={cn(
+                                "font-bold text-sm",
+                                project.color.includes('emerald') ? "text-navy-900" : "text-white"
+                            )}>
                                 Progress: {project.progress}%
                             </div>
                         </div>

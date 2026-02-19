@@ -86,32 +86,33 @@ export function Projects() {
                                 className="group block"
                             >
                                 <Card className="p-0 overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1 border-none shadow-sm h-full flex flex-col">
-                                    <div className={cn("h-48 relative shrink-0 flex items-center justify-center transition-all duration-700",
+                                    <div className={cn("h-24 relative shrink-0 flex items-end p-4 transition-all duration-700",
                                         project.color.includes('emerald') ? "bg-emerald-500" :
                                             (project.color.includes('blue') || project.color.includes('navy')) ? "bg-navy-900" : project.color
                                     )}>
-                                        {/* Item 2 & 4: Center Icon */}
-                                        {project.color.includes('emerald') ? (
-                                            <Home className="w-16 h-16 text-navy-900 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-90" />
-                                        ) : (project.color.includes('blue') || project.color.includes('navy')) ? (
-                                            <Store className="w-16 h-16 text-emerald-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-90" />
-                                        ) : (
-                                            <Activity className="w-16 h-16 text-white/20 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-                                        )}
+                                        <div className="absolute top-0 left-0 w-full h-full bg-black/5" />
 
-                                        {/* Item 5: Remove Top Right Avatar - DONE (Element Removed) */}
+                                        <div className="relative z-10 w-full">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <span className={cn(
+                                                    "inline-block px-2.5 py-1 rounded-full text-xs font-semibold capitalize backdrop-blur-sm",
+                                                    project.status === 'active'
+                                                        ? (project.color.includes('emerald') ? "bg-navy-900 text-white" : "bg-emerald-500 text-navy-900")
+                                                        : project.status === 'completed' ? "bg-slate-900/40 text-white" : "bg-amber-500/80 text-white"
+                                                )}>
+                                                    {project.status}
+                                                </span>
 
-                                        <div className="absolute top-0 left-0 w-full h-full bg-black/5" /> {/* Reduced overlay opacity */}
-                                        <div className="absolute bottom-4 left-4 right-4">
-                                            {/* Item 1 & 3: Status Badge */}
-                                            <span className={cn(
-                                                "inline-block px-2.5 py-1 rounded-full text-xs font-semibold mb-2 capitalize backdrop-blur-sm",
-                                                project.status === 'active'
-                                                    ? (project.color.includes('emerald') ? "bg-navy-900 text-white" : "bg-emerald-500 text-navy-900")
-                                                    : project.status === 'completed' ? "bg-slate-900/40 text-white" : "bg-amber-500/80 text-white"
-                                            )}>
-                                                {project.status}
-                                            </span>
+                                                {/* Smaller Icon next to badge */}
+                                                {project.color.includes('emerald') ? (
+                                                    <Home className="w-5 h-5 text-navy-900 opacity-80" />
+                                                ) : (project.color.includes('blue') || project.color.includes('navy')) ? (
+                                                    <Store className="w-5 h-5 text-emerald-500 opacity-80" />
+                                                ) : (
+                                                    <Activity className="w-5 h-5 text-white/80" />
+                                                )}
+                                            </div>
+
                                             <h3 className={cn(
                                                 "text-xl font-bold truncate drop-shadow-sm",
                                                 project.color.includes('emerald') ? "text-navy-900" :
@@ -194,16 +195,15 @@ export function Projects() {
                                 className="group block grayscale hover:grayscale-0 transition-all duration-500"
                             >
                                 <Card className="p-0 overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1 border-none shadow-sm h-full flex flex-col opacity-75 hover:opacity-100">
-                                    <div className={cn("h-48 relative shrink-0 flex items-center justify-center bg-slate-800")}>
-                                        <div className="absolute top-4 right-4 z-10">
-                                            <UserAvatar userId={project.createdBy} className="h-8 w-8 text-xs border-2 border-white/50 shadow-sm" />
-                                        </div>
-                                        <CheckCircle className="w-16 h-16 text-white/20 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                                    <div className={cn("h-24 relative shrink-0 flex items-end p-4 bg-slate-800")}>
                                         <div className="absolute top-0 left-0 w-full h-full bg-black/10" />
-                                        <div className="absolute bottom-4 left-4 right-4">
-                                            <span className="inline-block px-2.5 py-1 rounded-full text-xs font-semibold mb-2 capitalize bg-emerald-500/90 text-white backdrop-blur-sm">
-                                                Completed
-                                            </span>
+                                        <div className="relative z-10 w-full">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <span className="inline-block px-2.5 py-1 rounded-full text-xs font-semibold capitalize bg-emerald-500/90 text-white backdrop-blur-sm">
+                                                    Completed
+                                                </span>
+                                                <CheckCircle className="w-5 h-5 text-white/50" />
+                                            </div>
                                             <h3 className="text-xl font-bold text-white truncate drop-shadow-sm">{project.name}</h3>
                                         </div>
                                     </div>

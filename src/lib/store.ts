@@ -548,7 +548,8 @@ export const useStore = create<AppState>((set, get) => ({
                 await apiRequest('/task/complete', 'POST', {
                     taskId,
                     note,
-                    images: Array.isArray(images) ? images : (images ? [images] : []),
+                    completionImages: Array.isArray(images) ? images : (images ? [images] : []),
+                    image: Array.isArray(images) ? images[0] : images,
                     completedBy
                 });
             } catch (e) {

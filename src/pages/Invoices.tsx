@@ -182,33 +182,29 @@ export function Invoices() {
 
             {/* Summary Card */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card className={cn("p-6 border-none shadow-sm text-white",
-                    activeTab === 'sent'
-                        ? (viewMode === 'pending' ? "bg-gradient-to-br from-emerald-500 to-teal-600" : "bg-gradient-to-br from-blue-500 to-indigo-600")
-                        : "bg-gradient-to-br from-rose-500 to-orange-600"
-                )}>
+                <Card className="p-6 border-none shadow-sm bg-white text-navy-900">
                     <div className="flex items-center gap-4 mb-4">
-                        <div className="p-3 bg-white/20 rounded-full backdrop-blur-sm">
-                            {activeTab === 'sent' ? <ArrowUpRight className="w-6 h-6" /> : <ArrowDownLeft className="w-6 h-6" />}
+                        <div className="p-3 bg-emerald-50 rounded-full">
+                            {activeTab === 'sent' ? <ArrowUpRight className="w-6 h-6 text-emerald-500" /> : <ArrowDownLeft className="w-6 h-6 text-emerald-500" />}
                         </div>
                         <div>
-                            <p className="text-white/80 text-sm font-medium">
+                            <p className="text-navy-600 text-sm font-medium">
                                 {viewMode === 'pending'
                                     ? (activeTab === 'sent' ? 'Total Outstanding Receivables' : 'Total Outstanding Payables')
                                     : (activeTab === 'sent' ? 'Total Revenue Collected' : 'Total Paid')
                                 }
                             </p>
-                            <h3 className="text-5xl font-extrabold">${totalAmount.toLocaleString()}</h3>
+                            <h3 className="text-5xl font-extrabold text-navy-900">${totalAmount.toLocaleString()}</h3>
                         </div>
                     </div>
-                    <div className="flex items-center justify-between text-sm pt-4 border-t border-white/20">
-                        <span className="text-white/80">
+                    <div className="flex items-center justify-between text-sm pt-4 border-t-4 border-emerald-500">
+                        <span className="text-navy-700">
                             {viewMode === 'pending'
                                 ? 'Pending & Overdue'
                                 : `Paid (${dateFilter.replace('this_financial_year', 'FY YTD').replace('_', ' ')})`
                             }
                         </span>
-                        <span className="font-bold text-white">{filteredInvoices.length} invoices</span>
+                        <span className="font-bold text-navy-900">{filteredInvoices.length} invoices</span>
                     </div>
                 </Card>
             </div>

@@ -14,7 +14,7 @@ export function Invoices() {
     const { addInvoice, updateInvoice, updateInvoiceStatus, deleteInvoice } = useStore();
     const [activeTab, setActiveTab] = useState<'sent' | 'received'>('sent');
     const [viewMode, setViewMode] = useState<'pending' | 'history'>('pending');
-    const [dateFilter, setDateFilter] = useState<'this_month' | 'last_month' | 'all_time'>('this_month');
+    const [dateFilter, setDateFilter] = useState<'this_month' | 'last_month' | 'this_financial_year' | 'all_time'>('this_month');
     const [isFormOpen, setIsFormOpen] = useState(false);
 
     // Form State
@@ -45,14 +45,26 @@ export function Invoices() {
 
             const invDate = new Date(inv.date); // Issue Date
             const now = new Date();
+
+            // Standard Month Filters
             const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
             const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
             const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+
+            // Australian Financial Year (July 1 - June 30)
+            let fyStartYear = now.getFullYear();
+            if (now.getMonth() < 6) { // Jan (0) - June (5)
+                fyStartYear = now.getFullYear() - 1;
+            }
+            const startOfFY = new Date(fyStartYear, 6, 1); // July 1st
+            const endOfFY = new Date(fyStartYear + 1, 5, 30, 23, 59, 59, 999); // June 30th next year
 
             if (dateFilter === 'this_month') {
                 return invDate >= startOfThisMonth;
             } else if (dateFilter === 'last_month') {
                 return invDate >= startOfLastMonth && invDate <= endOfLastMonth;
+            } else if (dateFilter === 'this_financial_year') {
+                return invDate >= startOfFY && invDate <= endOfFY;
             }
             return true;
         }
@@ -193,7 +205,7 @@ export function Invoices() {
                         <span className="text-white/80">
                             {viewMode === 'pending'
                                 ? 'Pending & Overdue'
-                                : `Paid (${dateFilter.replace('_', ' ')})`
+                                : `Paid (${dateFilter.replace('this_financial_year', 'FY YTD').replace('_', ' ')})`
                             }
                         </span>
                         <span className="font-bold text-white">{filteredInvoices.length} invoices</span>
@@ -254,6 +266,7 @@ export function Invoices() {
                                 >
                                     <option value="this_month">This Month</option>
                                     <option value="last_month">Last Month</option>
+                                    <option value="this_financial_year">Financial Year (YTD)</option>
                                     <option value="all_time">All Time</option>
                                 </select>
                             </div>

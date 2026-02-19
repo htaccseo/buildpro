@@ -53,6 +53,7 @@ export function ProjectDetails() {
                 title: taskData.title!,
                 description: taskData.description!,
                 requiredDate: taskData.requiredDate!,
+                attachments: taskData.attachments,
                 status: 'pending'
             });
         }

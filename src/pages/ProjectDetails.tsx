@@ -385,7 +385,7 @@ export function ProjectDetails() {
                                         return (
                                             <Card
                                                 key={task.id}
-                                                className="p-4 md:p-5 flex items-start gap-3 md:gap-4 border-none shadow-sm hover:shadow-md transition-all group cursor-pointer hover:bg-slate-50/50"
+                                                className="p-3 md:p-5 flex items-start gap-3 md:gap-4 border-none shadow-sm hover:shadow-md transition-all group cursor-pointer hover:bg-slate-50/50"
                                                 onClick={() => {
                                                     setSelectedTask(task);
                                                     setIsTaskDetailOpen(true);

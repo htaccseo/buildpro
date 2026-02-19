@@ -136,8 +136,8 @@ export default {
                             createdBy: t.created_by,
                             completedAt: t.completed_at,
                             completionNote: t.completion_note,
-                            completionImages: t.completion_images ? JSON.parse(t.completion_images) : [],
-                            attachments: t.attachments ? JSON.parse(t.attachments) : [],
+                            completionImages: t.completion_images ? (t.completion_images.startsWith('[') ? JSON.parse(t.completion_images) : (t.completion_images.trim() ? [t.completion_images] : [])) : [],
+                            attachments: t.attachments ? (t.attachments.startsWith('[') ? JSON.parse(t.attachments) : (t.attachments.trim() ? [t.attachments] : [])) : [],
                             comments: comments
                                 ? comments
                                     .filter((c: any) => c.task_id === t.id)
@@ -146,7 +146,7 @@ export default {
                                         taskId: c.task_id,
                                         userId: c.user_id,
                                         message: c.message,
-                                        images: c.images ? JSON.parse(c.images) : [],
+                                        images: c.images ? (c.images.startsWith('[') ? JSON.parse(c.images) : []) : [],
                                         createdAt: c.created_at
                                     }))
                                 : []

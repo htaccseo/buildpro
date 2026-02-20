@@ -158,7 +158,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
 
                     {/* Meta Info Grid */}
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-slate-50 p-3 rounded-full border border-slate-100 relative">
+                        <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 relative">
                             <span className="text-xs font-medium text-slate-400 uppercase tracking-wider block mb-2">Assigned To</span>
                             <div className="flex items-center gap-2 overflow-hidden relative pr-6">
                                 {assignee ? (
@@ -188,7 +188,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                             </div>
                         </div>
 
-                        <div className="bg-slate-50 p-3 rounded-full border border-slate-100">
+                        <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
                             <span className="text-xs font-medium text-slate-400 uppercase tracking-wider block mb-2">Created By</span>
                             <div className="flex items-center gap-2 overflow-hidden">
                                 {creator ? (

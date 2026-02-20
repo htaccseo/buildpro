@@ -399,7 +399,7 @@ export function ProjectDetails() {
                                                                 </div>
                                                             </div>
 
-                                                            <p className="text-text-muted text-sm line-clamp-2">{task.description}</p>
+                                                            <p className="text-navy-700 leading-relaxed line-clamp-2">{task.description}</p>
 
                                                             {/* Attachments List (Item 1 - Fixed to Grid) */}
                                                             {task.attachments && task.attachments.length > 0 && (
@@ -480,7 +480,7 @@ export function ProjectDetails() {
                                                                                                 )}
                                                                                             </div>
                                                                                         </div>
-                                                                                        <p className="text-[13px] sm:text-sm text-navy-700 whitespace-pre-wrap">{comment.message}</p>
+                                                                                        <p className="text-navy-700 leading-relaxed whitespace-pre-wrap">{comment.message}</p>
                                                                                         {comment.images && comment.images.length > 0 && (
                                                                                             <div className="mt-2 flex flex-wrap gap-2">
                                                                                                 {comment.images.map((img, i) => (

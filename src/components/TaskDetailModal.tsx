@@ -90,8 +90,8 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                 <div className="p-6 space-y-6 max-h-[60vh] overflow-y-auto">
                     {/* Description */}
                     {task.description && (
-                        <div className="prose prose-sm prose-slate max-w-none">
-                            <p className="text-slate-600 whitespace-pre-wrap">{task.description}</p>
+                        <div className="max-w-none">
+                            <p className="text-navy-700 leading-relaxed whitespace-pre-wrap">{task.description}</p>
                         </div>
                     )}
 

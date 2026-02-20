@@ -349,7 +349,7 @@ export function ProjectDetails() {
                                                         }
                                                     }}
                                                     className={cn(
-                                                        "mt-1 p-1 rounded-full transition-colors shrink-0",
+                                                        "p-1 rounded-full transition-colors shrink-0",
                                                         task.status === 'completed' ? 'text-emerald-500 hover:bg-emerald-50' : 'text-slate-300 hover:text-emerald-500 hover:bg-emerald-50'
                                                     )}
                                                     title={task.status === 'completed' ? "Mark as incomplete" : "Mark as complete"}
@@ -359,7 +359,7 @@ export function ProjectDetails() {
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex justify-between items-start gap-4">
                                                         <div className="min-w-0 flex-1">
-                                                            <div className="flex items-start justify-between gap-2 mb-1">
+                                                            <div className="flex items-center justify-between gap-2 mb-1">
                                                                 <div className="flex items-center gap-2 min-w-0">
                                                                     <h3 className={cn("text-lg font-medium truncate", task.status === 'completed' ? "text-text-muted line-through" : "text-navy-900")}>
                                                                         {task.title}
@@ -387,7 +387,7 @@ export function ProjectDetails() {
                                                                 </div>
 
                                                                 {/* Due Date (Right Aligned) */}
-                                                                <div className="shrink-0 pt-1">
+                                                                <div className="shrink-0 flex items-center">
                                                                     <p className={cn(
                                                                         "text-[11px] sm:text-xs font-medium whitespace-nowrap",
                                                                         task.requiredDate && new Date(task.requiredDate) < new Date() && task.status !== 'completed'

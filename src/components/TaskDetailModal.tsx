@@ -15,7 +15,6 @@ interface TaskDetailModalProps {
     onComplete: (taskId: string) => void;
     onUncomplete: (taskId: string) => void;
     onAssign: (userId: string) => void;
-    onEditReport: (task: Task) => void;
 }
 
 export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
@@ -27,8 +26,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
     onDelete,
     onComplete,
     onUncomplete,
-    onAssign,
-    onEditReport
+    onAssign
 }) => {
     if (!isOpen) return null;
 
@@ -130,16 +128,6 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                                 <FileText className="w-4 h-4" />
                                 Completion Report
                                 {completer && <span className="text-emerald-600 font-medium ml-auto text-xs flex items-center gap-1">by <UserAvatar userId={completer.id} className="w-4 h-4" /> {completer.name}</span>}
-                                <button
-                                    onClick={() => {
-                                        onEditReport(task);
-                                        onClose();
-                                    }}
-                                    className="p-1 text-emerald-600 hover:text-emerald-800 hover:bg-emerald-100 rounded ml-2 transition-colors"
-                                    title="Edit Report"
-                                >
-                                    <Pencil className="w-3.5 h-3.5" />
-                                </button>
                             </div>
 
                             {task.completionNote && (

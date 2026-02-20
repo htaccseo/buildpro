@@ -1,9 +1,8 @@
-
 import React, { useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useStore } from '../lib/store';
 import { format } from 'date-fns';
-import { ArrowLeft, Calendar, Camera, CheckCircle, Clock, MapPin, MessageSquare, Pencil, Plus, Trash2, UserPlus, Edit2, X, Paperclip } from 'lucide-react';
+import { X, MessageSquare, ArrowLeft, Camera, UserPlus, MapPin, Paperclip, CheckCircle2, Circle, Trash2, Pencil, Calendar, Plus, Edit2 } from 'lucide-react';
 import { cn, resizeImage } from '../lib/utils';
 import { Card } from '../components/ui/Card';
 import { NewProjectModal } from '../components/NewProjectModal';
@@ -124,59 +123,8 @@ export function ProjectDetails() {
 
 
 
-    // Task Completion State
-    const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
-    const [completionTaskId, setCompletionTaskId] = useState<string | null>(null);
-    const [completionNote, setCompletionNote] = useState('');
-    const [completionImages, setCompletionImages] = useState<string[]>([]);
-
-    const fileInputRef = useRef<HTMLInputElement>(null);
-
     const [expandedImage, setExpandedImage] = useState<string | null>(null);
 
-    const openCompletionModal = (taskId: string, currentNote?: string, currentImages?: string[] | string) => {
-        setCompletionTaskId(taskId);
-        setCompletionNote(currentNote || '');
-        // Handle both array (new) and string (old) formats
-        if (Array.isArray(currentImages)) {
-            setCompletionImages(currentImages);
-        } else if (typeof currentImages === 'string' && currentImages) {
-            setCompletionImages([currentImages]);
-        } else {
-            setCompletionImages([]);
-        }
-        setIsCompleteModalOpen(true);
-    };
-
-    const handleCompletionSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (completionTaskId) {
-            completeTask(completionTaskId, completionNote, completionImages);
-            setIsCompleteModalOpen(false);
-            setCompletionTaskId(null);
-        }
-    };
-
-    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            try {
-                // Resize image to max 800px width and compress to 0.7 quality
-                const resizedImage = await resizeImage(file, 800, 0.7);
-                setCompletionImages(prev => [...prev, resizedImage]);
-            } catch (error) {
-                console.error("Error resizing image:", error);
-            }
-        }
-    };
-
-    const removeCompletionImage = (index: number) => {
-        setCompletionImages(prev => prev.filter((_, i) => i !== index));
-    };
-
-    const triggerFileInput = () => {
-        fileInputRef.current?.click();
-    };
 
     const handleReplyImageUpload = async (taskId: string, e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -391,9 +339,23 @@ export function ProjectDetails() {
                                                     setIsTaskDetailOpen(true);
                                                 }}
                                             >
-                                                <div className={cn("mt-1 p-2 rounded-lg bg-slate-50", task.status === 'completed' ? 'text-emerald-500' : 'text-amber-500')}>
-                                                    {task.status === 'completed' ? <CheckCircle className="w-5 h-5" /> : <Clock className="w-5 h-5" />}
-                                                </div>
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        if (task.status === 'completed') {
+                                                            uncompleteTask(task.id);
+                                                        } else {
+                                                            completeTask(task.id);
+                                                        }
+                                                    }}
+                                                    className={cn(
+                                                        "mt-1 p-1 rounded-full transition-colors shrink-0",
+                                                        task.status === 'completed' ? 'text-emerald-500 hover:bg-emerald-50' : 'text-slate-300 hover:text-emerald-500 hover:bg-emerald-50'
+                                                    )}
+                                                    title={task.status === 'completed' ? "Mark as incomplete" : "Mark as complete"}
+                                                >
+                                                    {task.status === 'completed' ? <CheckCircle2 className="w-6 h-6" fill="currentColor" stroke="white" /> : <Circle className="w-6 h-6" strokeWidth={1.5} />}
+                                                </button>
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex justify-between items-start gap-4">
                                                         <div className="min-w-0 flex-1">
@@ -466,9 +428,24 @@ export function ProjectDetails() {
                                                                                         <span className="text-sm font-bold text-navy-900">
                                                                                             {users.find(u => u.id === comment.userId)?.name || 'Unknown'}
                                                                                         </span>
-                                                                                        <span className="text-[10px] text-text-muted">
-                                                                                            {format(new Date(comment.createdAt), 'd/M, h:mm a')}
-                                                                                        </span>
+                                                                                        <div className="flex items-center gap-2">
+                                                                                            <span className="text-[10px] text-text-muted">
+                                                                                                {format(new Date(comment.createdAt), 'd/M, h:mm a')}
+                                                                                            </span>
+                                                                                            {comment.userId === currentUser?.id && (
+                                                                                                <button
+                                                                                                    onClick={(e) => {
+                                                                                                        e.stopPropagation();
+                                                                                                        if (confirm('Delete this comment?')) {
+                                                                                                            deleteComment(task.id, comment.id);
+                                                                                                        }
+                                                                                                    }}
+                                                                                                    className="p-1 rounded-full text-slate-300 hover:text-rose-500 hover:bg-rose-50 transition-colors opacity-0 group-hover/comment:opacity-100"
+                                                                                                >
+                                                                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                                                                </button>
+                                                                                            )}
+                                                                                        </div>
                                                                                     </div>
                                                                                     <p className="text-sm text-navy-700 whitespace-pre-wrap">{comment.message}</p>
                                                                                     {comment.images && comment.images.length > 0 && (
@@ -497,7 +474,7 @@ export function ProjectDetails() {
 
                                                             {/* Reply Input */}
                                                             <div className="mt-4 flex gap-2 items-end w-full" onClick={(e) => e.stopPropagation()}>
-                                                                <div className="flex-1 bg-slate-50 rounded-2xl border border-slate-200 focus-within:border-emerald-500 focus-within:ring-1 focus-within:ring-emerald-500 transition-all">
+                                                                <div className="flex-1 bg-slate-50 rounded-2xl border border-slate-200 focus-within:border-navy-900 focus-within:ring-1 focus-within:ring-navy-900 transition-all">
                                                                     <textarea
                                                                         value={replyText[task.id] || ''}
                                                                         onChange={(e) => setReplyText(prev => ({ ...prev, [task.id]: e.target.value }))}
@@ -582,85 +559,6 @@ export function ProjectDetails() {
                                             </Card>
                                         );
                                     })}
-                                </div>
-                            )}
-
-                            {/* Completion Modal */}
-                            {isCompleteModalOpen && (
-                                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-                                    <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl animate-in zoom-in-95 duration-200">
-                                        <h3 className="text-xl font-bold text-navy-900 mb-4">Complete Requirement</h3>
-                                        <form onSubmit={handleCompletionSubmit} className="space-y-4">
-                                            <div>
-                                                <label className="block text-sm font-medium text-navy-900 mb-1.5">Completion Note</label>
-                                                <textarea
-                                                    value={completionNote}
-                                                    onChange={(e) => setCompletionNote(e.target.value)}
-                                                    className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 outline-none h-24 resize-none"
-                                                    placeholder="Describe the work done..."
-                                                    required
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="block text-sm font-medium text-navy-900 mb-1.5">Attach Photo</label>
-                                                <input
-                                                    type="file"
-                                                    ref={fileInputRef}
-                                                    onChange={handleFileUpload}
-                                                    accept="image/*"
-                                                    className="hidden"
-                                                />
-                                                {completionImages.length > 0 ? (
-                                                    <div className="grid grid-cols-2 gap-2">
-                                                        {completionImages.map((img, idx) => (
-                                                            <div key={idx} className="relative group rounded-xl overflow-hidden border border-slate-200 aspect-video">
-                                                                <img src={img} alt={`Completion ${idx + 1}`} className="w-full h-full object-cover" />
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => removeCompletionImage(idx)}
-                                                                    className="absolute top-1 right-1 bg-black/50 hover:bg-black/70 text-white p-1 rounded-full transition-colors"
-                                                                >
-                                                                    <X className="w-3 h-3" />
-                                                                </button>
-                                                            </div>
-                                                        ))}
-                                                        <button
-                                                            type="button"
-                                                            onClick={triggerFileInput}
-                                                            className="border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center text-slate-400 hover:text-emerald-600 hover:border-emerald-200 hover:bg-emerald-50 transition-all aspect-video"
-                                                        >
-                                                            <Camera className="w-5 h-5" />
-                                                            <span className="text-xs font-medium">Add Photo</span>
-                                                        </button>
-                                                    </div>
-                                                ) : (
-                                                    <button
-                                                        type="button"
-                                                        onClick={triggerFileInput}
-                                                        className="w-full h-32 border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center gap-2 text-slate-400 hover:text-emerald-600 hover:border-emerald-200 hover:bg-emerald-50 transition-all"
-                                                    >
-                                                        <Camera className="w-6 h-6" />
-                                                        <span className="text-sm font-medium">Capture or Upload Photo</span>
-                                                    </button>
-                                                )}
-                                            </div>
-                                            <div className="flex gap-3 pt-2">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setIsCompleteModalOpen(false)}
-                                                    className="flex-1 px-6 py-2.5 rounded-full border border-slate-200 text-navy-700 hover:bg-slate-50 transition-colors font-medium"
-                                                >
-                                                    Cancel
-                                                </button>
-                                                <button
-                                                    type="submit"
-                                                    className="flex-1 px-6 py-2.5 rounded-full bg-black text-white hover:bg-slate-800 shadow-lg shadow-black/20 font-bold transition-colors"
-                                                >
-                                                    Complete Task
-                                                </button>
-                                            </div>
-                                        </form>
-                                    </div>
                                 </div>
                             )}
                         </div>
@@ -781,9 +679,6 @@ export function ProjectDetails() {
                         if (selectedTask) {
                             assignTask(selectedTask.id, userId);
                         }
-                    }}
-                    onEditReport={(task) => {
-                        openCompletionModal(task.id, task.completionNote, task.completionImages || task.completionImage);
                     }}
                 />)}
 

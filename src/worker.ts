@@ -403,6 +403,17 @@ export default {
                     }
                 }
 
+                // DELETE /api/task/comment
+                if (url.pathname === '/api/task/comment' && request.method === 'DELETE') {
+                    try {
+                        const { id } = await request.json();
+                        await env.DB.prepare('DELETE FROM task_comments WHERE id = ?').bind(id).run();
+                        return withCors(Response.json({ success: true }));
+                    } catch (e: any) {
+                        return withCors(Response.json({ message: `Task Comment Delete Error: ${e.message}` }, { status: 500 }));
+                    }
+                }
+
                 // POST /api/invite
                 if (url.pathname === '/api/invite' && request.method === 'POST') {
                     try {

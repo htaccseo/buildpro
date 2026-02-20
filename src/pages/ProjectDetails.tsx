@@ -409,124 +409,126 @@ export function ProjectDetails() {
                                                                 </div>
                                                             )}
 
-                                                            {/* Comments Section (Conversational Thread) */}
-                                                            {task.comments && task.comments.length > 0 && (
-                                                                <div className="mt-4 space-y-3 pl-0 md:pl-4 border-l-0 md:border-l-2 border-slate-100">
-                                                                    {task.comments.map((comment) => (
-                                                                        <div
-                                                                            key={comment.id}
-                                                                            className="bg-slate-50 rounded-xl p-3 group/comment relative cursor-pointer hover:bg-slate-100 transition-colors"
-                                                                            onClick={(e) => {
-                                                                                e.stopPropagation();
-                                                                                setSelectedComment({ task, comment });
-                                                                            }}
-                                                                        >
-                                                                            <div className="flex items-start gap-2.5">
-                                                                                <UserAvatar userId={comment.userId} className="w-6 h-6 shrink-0" />
-                                                                                <div className="flex-1 min-w-0">
-                                                                                    <div className="flex items-center justify-between mb-1">
-                                                                                        <span className="text-sm font-bold text-navy-900">
-                                                                                            {users.find(u => u.id === comment.userId)?.name || 'Unknown'}
-                                                                                        </span>
-                                                                                        <div className="flex items-center gap-2">
-                                                                                            <span className="text-[10px] text-text-muted">
-                                                                                                {format(new Date(comment.createdAt), 'd/M, h:mm a')}
+                                                            {/* Conversational Thread & Input Wrapper */}
+                                                            <div className="mt-4 pl-3 sm:pl-4 border-l-2 border-slate-200 sm:border-slate-100">
+                                                                {/* Comments Section */}
+                                                                {task.comments && task.comments.length > 0 && (
+                                                                    <div className="space-y-2.5 sm:space-y-3 mb-3 sm:mb-4">
+                                                                        {task.comments.map((comment) => (
+                                                                            <div
+                                                                                key={comment.id}
+                                                                                className="bg-slate-50 rounded-xl p-2.5 sm:p-3 group/comment relative cursor-pointer hover:bg-slate-100 transition-colors"
+                                                                                onClick={(e) => {
+                                                                                    e.stopPropagation();
+                                                                                    setSelectedComment({ task, comment });
+                                                                                }}
+                                                                            >
+                                                                                <div className="flex items-start gap-2 sm:gap-2.5">
+                                                                                    <UserAvatar userId={comment.userId} className="w-5 h-5 sm:w-6 sm:h-6 shrink-0" />
+                                                                                    <div className="flex-1 min-w-0">
+                                                                                        <div className="flex items-center justify-between mb-0.5 sm:mb-1">
+                                                                                            <span className="text-sm font-bold text-navy-900 truncate pr-2">
+                                                                                                {users.find(u => u.id === comment.userId)?.name || 'Unknown'}
                                                                                             </span>
-                                                                                            {comment.userId === currentUser?.id && (
-                                                                                                <button
-                                                                                                    onClick={(e) => {
-                                                                                                        e.stopPropagation();
-                                                                                                        if (confirm('Delete this comment?')) {
-                                                                                                            deleteComment(task.id, comment.id);
-                                                                                                        }
-                                                                                                    }}
-                                                                                                    className="p-1 rounded-full text-slate-300 hover:text-rose-500 hover:bg-rose-50 transition-colors opacity-0 group-hover/comment:opacity-100"
-                                                                                                >
-                                                                                                    <Trash2 className="w-3.5 h-3.5" />
-                                                                                                </button>
-                                                                                            )}
+                                                                                            <div className="flex items-center gap-2 shrink-0">
+                                                                                                <span className="text-[10px] sm:text-xs text-text-muted">
+                                                                                                    {format(new Date(comment.createdAt), 'd/M, h:mm a')}
+                                                                                                </span>
+                                                                                                {comment.userId === currentUser?.id && (
+                                                                                                    <button
+                                                                                                        onClick={(e) => {
+                                                                                                            e.stopPropagation();
+                                                                                                            if (confirm('Delete this comment?')) {
+                                                                                                                deleteComment(task.id, comment.id);
+                                                                                                            }
+                                                                                                        }}
+                                                                                                        className="p-1 -mr-1 rounded-full text-slate-300 hover:text-rose-500 hover:bg-rose-50 transition-colors opacity-100 sm:opacity-0 group-hover/comment:opacity-100"
+                                                                                                    >
+                                                                                                        <Trash2 className="w-3.5 h-3.5" />
+                                                                                                    </button>
+                                                                                                )}
+                                                                                            </div>
                                                                                         </div>
+                                                                                        <p className="text-[13px] sm:text-sm text-navy-700 whitespace-pre-wrap">{comment.message}</p>
+                                                                                        {comment.images && comment.images.length > 0 && (
+                                                                                            <div className="mt-2 flex flex-wrap gap-2">
+                                                                                                {comment.images.map((img, i) => (
+                                                                                                    <div
+                                                                                                        key={i}
+                                                                                                        className="w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden border border-slate-200 cursor-pointer"
+                                                                                                        onClick={(e) => {
+                                                                                                            e.stopPropagation();
+                                                                                                            setExpandedImage(img);
+                                                                                                        }}
+                                                                                                    >
+                                                                                                        <img src={img} alt="Comment attachment" className="w-full h-full object-cover" />
+                                                                                                    </div>
+                                                                                                ))}
+                                                                                            </div>
+                                                                                        )}
                                                                                     </div>
-                                                                                    <p className="text-sm text-navy-700 whitespace-pre-wrap">{comment.message}</p>
-                                                                                    {comment.images && comment.images.length > 0 && (
-                                                                                        <div className="mt-2 flex flex-wrap gap-2">
-                                                                                            {comment.images.map((img, i) => (
-                                                                                                <div
-                                                                                                    key={i}
-                                                                                                    className="w-16 h-16 rounded-lg overflow-hidden border border-slate-200 cursor-pointer"
-                                                                                                    onClick={(e) => {
-                                                                                                        e.stopPropagation();
-                                                                                                        setExpandedImage(img);
-                                                                                                    }}
-                                                                                                >
-                                                                                                    <img src={img} alt="Comment attachment" className="w-full h-full object-cover" />
-                                                                                                </div>
-                                                                                            ))}
-                                                                                        </div>
-                                                                                    )}
                                                                                 </div>
                                                                             </div>
-                                                                        </div>
-                                                                    ))}
-                                                                </div>
-                                                            )}
+                                                                        ))}
+                                                                    </div>
+                                                                )}
 
-
-                                                            {/* Reply Input */}
-                                                            <div className="mt-4 flex gap-2 items-end w-full" onClick={(e) => e.stopPropagation()}>
-                                                                <div className="flex-1 bg-slate-50 rounded-2xl border border-slate-200 focus-within:border-navy-900 focus-within:ring-1 focus-within:ring-navy-900 transition-all">
-                                                                    <textarea
-                                                                        value={replyText[task.id] || ''}
-                                                                        onChange={(e) => setReplyText(prev => ({ ...prev, [task.id]: e.target.value }))}
-                                                                        placeholder="Write a reply..."
-                                                                        className="w-full bg-transparent border-none outline-none focus:ring-0 px-4 py-2 text-sm min-h-[40px] resize-none"
-                                                                        rows={1}
-                                                                        onKeyDown={(e) => {
-                                                                            if (e.key === 'Enter' && !e.shiftKey) {
-                                                                                e.preventDefault();
-                                                                                submitComment(task.id);
-                                                                            }
-                                                                        }}
-                                                                    />
-                                                                    {/* Attached Images Preview */}
-                                                                    {replyImages[task.id] && replyImages[task.id].length > 0 && (
-                                                                        <div className="px-3 pb-2 flex flex-wrap gap-2">
-                                                                            {replyImages[task.id].map((img, idx) => (
-                                                                                <div key={idx} className="relative w-10 h-10 rounded-lg overflow-hidden border border-slate-200">
-                                                                                    <img src={img} alt="Preview" className="w-full h-full object-cover" />
-                                                                                    <button
-                                                                                        onClick={() => removeReplyImage(task.id, idx)}
-                                                                                        className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 flex items-center justify-center text-white"
-                                                                                    >
-                                                                                        <X className="w-3 h-3" />
-                                                                                    </button>
-                                                                                </div>
-                                                                            ))}
-                                                                        </div>
-                                                                    )}
-                                                                </div>
-                                                                <div className="flex gap-1 pb-1">
-                                                                    <input
-                                                                        type="file"
-                                                                        ref={el => { if (el) replyFileInputRefs.current[task.id] = el }}
-                                                                        className="hidden"
-                                                                        accept="image/*"
-                                                                        onChange={(e) => handleReplyImageUpload(task.id, e)}
-                                                                    />
-                                                                    <button
-                                                                        onClick={() => replyFileInputRefs.current[task.id]?.click()}
-                                                                        className="p-2 text-slate-400 hover:text-navy-900 hover:bg-slate-100 rounded-full transition-colors"
-                                                                        title="Attach Image"
-                                                                    >
-                                                                        <Camera className="w-5 h-5" />
-                                                                    </button>
-                                                                    <button
-                                                                        onClick={() => submitComment(task.id)}
-                                                                        disabled={!replyText[task.id] && (!replyImages[task.id] || replyImages[task.id].length === 0)}
-                                                                        className="p-2 bg-black text-white rounded-full hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-colors"
-                                                                    >
-                                                                        <ArrowLeft className="w-4 h-4 rotate-90" />
-                                                                    </button>
+                                                                {/* Reply Input */}
+                                                                <div className="flex gap-2 items-end w-full" onClick={(e) => e.stopPropagation()}>
+                                                                    <div className="flex-1 bg-slate-50 rounded-2xl border border-slate-200 focus-within:border-navy-900 focus-within:ring-1 focus-within:ring-navy-900 transition-all">
+                                                                        <textarea
+                                                                            value={replyText[task.id] || ''}
+                                                                            onChange={(e) => setReplyText(prev => ({ ...prev, [task.id]: e.target.value }))}
+                                                                            placeholder="Write a reply..."
+                                                                            className="w-full bg-transparent border-none outline-none focus:ring-0 px-3 py-2 text-[13px] sm:text-sm min-h-[40px] resize-none"
+                                                                            rows={1}
+                                                                            onKeyDown={(e) => {
+                                                                                if (e.key === 'Enter' && !e.shiftKey) {
+                                                                                    e.preventDefault();
+                                                                                    submitComment(task.id);
+                                                                                }
+                                                                            }}
+                                                                        />
+                                                                        {/* Attached Images Preview */}
+                                                                        {replyImages[task.id] && replyImages[task.id].length > 0 && (
+                                                                            <div className="px-3 pb-2 flex flex-wrap gap-2">
+                                                                                {replyImages[task.id].map((img, idx) => (
+                                                                                    <div key={idx} className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-lg overflow-hidden border border-slate-200">
+                                                                                        <img src={img} alt="Preview" className="w-full h-full object-cover" />
+                                                                                        <button
+                                                                                            onClick={() => removeReplyImage(task.id, idx)}
+                                                                                            className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 flex items-center justify-center text-white"
+                                                                                        >
+                                                                                            <X className="w-3 h-3" />
+                                                                                        </button>
+                                                                                    </div>
+                                                                                ))}
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                    <div className="flex gap-1 pb-1 shrink-0">
+                                                                        <input
+                                                                            type="file"
+                                                                            ref={el => { if (el) replyFileInputRefs.current[task.id] = el }}
+                                                                            className="hidden"
+                                                                            accept="image/*"
+                                                                            onChange={(e) => handleReplyImageUpload(task.id, e)}
+                                                                        />
+                                                                        <button
+                                                                            onClick={() => replyFileInputRefs.current[task.id]?.click()}
+                                                                            className="p-2 sm:p-2.5 text-slate-400 hover:text-navy-900 hover:bg-slate-100 rounded-full transition-colors"
+                                                                            title="Attach Image"
+                                                                        >
+                                                                            <Camera className="w-4 h-4 sm:w-5 sm:h-5" />
+                                                                        </button>
+                                                                        <button
+                                                                            onClick={() => submitComment(task.id)}
+                                                                            disabled={!replyText[task.id] && (!replyImages[task.id] || replyImages[task.id].length === 0)}
+                                                                            className="p-2 sm:p-2.5 bg-black text-white rounded-full hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-colors"
+                                                                        >
+                                                                            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 rotate-90" />
+                                                                        </button>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>

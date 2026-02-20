@@ -65,7 +65,7 @@ export const ProjectUpdateModal: React.FC<ProjectUpdateModalProps> = ({
                         <textarea
                             value={message}
                             onChange={(e) => setMessage(e.target.value)}
-                            className="w-full px-4 py-3 rounded-full bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all placeholder:text-slate-400 h-40 resize-none text-base"
+                            className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all placeholder:text-slate-400 h-40 resize-none text-base"
                             placeholder="What's the latest progress..."
                             required
                             autoFocus

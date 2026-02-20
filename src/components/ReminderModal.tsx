@@ -85,6 +85,23 @@ export function ReminderModal({ isOpen, onClose, initialDate, existingReminder }
         }
     };
 
+    const handleUndoComplete = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (existingReminder) {
+            updateReminder({
+                ...existingReminder,
+                title,
+                description,
+                date,
+                assignedTo,
+                completed: false,
+                completedBy: undefined,
+                completedAt: undefined
+            });
+            onClose();
+        }
+    };
+
     if (!isOpen) return null;
 
     return (
@@ -171,6 +188,15 @@ export function ReminderModal({ isOpen, onClose, initialDate, existingReminder }
                                     className="flex-1 px-4 py-2.5 rounded-xl border-2 border-emerald-500 text-emerald-600 hover:bg-emerald-50 font-bold transition-all text-sm whitespace-nowrap"
                                 >
                                     Complete
+                                </button>
+                            )}
+                            {existingReminder && completed && (
+                                <button
+                                    type="button"
+                                    onClick={handleUndoComplete}
+                                    className="flex-1 px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 font-medium transition-all text-sm whitespace-nowrap"
+                                >
+                                    Reopen
                                 </button>
                             )}
                             <button

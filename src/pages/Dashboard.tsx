@@ -188,7 +188,7 @@ export function Dashboard() {
                                             />
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex justify-between items-start">
-                                                    <h4 className={cn("font-medium truncate", reminder.completed ? "line-through text-text-muted text-navy-900" : "text-white")} title={reminder.title}>
+                                                    <h4 className={cn("font-medium truncate", reminder.completed ? "line-through text-text-muted" : "text-navy-900")} title={reminder.title}>
                                                         {reminder.title}
                                                     </h4>
                                                     <div className="flex items-center gap-1">

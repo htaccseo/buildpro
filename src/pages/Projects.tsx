@@ -151,19 +151,29 @@ export function Projects() {
 
                                         <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
                                             <div className="flex -space-x-2">
-                                                <div className="flex -space-x-2">
-                                                    {/* Item 6: Actual Creator + Assignees */}
-                                                    {Array.from(new Set([
-                                                        project.createdBy,
-                                                        ...(project.tasks || []).map(t => t.assignedTo)
-                                                    ])).filter(Boolean).slice(0, 4).map((userId) => (
+                                                {/* Item 6: Actual Creator + Assignees */}
+                                                {Array.from(new Set([
+                                                    project.createdBy,
+                                                    ...(project.tasks || []).map(t => t.assignedTo)
+                                                ])).filter(Boolean).slice(0, 4).map((userId) => (
+                                                    <div key={userId as string} className="relative z-10 hover:z-20 transition-all duration-200">
                                                         <UserAvatar
-                                                            key={userId as string}
                                                             userId={userId as string}
-                                                            className="w-8 h-8 text-xs border-2 border-white shadow-sm"
+                                                            className="w-8 h-8 text-xs border-2 border-white shadow-sm ring-1 ring-slate-100"
                                                         />
-                                                    ))}
-                                                </div>
+                                                    </div>
+                                                ))}
+                                                {Array.from(new Set([
+                                                    project.createdBy,
+                                                    ...(project.tasks || []).map(t => t.assignedTo)
+                                                ])).filter(Boolean).length > 4 && (
+                                                        <div className="relative z-10 w-8 h-8 rounded-full bg-slate-100 border-2 border-white flex items-center justify-center text-[10px] font-bold text-slate-600 shadow-sm ring-1 ring-slate-100">
+                                                            +{Array.from(new Set([
+                                                                project.createdBy,
+                                                                ...(project.tasks || []).map(t => t.assignedTo)
+                                                            ])).filter(Boolean).length - 4}
+                                                        </div>
+                                                    )}
                                             </div>
                                             <span className="text-sm text-emerald-600 group-hover:text-emerald-700 font-medium">View Details &rarr;</span>
                                         </div>

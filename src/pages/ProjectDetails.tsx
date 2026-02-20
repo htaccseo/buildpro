@@ -359,15 +359,46 @@ export function ProjectDetails() {
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex justify-between items-start gap-4">
                                                         <div className="min-w-0 flex-1">
-                                                            <div className="flex items-center gap-2 mb-1">
-                                                                <h3 className={cn("text-lg font-medium truncate pr-2", task.status === 'completed' ? "text-text-muted line-through" : "text-navy-900")}>
-                                                                    {task.title}
-                                                                </h3>
-                                                                {/* Creator Avatar (Item 4) */}
-                                                                <div className="shrink-0 hidden md:block" title={`Created by ${users.find(u => u.id === task.createdBy)?.name || 'Unknown'}`}>
-                                                                    <UserAvatar userId={task.createdBy || ''} className="w-5 h-5 border border-white shadow-sm" />
+                                                            <div className="flex items-start justify-between gap-2 mb-1">
+                                                                <div className="flex items-center gap-2 min-w-0">
+                                                                    <h3 className={cn("text-lg font-medium truncate", task.status === 'completed' ? "text-text-muted line-through" : "text-navy-900")}>
+                                                                        {task.title}
+                                                                    </h3>
+
+                                                                    {/* Avatars Container (Hidden on Mobile) */}
+                                                                    <div className="hidden md:flex items-center space-x-[-8px]">
+                                                                        {/* Creator Avatar */}
+                                                                        <div className="relative z-10" title={`Created by ${users.find(u => u.id === task.createdBy)?.name || 'Unknown'}`}>
+                                                                            <UserAvatar userId={task.createdBy || ''} className="w-6 h-6 border-2 border-white shadow-sm" />
+                                                                        </div>
+                                                                        {/* Assignee Avatar */}
+                                                                        <div className="relative z-20">
+                                                                            {assignee ? (
+                                                                                <div title={`Assigned to ${assignee.name}`}>
+                                                                                    <UserAvatar userId={assignee.id} className="w-6 h-6 border-2 border-white shadow-sm" />
+                                                                                </div>
+                                                                            ) : (
+                                                                                <div title="Unassigned" className="w-6 h-6 rounded-full bg-slate-100 border-2 border-white shadow-sm flex items-center justify-center">
+                                                                                    <UserPlus className="w-3 h-3 text-slate-400" />
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                {/* Due Date (Right Aligned) */}
+                                                                <div className="shrink-0 pt-1">
+                                                                    <p className={cn(
+                                                                        "text-[11px] sm:text-xs font-medium whitespace-nowrap",
+                                                                        task.requiredDate && new Date(task.requiredDate) < new Date() && task.status !== 'completed'
+                                                                            ? "text-rose-500"
+                                                                            : "text-text-muted"
+                                                                    )}>
+                                                                        Due {format(new Date(task.requiredDate), 'MMM d')}
+                                                                    </p>
                                                                 </div>
                                                             </div>
+
                                                             <p className="text-text-muted text-sm line-clamp-2">{task.description}</p>
 
                                                             {/* Attachments List (Item 1 - Fixed to Grid) */}
@@ -531,30 +562,6 @@ export function ProjectDetails() {
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                        <div className="text-right shrink-0">
-                                                            <div className="text-sm font-medium text-navy-900 mb-1">
-                                                                {/* Assignee (Item 3 - Avatar Only) */}
-                                                                {assignee ? (
-                                                                    <div className="flex items-center justify-end gap-2" title={`Assigned to ${assignee.name}`}>
-                                                                        <UserAvatar userId={assignee.id} />
-                                                                    </div>
-                                                                ) : (
-                                                                    <div className="flex items-center justify-end gap-2 opacity-50" title="Unassigned">
-                                                                        <div className="w-8 h-8 rounded-full bg-slate-100 border border-dashed border-slate-300 flex items-center justify-center">
-                                                                            <UserPlus className="w-4 h-4 text-slate-400" />
-                                                                        </div>
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                            <p className={cn(
-                                                                "text-xs mt-1 font-medium",
-                                                                task.requiredDate && new Date(task.requiredDate) < new Date() && task.status !== 'completed'
-                                                                    ? "text-rose-500"
-                                                                    : "text-text-muted"
-                                                            )}>
-                                                                Due {format(new Date(task.requiredDate), 'MMM d')}
-                                                            </p>
                                                         </div>
                                                     </div>
                                                 </div>

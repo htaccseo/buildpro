@@ -224,11 +224,11 @@ export function ProjectDetails() {
             </div>
 
             {/* Header */}
-            <div className={cn("relative min-h-[300px] md:min-h-[256px] h-auto rounded-3xl overflow-hidden group transition-all mt-[30px] md:mt-0 md:block flex flex-col justify-end pt-[60px] pb-6 px-6 shadow-2xl", project.color || "bg-black")}>
+            <div className={cn("relative min-h-[250px] md:min-h-[256px] h-auto rounded-3xl overflow-hidden group transition-all mt-[30px] md:mt-0 flex flex-col justify-end pt-12 pb-4 px-6 md:pb-6 shadow-2xl", project.color || "bg-black")}>
                 {/* Content Wrapper */}
-                <div className="w-full relative z-10 md:absolute md:bottom-0 md:left-0 md:p-8 md:w-full">
-                    <div className="flex flex-col md:flex-row justify-end md:justify-between items-end gap-3 md:gap-6">
-                        <div className="w-full md:w-auto">
+                <div className="w-full relative z-10 md:absolute md:bottom-0 md:left-0 md:p-8 md:w-full h-full flex flex-col justify-end bg-clip-border">
+                    <div className="flex flex-col md:flex-row justify-end md:justify-between items-end gap-3 md:gap-6 w-full h-full">
+                        <div className="w-full md:w-auto mt-auto">
                             <h1 className={cn(
                                 "text-3xl md:text-4xl font-bold mb-2",
                                 project.color.includes('emerald') ? "text-navy-900" :
@@ -253,7 +253,7 @@ export function ProjectDetails() {
 
                         {/* Mobile Bottom Row: Due Date + Progress */}
                         <div className={cn(
-                            "flex md:hidden w-full justify-between items-end mt-4 pt-4 border-t",
+                            "flex md:hidden w-full justify-between items-end mt-4 pt-4 border-t pb-2",
                             project.color.includes('emerald') ? "border-navy-900/10" : "border-white/20"
                         )}>
                             <div className={cn(

@@ -68,6 +68,23 @@ export function ReminderModal({ isOpen, onClose, initialDate, existingReminder }
         }
     };
 
+    const handleComplete = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (existingReminder) {
+            updateReminder({
+                ...existingReminder,
+                title,
+                description,
+                date,
+                assignedTo,
+                completed: true,
+                completedBy: currentUser?.id,
+                completedAt: new Date().toISOString()
+            });
+            onClose();
+        }
+    };
+
     if (!isOpen) return null;
 
     return (
@@ -138,7 +155,7 @@ export function ReminderModal({ isOpen, onClose, initialDate, existingReminder }
                         </select>
                     </div>
 
-                    <div className="flex gap-3 pt-4 border-t border-slate-100">
+                    <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-100">
                         <button
                             type="button"
                             onClick={onClose}
@@ -146,12 +163,23 @@ export function ReminderModal({ isOpen, onClose, initialDate, existingReminder }
                         >
                             Cancel
                         </button>
-                        <button
-                            type="submit"
-                            className="flex-1 px-4 py-2.5 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 font-bold transition-all shadow-lg shadow-emerald-600/20 text-sm"
-                        >
-                            {existingReminder ? 'Save Changes' : 'Create Reminder'}
-                        </button>
+                        <div className="flex gap-3 flex-1">
+                            {existingReminder && !completed && (
+                                <button
+                                    type="button"
+                                    onClick={handleComplete}
+                                    className="flex-1 px-4 py-2.5 rounded-xl border-2 border-emerald-500 text-emerald-600 hover:bg-emerald-50 font-bold transition-all text-sm whitespace-nowrap"
+                                >
+                                    Complete
+                                </button>
+                            )}
+                            <button
+                                type="submit"
+                                className="flex-1 px-4 py-2.5 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 font-bold transition-all shadow-lg shadow-emerald-600/20 text-sm whitespace-nowrap"
+                            >
+                                {existingReminder ? 'Save' : 'Create Reminder'}
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>

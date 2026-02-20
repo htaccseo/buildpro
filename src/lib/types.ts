@@ -130,6 +130,7 @@ export interface Reminder {
     description?: string;
     assignedTo?: string;
     completedBy?: string;
+    completedAt?: string;
 }
 
 export interface OtherMatter {

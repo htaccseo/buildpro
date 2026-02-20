@@ -52,7 +52,14 @@ export function Dashboard() {
             // Fix: Compare dates string-wise using local time to avoid timezone issues.
             // new Date().toLocaleDateString('en-CA') returns YYYY-MM-DD in local time
             const todayStr = new Date().toLocaleDateString('en-CA');
-            return r.date <= todayStr || r.completed; // Show past/today due OR completed
+
+            // If completed, only show if completed today
+            if (r.completed) {
+                return r.completedAt && isSameDay(new Date(r.completedAt), new Date());
+            }
+
+            // If pending, show if due today or past
+            return r.date <= todayStr;
         })
         .sort((a, b) => {
             if (a.completed === b.completed) return 0;

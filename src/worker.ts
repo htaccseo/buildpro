@@ -638,13 +638,32 @@ export default {
                         const reminder = await request.json();
                         console.log('Updating Reminder:', JSON.stringify(reminder, null, 2));
 
+                        const now = new Date().toISOString();
+                        const isCompleting = reminder.completed && (!reminder.completedAt);
+                        const completedAtToSave = reminder.completed ? (reminder.completedAt || now) : null;
+
                         const result = await env.DB.prepare(`
                             UPDATE reminders 
-                            SET title = ?, description = ?, date = ?, assigned_to = ?, completed = ?, completed_by = ?
+                            SET title = ?, description = ?, date = ?, assigned_to = ?, completed = ?, completed_by = ?, completed_at = ?
                             WHERE id = ?
                         `).bind(
-                            reminder.title, reminder.description || null, reminder.date || null, reminder.assignedTo || null, reminder.completed ? 1 : 0, reminder.completedBy || null, reminder.id
+                            reminder.title, reminder.description || null, reminder.date || null, reminder.assignedTo || null, reminder.completed ? 1 : 0, reminder.completedBy || null, completedAtToSave, reminder.id
                         ).run();
+
+                        // Notification logic
+                        if (isCompleting && reminder.createdBy && reminder.completedBy && reminder.createdBy !== reminder.completedBy) {
+                            const notificationId = crypto.randomUUID();
+                            const { results: completers } = await env.DB.prepare('SELECT name FROM users WHERE id = ?').bind(reminder.completedBy).all();
+                            const completerName = completers[0]?.name || 'Assignee';
+                            const message = `Reminder "${reminder.title}" was completed by ${completerName}`;
+
+                            await env.DB.prepare(`
+                                INSERT INTO notifications (id, organization_id, user_id, message, read, date, type, data)
+                                VALUES (?, ?, ?, ?, 0, ?, 'task_completed', ?)
+                             `).bind(
+                                notificationId, reminder.organizationId, reminder.createdBy, message, now, JSON.stringify({ reminderId: reminder.id })
+                            ).run();
+                        }
 
                         console.log('Reminder Update Result:', JSON.stringify(result));
                         return withCors(Response.json({ success: true, result }));

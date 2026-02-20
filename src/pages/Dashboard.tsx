@@ -194,7 +194,7 @@ export function Dashboard() {
                                                 "p-4 rounded-xl border flex gap-4 hover:shadow-sm transition-all group cursor-pointer",
                                                 reminder.completed
                                                     ? "bg-slate-50 border-slate-100 opacity-75"
-                                                    : "bg-black border-black shadow-md shadow-black/10"
+                                                    : "bg-[#abaaa7] border-[#abaaa7] shadow-md shadow-black/10"
                                             )}
                                             onClick={() => {
                                                 setSelectedReminder(reminder);
@@ -204,7 +204,7 @@ export function Dashboard() {
                                             <div
                                                 className={cn(
                                                     "w-1 h-12 rounded-full transition-colors shrink-0",
-                                                    reminder.completed ? "bg-slate-300" : "bg-emerald-500"
+                                                    reminder.completed ? "bg-slate-300" : "bg-navy-900"
                                                 )}
                                             />
                                             <div className="flex-1 min-w-0">
@@ -214,19 +214,19 @@ export function Dashboard() {
                                                     </h4>
                                                     <div className="flex items-center gap-1">
                                                         {reminder.assignedTo && (
-                                                            <UserAvatar userId={reminder.assignedTo} className="ring-2 ring-white" />
+                                                            <UserAvatar userId={reminder.assignedTo} className="ring-2 ring-[#abaaa7]" />
                                                         )}
                                                     </div>
                                                 </div>
                                                 {reminder.description && (
                                                     <div className="group/desc relative">
-                                                        <p className={cn("text-sm mt-0.5 line-clamp-2", reminder.completed ? "text-text-muted" : "text-slate-400")} title={reminder.description}>
+                                                        <p className={cn("text-sm mt-0.5 line-clamp-2", reminder.completed ? "text-text-muted" : "text-navy-800")} title={reminder.description}>
                                                             {reminder.description}
                                                         </p>
                                                     </div>
                                                 )}
                                                 <div className="flex items-center gap-2 mt-1">
-                                                    <p className="text-sm text-text-muted">Personal Reminder • {formatDate(reminder.date, 'MMM d')}</p>
+                                                    <p className={cn("text-sm", reminder.completed ? "text-text-muted" : "text-navy-900 font-medium")}>Personal Reminder • {formatDate(reminder.date, 'MMM d')}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -234,39 +234,47 @@ export function Dashboard() {
 
                                     {/* Project Tasks */}
                                     {/* Project Tasks */}
-                                    {dueProjectTasks.map(task => (
-                                        <div
-                                            key={task.id}
-                                            className={cn(
-                                                "p-4 rounded-xl border flex gap-4 hover:shadow-sm transition-all group cursor-pointer",
-                                                task.status === 'completed'
-                                                    ? "bg-slate-50 border-slate-100 opacity-75"
-                                                    : "bg-emerald-500 border-emerald-500 shadow-md shadow-emerald-500/20" // Green background (Item 1 <- Item 3)
-                                            )}
-                                            onClick={() => navigate(`/projects/${task.projectId}`)}
-                                        >
+                                    {dueProjectTasks.map(task => {
+                                        const project = projects.find(p => p.id === task.projectId);
+                                        const isCommercial = project?.color.includes('blue') || project?.color.includes('navy');
+
+                                        return (
                                             <div
+                                                key={task.id}
                                                 className={cn(
-                                                    "w-1 h-12 rounded-full transition-colors shrink-0",
-                                                    task.status === 'completed' ? "bg-slate-300" : "bg-black" // Black bar (Item 2 <- Item 4)
+                                                    "p-4 rounded-xl border flex gap-4 hover:shadow-sm transition-all group cursor-pointer",
+                                                    task.status === 'completed'
+                                                        ? "bg-slate-50 border-slate-100 opacity-75"
+                                                        : isCommercial
+                                                            ? "bg-navy-900 border-navy-900 shadow-md shadow-navy-900/20"
+                                                            : "bg-emerald-500 border-emerald-500 shadow-md shadow-emerald-500/20"
                                                 )}
-                                            />
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex justify-between items-start">
-                                                    <h4 className={cn("font-medium truncate", task.status === 'completed' ? "line-through text-text-muted" : "text-navy-900")}>
-                                                        {task.title}
-                                                    </h4>
-                                                    {/* Task assignment avatar handles the 'who' part naturally, createdBy not strictly needed here but could be added if requested for tasks too */}
-                                                </div>
-                                                {task.description && (
-                                                    <p className={cn("text-sm mt-0.5 line-clamp-2", task.status === 'completed' ? "text-text-muted" : "text-navy-700")}>
-                                                        {task.description}
+                                                onClick={() => navigate(`/projects/${task.projectId}`)}
+                                            >
+                                                <div
+                                                    className={cn(
+                                                        "w-1 h-12 rounded-full transition-colors shrink-0",
+                                                        task.status === 'completed' ? "bg-slate-300" : isCommercial ? "bg-emerald-500" : "bg-black"
+                                                    )}
+                                                />
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex justify-between items-start">
+                                                        <h4 className={cn("font-medium truncate", task.status === 'completed' ? "line-through text-text-muted" : isCommercial ? "text-white" : "text-navy-900")}>
+                                                            {task.title}
+                                                        </h4>
+                                                    </div>
+                                                    {task.description && (
+                                                        <p className={cn("text-sm mt-0.5 line-clamp-2", task.status === 'completed' ? "text-text-muted" : isCommercial ? "text-slate-300" : "text-navy-700")}>
+                                                            {task.description}
+                                                        </p>
+                                                    )}
+                                                    <p className={cn("text-sm mt-1", task.status === 'completed' ? "text-text-muted" : isCommercial ? "text-emerald-400" : "text-navy-600")}>
+                                                        {project?.name} • Due: {formatDate(task.requiredDate, 'MMM d')}
                                                     </p>
-                                                )}
-                                                <p className={cn("text-sm mt-1", task.status === 'completed' ? "text-text-muted" : "text-navy-600")}>Project Task • Due: {formatDate(task.requiredDate, 'MMM d')}</p>
+                                                </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             )}
                         </Card>

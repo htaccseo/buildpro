@@ -1,38 +1,47 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useStore } from '../lib/store';
 import { useOrganizationData } from '../lib/hooks';
 import { isSameDay } from 'date-fns';
 import { Link, useNavigate } from 'react-router-dom';
-import { Activity, Clock, MapPin, X, Check, Store, Home } from 'lucide-react';
+import { Clock, MapPin, Home, Store, Activity } from 'lucide-react';
 import { cn, formatDate } from '../lib/utils';
 import { Card } from '../components/ui/Card';
 import { NewMeetingModal } from '../components/NewMeetingModal';
 import { ReminderModal } from '../components/ReminderModal';
 import { UserAvatar } from '../components/UserAvatar';
-import type { Reminder, OtherMatter, Meeting } from '../lib/types';
+import type { Meeting, Reminder, OtherMatter } from '../lib/types';
 
 export function Dashboard() {
     const navigate = useNavigate();
-    const [isMeetingModalOpen, setIsMeetingModalOpen] = React.useState(false);
-    const [selectedMeeting, setSelectedMeeting] = React.useState<Meeting | null>(null);
+    const { projects, invoices, meetings, reminders, otherMatters, users } = useOrganizationData();
+    const { currentUser, fetchData, addOtherMatter, updateOtherMatter, deleteOtherMatter } = useStore();
+    const [isMeetingModalOpen, setIsMeetingModalOpen] = useState(false);
+    const [selectedMeeting, setSelectedMeeting] = useState<Meeting | undefined>();
     // Reminder State
-    const [selectedReminder, setSelectedReminder] = React.useState<Reminder | null>(null);
-    const [isReminderModalOpen, setIsReminderModalOpen] = React.useState(false);
+    const [selectedReminder, setSelectedReminder] = useState<Reminder | null>(null);
+    const [isReminderModalOpen, setIsReminderModalOpen] = useState(false);
+
+    React.useEffect(() => {
+        if (currentUser?.email) {
+            fetchData(currentUser.email);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentUser?.email]);
 
     // Other Matters State
-    const [isMatterModalOpen, setIsMatterModalOpen] = React.useState(false);
-    const [matterToEdit, setMatterToEdit] = React.useState<OtherMatter | null>(null);
-    const [matterTitle, setMatterTitle] = React.useState('');
-    const [matterAddress, setMatterAddress] = React.useState('');
-    const [matterNote, setMatterNote] = React.useState('');
-    const [matterAssignedTo, setMatterAssignedTo] = React.useState('');
+    const [isMatterModalOpen, setIsMatterModalOpen] = useState(false);
+    const [matterToEdit, setMatterToEdit] = useState<OtherMatter | null>(null);
+    const [matterTitle, setMatterTitle] = useState('');
+    const [matterAddress, setMatterAddress] = useState('');
+    const [matterNote, setMatterNote] = useState('');
+    const [matterAssignedTo, setMatterAssignedTo] = useState('');
 
     // Use Clean Data Hook (RLS)
-    const { projects, invoices, meetings, reminders, otherMatters, users } = useOrganizationData();
+
     // Use Store actions (actions are safe to use from store directly as they usually just dispatch)
     // Actually, our store actions need currentOrgId from store state, which is fine.
     // The previous code destructured methods from useStore. Let's keep doing that for actions.
-    const { addOtherMatter, updateOtherMatter, deleteOtherMatter, deleteMeeting, updateMeeting, currentUser } = useStore();
+
 
     const allTasks = projects.flatMap(p => p.tasks);
 
@@ -70,7 +79,19 @@ export function Dashboard() {
     // Let's keep them separate sections or combined? User asked to "Add Daily Reminders".
     // I will combine them visually in the list.
 
-    const upcomingMeetings = meetings.filter(m => new Date(m.date) >= new Date(new Date().setHours(0, 0, 0, 0))).slice(0, 3); // Today onwards
+    const upcomingMeetings = meetings
+        .filter(m => {
+
+            // If completed, only show if completed today
+            if (m.completed) {
+                return m.completedAt && isSameDay(new Date(m.completedAt), new Date());
+            }
+
+            // If pending, show if due today or in the future
+            return new Date(m.date) >= new Date(new Date().setHours(0, 0, 0, 0));
+        })
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+        .slice(0, 3);
 
 
 
@@ -78,7 +99,7 @@ export function Dashboard() {
         if (meeting) {
             setSelectedMeeting(meeting);
         } else {
-            setSelectedMeeting(null);
+            setSelectedMeeting(undefined);
         }
         setIsMeetingModalOpen(true);
     };
@@ -322,20 +343,8 @@ export function Dashboard() {
                                 <div
                                     key={meeting.id}
                                     onClick={() => openMeetingModal(meeting)}
-                                    className="group relative flex items-center gap-4 p-3 rounded-xl bg-slate-50 border border-slate-100 pr-8 cursor-pointer hover:bg-slate-100 transition-colors"
+                                    className="group relative flex items-center gap-4 p-3 rounded-xl bg-slate-50 border border-slate-100 pr-4 cursor-pointer hover:bg-slate-100 transition-colors"
                                 >
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            if (confirm('Delete this meeting?')) {
-                                                deleteMeeting(meeting.id);
-                                            }
-                                        }}
-                                        className="absolute top-2 right-2 text-slate-400 hover:text-rose-500 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
-                                        title="Delete Meeting"
-                                    >
-                                        <X className="w-4 h-4" />
-                                    </button>
                                     <div className="flex-col flex items-center justify-center w-12 h-12 bg-white rounded-lg border border-slate-100 shadow-sm shrink-0">
                                         <span className="text-xs font-bold text-emerald-600 uppercase">{formatDate(meeting.date, 'MMM')}</span>
                                         <span className="text-lg font-bold text-navy-900 leading-none">{formatDate(meeting.date, 'd')}</span>
@@ -343,20 +352,7 @@ export function Dashboard() {
                                     <div className="min-w-0 flex-1 group/title relative">
                                         <div className="flex justify-between items-start">
                                             <div className="flex items-center gap-2">
-                                                <div
-                                                    className={cn(
-                                                        "w-4 h-4 rounded-full border-2 cursor-pointer transition-colors flex items-center justify-center",
-                                                        meeting.completed ? "bg-emerald-500 border-emerald-500" : "border-slate-300 hover:border-emerald-500"
-                                                    )}
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        updateMeeting({ ...meeting, completed: !meeting.completed, completedBy: !meeting.completed ? currentUser?.id : undefined });
-                                                    }}
-                                                    title={meeting.completed ? "Mark as incomplete" : "Mark as done"}
-                                                >
-                                                    {meeting.completed && <Check className="w-2.5 h-2.5 text-white" />}
-                                                </div>
-                                                <h4 className={cn("font-bold text-navy-900 truncate pr-4 cursor-help max-w-[150px]", meeting.completed && "line-through text-text-muted")} title={meeting.title}>
+                                                <h4 className={cn("font-bold text-navy-900 truncate pr-4 max-w-[150px]", meeting.completed && "line-through text-text-muted")} title={meeting.title}>
                                                     {meeting.title}
                                                 </h4>
                                             </div>
@@ -577,6 +573,6 @@ export function Dashboard() {
                     </div>
                 )
             }
-        </div >
+        </div>
     );
 }

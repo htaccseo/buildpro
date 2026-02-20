@@ -91,6 +91,7 @@ export interface Meeting {
     assignedTo?: string;
     completed: boolean;
     completedBy?: string;
+    completedAt?: string;
 }
 
 export interface Notification {

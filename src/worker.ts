@@ -521,12 +521,16 @@ export default {
                         const meeting = await request.json();
                         // This handles both content updates and completion toggles
                         // We update all fields to be safe, but primarily used for completion and basic edits
+
+                        const now = new Date().toISOString();
+                        const completedAtToSave = meeting.completed ? (meeting.completedAt || now) : null;
+
                         await env.DB.prepare(`
                             UPDATE meetings 
-                            SET title = ?, date = ?, time = ?, address = ?, description = ?, assigned_to = ?, completed = ?, completed_by = ?
+                            SET title = ?, date = ?, time = ?, address = ?, description = ?, assigned_to = ?, completed = ?, completed_by = ?, completed_at = ?
                             WHERE id = ?
                         `).bind(
-                            meeting.title, meeting.date, meeting.time, meeting.address || null, meeting.description || null, meeting.assignedTo || null, meeting.completed ? 1 : 0, meeting.completedBy || null, meeting.id
+                            meeting.title, meeting.date, meeting.time, meeting.address || null, meeting.description || null, meeting.assignedTo || null, meeting.completed ? 1 : 0, meeting.completedBy || null, completedAtToSave, meeting.id
                         ).run();
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {

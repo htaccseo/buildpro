@@ -219,8 +219,8 @@ export function Dashboard() {
                                                     </div>
                                                 </div>
                                                 {reminder.description && (
-                                                    <div className="group/desc relative">
-                                                        <p className={cn("text-sm mt-0.5 line-clamp-2", reminder.completed ? "text-text-muted" : "text-navy-800")} title={reminder.description}>
+                                                    <div className="group/desc relative mt-1">
+                                                        <p className={cn("text-base leading-relaxed line-clamp-2", reminder.completed ? "text-text-muted" : "text-navy-800")} title={reminder.description}>
                                                             {reminder.description}
                                                         </p>
                                                     </div>
@@ -264,7 +264,7 @@ export function Dashboard() {
                                                         </h4>
                                                     </div>
                                                     {task.description && (
-                                                        <p className={cn("text-sm mt-0.5 line-clamp-2", task.status === 'completed' ? "text-text-muted" : isCommercial ? "text-slate-300" : "text-navy-700")}>
+                                                        <p className={cn("text-base leading-relaxed mt-1 line-clamp-2", task.status === 'completed' ? "text-text-muted" : isCommercial ? "text-slate-300" : "text-navy-700")}>
                                                             {task.description}
                                                         </p>
                                                     )}
@@ -467,7 +467,7 @@ export function Dashboard() {
                                             {matter.address}
                                         </div>
                                     )}
-                                    <p className="text-sm text-navy-600 bg-slate-50 p-2 rounded-lg border border-slate-100 whitespace-pre-wrap">
+                                    <p className="text-base leading-relaxed text-navy-700 bg-slate-50 p-2.5 rounded-lg border border-slate-100 whitespace-pre-wrap">
                                         {matter.note}
                                     </p>
                                 </div>

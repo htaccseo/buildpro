@@ -133,7 +133,7 @@ export default {
                         if (projectIds.length > 0) {
                             const placeholders = projectIds.map(() => '?').join(',');
                             logs.push(`Fetching tasks with placeholders: ${placeholders}`);
-                            const { results: taskResults } = await env.DB.prepare(`SELECT * FROM tasks WHERE project_id IN (${placeholders})`).bind(...projectIds).all();
+                            const { results: taskResults } = await env.DB.prepare(`SELECT * FROM tasks WHERE project_id IN (${placeholders}) ORDER BY rowid DESC`).bind(...projectIds).all();
                             tasks = (taskResults || []).map((t: any) => ({
                                 ...t,
                                 attachments: t.attachments ? JSON.parse(t.attachments) : [],
@@ -141,7 +141,7 @@ export default {
                             }));
 
                             logs.push(`Fetching project updates...`);
-                            const { results: updateResults } = await env.DB.prepare(`SELECT * FROM project_updates WHERE project_id IN (${placeholders})`).bind(...projectIds).all();
+                            const { results: updateResults } = await env.DB.prepare(`SELECT * FROM project_updates WHERE project_id IN (${placeholders}) ORDER BY date DESC`).bind(...projectIds).all();
                             projectUpdates = (updateResults || []).map((u: any) => ({
                                 ...u,
                                 userId: u.user_id,

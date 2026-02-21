@@ -509,7 +509,7 @@ export const useStore = create<AppState>((set, get) => ({
         set((state) => ({
             projects: state.projects.map((p) => p.id === projectId ? {
                 ...p,
-                tasks: [...(p.tasks || []), newTask]
+                tasks: [newTask, ...(p.tasks || [])]
             } : p)
         }));
 

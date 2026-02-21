@@ -381,7 +381,7 @@ export const useStore = create<AppState>((set, get) => ({
 
         const newReminder = { ...reminder, organizationId: currentOrgId, createdBy: currentUserId } as Reminder;
         set((state) => ({
-            reminders: [...state.reminders, newReminder].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+            reminders: [...state.reminders, newReminder].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
         }));
 
         try {
@@ -686,7 +686,7 @@ export const useStore = create<AppState>((set, get) => ({
 
     updateReminder: async (updatedReminder) => {
         set((state) => ({
-            reminders: state.reminders.map(r => r.id === updatedReminder.id ? updatedReminder : r).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+            reminders: state.reminders.map(r => r.id === updatedReminder.id ? updatedReminder : r).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
         }));
         try {
             await apiRequest('/reminder/update', 'POST', updatedReminder);

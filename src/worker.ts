@@ -109,10 +109,22 @@ export default {
                         logs.push(`Organization found: ${!!organization}`);
 
                         logs.push('Fetching projects');
-                        const { results: projects } = await env.DB.prepare('SELECT * FROM projects WHERE organization_id = ?').bind(orgId).all();
+                        const { results: rawProjects } = await env.DB.prepare('SELECT * FROM projects WHERE organization_id = ?').bind(orgId).all();
+
+                        const projects = (rawProjects || []).map((p: any) => ({
+                            ...p,
+                            organizationId: p.organization_id,
+                            clientName: p.client_name,
+                            clientEmail: p.client_email,
+                            clientPhone: p.client_phone,
+                            startDate: p.start_date,
+                            endDate: p.end_date,
+                            createdBy: p.created_by
+                        }));
+
                         logs.push(`Projects found: ${projects?.length}`);
 
-                        const projectIds = (projects || []).map((p: any) => p.id);
+                        const projectIds = projects.map((p: any) => p.id);
                         let tasks: any[] = [];
                         let projectUpdates: any[] = [];
                         let comments: any[] = [];

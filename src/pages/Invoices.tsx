@@ -300,7 +300,15 @@ export function Invoices() {
 
                                             {/* Desktop Attachment Button */}
                                             {invoice.attachmentUrl && (
-                                                <a href={invoice.attachmentUrl} target="_blank" rel="noopener noreferrer" className="hidden md:inline-flex items-center gap-1.5 text-emerald-600 hover:text-emerald-700 ml-2 px-2 py-1 rounded-lg hover:bg-emerald-50 transition-colors group" title="View Attachment">
+                                                <a
+                                                    href={invoice.attachmentUrl}
+                                                    download={`invoice_${invoice.id}_attachment`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                    className="hidden md:inline-flex items-center gap-1.5 text-emerald-600 hover:text-emerald-700 ml-2 px-2 py-1 rounded-lg hover:bg-emerald-50 transition-colors group"
+                                                    title="Download Attachment"
+                                                >
                                                     <Paperclip className="w-3.5 h-3.5" />
                                                     <span className="text-xs font-medium">Attachment</span>
                                                 </a>
@@ -318,8 +326,15 @@ export function Invoices() {
                                         {/* Mobile Attachment Button (Middle Row) */}
                                         {invoice.attachmentUrl && (
                                             <div className="md:hidden mt-3">
-                                                <a href={invoice.attachmentUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 w-full py-2 bg-slate-50 rounded-lg text-emerald-600 text-sm font-medium border border-slate-100 hover:bg-slate-100 transition-colors">
-                                                    <Paperclip className="w-4 h-4" /> View Attachment
+                                                <a
+                                                    href={invoice.attachmentUrl}
+                                                    download={`invoice_${invoice.id}_attachment`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                    className="flex items-center justify-center gap-2 w-full py-2 bg-slate-50 rounded-lg text-emerald-600 text-sm font-medium border border-slate-100 hover:bg-slate-100 transition-colors"
+                                                >
+                                                    <Paperclip className="w-4 h-4" /> Download Attachment
                                                 </a>
                                             </div>
                                         )}

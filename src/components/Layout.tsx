@@ -193,7 +193,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 md:ml-64 min-h-screen relative pt-24 md:pt-0 transition-all duration-300">
+            <main className="flex-1 md:ml-64 min-h-screen relative transition-all duration-300">
                 {/* Header - Desktop Only */}
                 <header className="hidden md:flex h-20 items-center justify-between px-8 sticky top-0 bg-bg-app/80 backdrop-blur-md z-20 transition-colors duration-300">
                     <div /> {/* Spacer */}
@@ -257,7 +257,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     </div>
                 </header>
 
-                <div className="p-4 md:p-8 max-w-7xl mx-auto">
+                <div className="p-4 md:p-8 pt-24 md:pt-8 max-w-7xl mx-auto">
                     <PullToRefresh>
                         {children}
                     </PullToRefresh>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Mail, User, Phone, Briefcase, Shield } from 'lucide-react';
+import { X, Mail, User, Phone, Briefcase } from 'lucide-react';
 import { useStore } from '../lib/store';
 import type { UserRole } from '../lib/types';
 
@@ -110,36 +110,31 @@ export function InviteMemberModal({ isOpen, onClose }: InviteMemberModalProps) {
                                     value={phone}
                                     onChange={(e) => setPhone(e.target.value)}
                                     className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
-                                    placeholder="+1 (555) 000-0000"
+                                    placeholder="0400 000 000"
                                 />
                             </div>
                         </div>
 
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-navy-700">Role</label>
-                            <div className="grid grid-cols-2 gap-3">
-                                <button
-                                    type="button"
-                                    onClick={() => setRole('worker')}
-                                    className={`p-3 rounded-xl border text-sm font-medium flex items-center justify-center gap-2 transition-all ${role === 'worker'
-                                        ? 'border-emerald-500 bg-emerald-50 text-emerald-700 ring-2 ring-emerald-200'
-                                        : 'border-slate-200 hover:bg-slate-50 text-slate-600'
-                                        }`}
+                            <div className="relative">
+                                <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                                <select
+                                    value={role}
+                                    onChange={(e) => setRole(e.target.value as UserRole)}
+                                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all text-navy-900 appearance-none bg-white"
                                 >
-                                    <Briefcase className="w-4 h-4" />
-                                    Worker
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setRole('builder')}
-                                    className={`p-3 rounded-xl border text-sm font-medium flex items-center justify-center gap-2 transition-all ${role === 'builder'
-                                        ? 'border-emerald-500 bg-emerald-50 text-emerald-700 ring-2 ring-emerald-200'
-                                        : 'border-slate-200 hover:bg-slate-50 text-slate-600'
-                                        }`}
-                                >
-                                    <Shield className="w-4 h-4" />
-                                    Manager
-                                </button>
+                                    <option value="builder">Manager / Builder</option>
+                                    <option value="worker">Worker</option>
+                                    <option value="admin">Admin</option>
+                                    <option value="carpenter">Carpenter</option>
+                                    <option value="planner">Planner</option>
+                                    <option value="architect">Architect</option>
+                                    <option value="electrician">Electrician</option>
+                                    <option value="plumber">Plumber</option>
+                                    <option value="painter">Painter</option>
+                                    <option value="tiler">Tiler</option>
+                                </select>
                             </div>
                         </div>
 

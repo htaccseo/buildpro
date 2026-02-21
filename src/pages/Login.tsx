@@ -128,7 +128,7 @@ export function Login({ initialMode = 'login' }: { initialMode?: 'login' | 'sign
                                     value={phone}
                                     onChange={(e) => setPhone(e.target.value)}
                                     className="w-full px-4 py-3 rounded-full bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-navy-900"
-                                    placeholder="+61 400 000 000"
+                                    placeholder="0400 000 000"
                                     required
                                 />
                             </div>
@@ -187,8 +187,16 @@ export function Login({ initialMode = 'login' }: { initialMode?: 'login' | 'sign
                                 className="w-full px-4 py-3 rounded-full bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-navy-900 appearance-none disabled:opacity-60 disabled:cursor-not-allowed"
                                 disabled={!!inviteRole}
                             >
-                                <option value="builder">Builder</option>
+                                <option value="builder">Builder / Manager</option>
                                 <option value="worker">Worker</option>
+                                <option value="admin">Admin</option>
+                                <option value="carpenter">Carpenter</option>
+                                <option value="planner">Planner</option>
+                                <option value="architect">Architect</option>
+                                <option value="electrician">Electrician</option>
+                                <option value="plumber">Plumber</option>
+                                <option value="painter">Painter</option>
+                                <option value="tiler">Tiler</option>
                             </select>
                         </div>
                     )}

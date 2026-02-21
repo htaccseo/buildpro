@@ -6,7 +6,7 @@ export interface Organization {
     subscriptionStatus: 'active' | 'trial' | 'past_due' | 'cancelled';
 }
 
-export type UserRole = 'builder' | 'worker';
+export type UserRole = 'builder' | 'worker' | 'admin' | 'carpenter' | 'planner' | 'architect' | 'electrician' | 'plumber' | 'painter' | 'tiler';
 
 export interface User {
     id: string;

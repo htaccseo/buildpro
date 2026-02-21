@@ -148,10 +148,18 @@ export function Settings() {
                                         <select
                                             value={role}
                                             onChange={(e) => setRole(e.target.value as UserRole)}
-                                            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none"
+                                            className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all text-navy-900 appearance-none"
                                         >
-                                            <option value="builder">Builder</option>
+                                            <option value="builder">Builder / Manager</option>
                                             <option value="worker">Worker</option>
+                                            <option value="admin">Admin</option>
+                                            <option value="carpenter">Carpenter</option>
+                                            <option value="planner">Planner</option>
+                                            <option value="architect">Architect</option>
+                                            <option value="electrician">Electrician</option>
+                                            <option value="plumber">Plumber</option>
+                                            <option value="painter">Painter</option>
+                                            <option value="tiler">Tiler</option>
                                         </select>
                                     </div>
                                 </div>

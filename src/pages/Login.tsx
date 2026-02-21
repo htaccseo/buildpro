@@ -11,6 +11,7 @@ export function Login({ initialMode = 'login' }: { initialMode?: 'login' | 'sign
     // URL Params for Invite Flow
     const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
     const inviteOrgId = searchParams.get('orgId');
+    const inviteOrgName = searchParams.get('orgName');
     const inviteEmail = searchParams.get('email');
     const inviteRole = searchParams.get('role') as UserRole;
 
@@ -35,7 +36,7 @@ export function Login({ initialMode = 'login' }: { initialMode?: 'login' | 'sign
     // For invites, company field is organizationId, but display logic might want name.
     // However, signup expects 'company' as string.
     // If inviting, we set organizationId explicitly.
-    const [company, setCompany] = useState(inviteOrgId || '');
+    const [company, setCompany] = useState(inviteOrgName || '');
     const [role, setRole] = useState<UserRole>(inviteRole || 'builder');
 
     // Auto-switch to signup if invite present or initialMode is signup
@@ -55,11 +56,9 @@ export function Login({ initialMode = 'login' }: { initialMode?: 'login' | 'sign
                     email: signupEmail,
                     password: signupPassword,
                     phone,
-                    company: inviteOrgId ? 'Hidden' : company, // Dummy name if joining existing? Or let user type name? 
-                    // Actually, if joining, we should probably hide the company input.
-                    // But for now, let's just pass organizationId.
+                    company, // Pass actual company name instead of replacing with 'Hidden'
                     role,
-                    organizationName: company, // If joining, this might be confusing. Backend uses orgId if present.
+                    organizationName: company,
                     organizationId: inviteOrgId || undefined
                 });
 
@@ -148,7 +147,11 @@ export function Login({ initialMode = 'login' }: { initialMode?: 'login' | 'sign
                             {inviteOrgId && (
                                 <div className="p-3 bg-emerald-50 text-emerald-700 text-sm rounded-full border border-emerald-100 flex items-center gap-2">
                                     <span className="font-bold">Joining Team</span>
-                                    <span className="text-emerald-600 text-xs">(Organization ID applied)</span>
+                                    {inviteOrgName ? (
+                                        <span className="text-emerald-600 font-medium ml-auto text-right">{inviteOrgName}</span>
+                                    ) : (
+                                        <span className="text-emerald-600 text-xs ml-auto">(Organization Applied)</span>
+                                    )}
                                 </div>
                             )}
                         </>

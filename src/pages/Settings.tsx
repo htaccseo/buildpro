@@ -6,13 +6,13 @@ import { UserAvatar } from '../components/UserAvatar';
 import type { UserRole } from '../lib/types';
 
 export function Settings() {
-    const { currentUser, updateUser, logout } = useStore();
+    const { currentUser, currentOrganization, updateUser, logout } = useStore();
 
     // Form State
     const [name, setName] = useState(currentUser?.name || '');
     const [email, setEmail] = useState(currentUser?.email || '');
     const [phone, setPhone] = useState(currentUser?.phone || '');
-    const [company, setCompany] = useState(currentUser?.company || '');
+    const [company, setCompany] = useState(currentOrganization?.name || currentUser?.company || '');
     const [role, setRole] = useState<UserRole>(currentUser?.role || 'builder');
 
     // Password State

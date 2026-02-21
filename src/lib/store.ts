@@ -438,11 +438,12 @@ export const useStore = create<AppState>((set, get) => ({
     inviteUser: (email, role) => {
         console.log(`Inviting ${email} as ${role} to ${get().currentOrganization?.name}`);
         const orgId = get().currentOrganization?.id;
+        const orgName = get().currentOrganization?.name || '';
 
         // Call API to invite
         apiRequest('/invite', 'POST', { email, role, organizationId: orgId }).catch(e => console.error("Invite failed", e));
 
-        return `${window.location.origin}/login?orgId=${orgId}&email=${encodeURIComponent(email)}&role=${role}`;
+        return `${window.location.origin}/login?orgId=${orgId}&orgName=${encodeURIComponent(orgName)}&email=${encodeURIComponent(email)}&role=${role}`;
     },
 
     // TODO: Implement other API calls

@@ -4,6 +4,7 @@ import { LayoutDashboard, Calendar, Users, Briefcase, Bell, Settings, Search, He
 import { cn } from '../lib/utils';
 import { useStore } from '../lib/store';
 import { UserAvatar } from '../components/UserAvatar';
+import { PullToRefresh } from './PullToRefresh';
 
 export function Layout({ children }: { children: React.ReactNode }) {
     const { notifications, currentUser, currentOrganization } = useStore();
@@ -51,12 +52,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 -ml-2 text-navy-900" aria-label="Open menu">
                         <Menu className="w-6 h-6" />
                     </button>
-                    <div className="flex items-center gap-2">
+                    <Link to="/dashboard" className="flex items-center gap-2" aria-label="Go to Dashboard">
                         <div className="w-6 h-6 rounded-md bg-emerald-500 flex items-center justify-center text-white">
                             <Hexagon className="w-4 h-4 fill-current" />
                         </div>
                         <span className="text-lg font-extrabold text-navy-900">{currentOrganization?.name || 'meits'}</span>
-                    </div>
+                    </Link>
                 </div>
                 <div className="flex items-center gap-2 relative">
                     <button
@@ -230,7 +231,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 </header>
 
                 <div className="p-4 md:p-8 max-w-7xl mx-auto">
-                    {children}
+                    <PullToRefresh>
+                        {children}
+                    </PullToRefresh>
                 </div>
             </main>
         </div>

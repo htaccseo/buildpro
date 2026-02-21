@@ -193,8 +193,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 md:ml-64 min-h-screen relative pt-16 md:pt-0 transition-all duration-300">
-                {/* Header - Desktop Only */}
+            <main className="flex-1 md:ml-64 min-h-screen relative pt-24 md:pt-0 transition-all duration-300">
                 {/* Header - Desktop Only */}
                 <header className="hidden md:flex h-20 items-center justify-between px-8 sticky top-0 bg-bg-app/80 backdrop-blur-md z-20 transition-colors duration-300">
                     <div /> {/* Spacer */}

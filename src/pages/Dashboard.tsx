@@ -82,9 +82,9 @@ export function Dashboard() {
     const upcomingMeetings = meetings
         .filter(m => {
 
-            // If completed, only show if completed today
+            // If completed, only show if the meeting is scheduled for today
             if (m.completed) {
-                return m.completedAt && isSameDay(new Date(m.completedAt), new Date());
+                return isSameDay(new Date(m.date), new Date());
             }
 
             // If pending, show if due today or in the future
@@ -359,35 +359,33 @@ export function Dashboard() {
                                         <span className="text-lg font-bold text-navy-900 leading-none">{formatDate(meeting.date, 'd')}</span>
                                     </div>
                                     <div className="min-w-0 flex-1 group/title relative">
-                                        <div className="flex justify-between items-start">
-                                            <div className="flex items-center gap-2">
-                                                <h4 className={cn("font-bold text-navy-900 truncate pr-4 max-w-[150px]", meeting.completed && "line-through text-text-muted")} title={meeting.title}>
-                                                    {meeting.title}
-                                                </h4>
-                                            </div>
+                                        <div className="flex justify-between items-start mb-1">
+                                            <h4 className={cn("font-medium truncate pr-4 max-w-[150px]", meeting.completed ? "line-through text-text-muted" : "text-navy-900")} title={meeting.title}>
+                                                {meeting.title}
+                                            </h4>
                                             <div className="flex items-center gap-1 shrink-0">
                                                 {meeting.assignedTo && (
-                                                    <UserAvatar userId={meeting.assignedTo} />
+                                                    <UserAvatar userId={meeting.assignedTo} className="w-6 h-6 border-2 border-white shadow-sm" />
                                                 )}
                                             </div>
                                         </div>
-
-                                        <p className="text-xs text-text-muted flex items-center gap-1.5 mt-1">
-                                            <Clock className="w-3 h-3" />
-                                            {meeting.time}
+                                        <div className="flex items-center gap-3 mt-1">
+                                            <div className="flex items-center gap-1.5 text-xs text-text-muted shrink-0">
+                                                <Clock className="w-3.5 h-3.5" />
+                                                <span>{meeting.time}</span>
+                                            </div>
                                             {meeting.address && (
-                                                <>
-                                                    <span className="mx-1">•</span>
-                                                    <MapPin className="w-3 h-3" />
-                                                    <span className="truncate max-w-[120px]">{meeting.address}</span>
-                                                </>
+                                                <div className="flex items-center gap-1.5 text-xs text-text-muted min-w-0">
+                                                    <MapPin className="w-3.5 h-3.5 shrink-0" />
+                                                    <span className="truncate max-w-[140px]" title={meeting.address}>{meeting.address}</span>
+                                                </div>
                                             )}
-                                        </p>
+                                        </div>
                                     </div>
                                 </div>
                             ))
                         )}
-                        <Link to="/schedule" className="block text-center text-xs font-medium text-slate-400 hover:text-navy-900 transition-colors pt-2">
+                        <Link to="/schedule" className="block text-center text-xs font-medium text-slate-400 hover:text-navy-900 transition-colors pt-2 border-t border-slate-50 mt-2">
                             View Full Schedule
                         </Link>
                     </Card>

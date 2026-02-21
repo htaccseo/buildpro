@@ -659,10 +659,10 @@ export default {
 
                         const result = await env.DB.prepare(`
                             UPDATE reminders 
-                            SET title = ?, description = ?, date = ?, assigned_to = ?, completed = ?, completed_by = ?, completed_at = ?
+                            SET title = ?, description = ?, date = ?, assigned_to = ?, completed = ?, completed_by = ?
                             WHERE id = ?
                         `).bind(
-                            reminder.title, reminder.description || null, reminder.date || null, reminder.assignedTo || null, reminder.completed ? 1 : 0, reminder.completedBy || null, completedAtToSave, reminder.id
+                            reminder.title, reminder.description || null, reminder.date || null, reminder.assignedTo || null, reminder.completed ? 1 : 0, reminder.completedBy || null, reminder.id
                         ).run();
 
                         // Notification logic

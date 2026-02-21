@@ -44,22 +44,22 @@ export function Projects() {
                     <p className="text-text-muted">Manage your active construction sites and requirements.</p>
                 </div>
 
-                <div className="flex items-center gap-4">
-                    <div className="relative">
-                        <Search className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <div className="flex flex-row items-center gap-3 w-full md:w-auto mt-4 sm:mt-0">
+                    <div className="relative flex-1 min-w-0">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 shrink-0" />
                         <input
                             type="text"
                             placeholder="Search projects..."
                             value={query}
                             onChange={(e) => setSearchParams(e.target.value ? { q: e.target.value } : {})}
-                            className="bg-white border border-slate-200 text-navy-900 pl-10 pr-4 py-2.5 rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-500/50 w-full md:w-64 placeholder:text-gray-400 shadow-sm"
+                            className="bg-white border border-slate-200 text-navy-900 pl-10 pr-4 py-2 min-h-[44px] rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-500/50 w-full md:w-64 placeholder:text-gray-400 shadow-sm"
                         />
                     </div>
                     <button
                         onClick={() => setIsModalOpen(true)}
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-full font-medium flex items-center gap-2 transition-colors shadow-lg shadow-emerald-500/20"
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 min-h-[44px] rounded-full font-medium flex items-center justify-center gap-2 transition-colors shadow-lg shadow-emerald-500/20 shrink-0 whitespace-nowrap"
                     >
-                        <Plus className="w-5 h-5" />
+                        <Plus className="w-5 h-5 shrink-0" />
                         <span>New Project</span>
                     </button>
                 </div>

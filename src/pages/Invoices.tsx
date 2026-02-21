@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useStore } from '../lib/store';
 import { useOrganizationData } from '../lib/hooks';
 import { Card } from '../components/ui/Card';
-import { Plus, FileText, ArrowUpRight, ArrowDownLeft, Trash2, Edit2, Paperclip, Calendar } from 'lucide-react';
+import { Plus, FileText, ArrowUpRight, ArrowDownLeft, Trash2, Edit2, Paperclip, Calendar, X, Download } from 'lucide-react';
 import { cn, formatDate, resizeImage } from '../lib/utils';
 import type { Invoice } from '../lib/types';
 import { UserAvatar } from '../components/UserAvatar';
@@ -27,6 +27,9 @@ export function Invoices() {
     const [description, setDescription] = useState('');
     const [invoiceType, setInvoiceType] = useState<'sent' | 'received'>('sent');
     const [attachment, setAttachment] = useState<string | null>(null);
+
+    // Preview Modal State
+    const [previewAttachment, setPreviewAttachment] = useState<{ url: string, id: string } | null>(null);
 
     // Filter Logic
     const filteredInvoices = invoices.filter(inv => {
@@ -163,6 +166,52 @@ export function Invoices() {
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
+            {/* Attachment Preview Modal */}
+            {previewAttachment && (
+                <div
+                    className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200"
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPreviewAttachment(null); }}
+                >
+                    <button
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPreviewAttachment(null); }}
+                        className="absolute top-4 right-4 text-white/70 hover:text-white p-3 rounded-full hover:bg-white/10 transition-colors flex items-center justify-center min-w-[44px] min-h-[44px]"
+                        title="Close Preview"
+                    >
+                        <X className="w-8 h-8" />
+                    </button>
+
+                    <div className="relative max-w-5xl w-full max-h-screen flex flex-col items-center gap-4" onClick={e => e.stopPropagation()}>
+                        {previewAttachment.url.startsWith('data:image/') || previewAttachment.url.match(/\.(jpeg|jpg|gif|png)$/i) ? (
+                            <img
+                                src={previewAttachment.url}
+                                alt="Attachment Preview"
+                                className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl"
+                            />
+                        ) : previewAttachment.url.startsWith('data:application/pdf') || previewAttachment.url.endsWith('.pdf') ? (
+                            <iframe
+                                src={previewAttachment.url}
+                                className="w-full h-[80vh] bg-white rounded-lg shadow-2xl"
+                                title="PDF Preview"
+                            />
+                        ) : (
+                            <div className="flex flex-col items-center gap-4 p-8 bg-white rounded-2xl w-full max-w-md text-center">
+                                <FileText className="w-16 h-16 text-emerald-500" />
+                                <h3 className="text-xl font-bold text-navy-900">Document File</h3>
+                                <p className="text-sm text-text-muted">This file type cannot be previewed. Please download it to view.</p>
+                            </div>
+                        )}
+                        <a
+                            href={previewAttachment.url}
+                            download={`invoice_${previewAttachment.id}_attachment`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="flex items-center gap-2 px-6 py-4 md:py-3 bg-white text-navy-900 rounded-full font-bold hover:bg-emerald-50 transition-colors shadow-lg min-h-[44px]"
+                        >
+                            <Download className="w-5 h-5" /> Download Attachment
+                        </a>
+                    </div>
+                </div>
+            )}
+
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-bold text-navy-900">Invoices</h1>
@@ -181,7 +230,7 @@ export function Invoices() {
             </div>
 
             {/* Summary Card */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            < div className="grid grid-cols-1 md:grid-cols-2 gap-6" >
                 <Card className="p-6 border-none shadow-sm bg-white text-navy-900">
                     <div className="flex items-center gap-4 mb-4">
                         <div className={cn("p-3 rounded-full", activeTab === 'sent' ? "bg-emerald-50" : "bg-rose-50")}>
@@ -207,7 +256,7 @@ export function Invoices() {
                         <span className="font-bold text-navy-900">{filteredInvoices.length} invoices</span>
                     </div>
                 </Card>
-            </div>
+            </div >
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-3 space-y-6">
@@ -300,18 +349,19 @@ export function Invoices() {
 
                                             {/* Desktop Attachment Button */}
                                             {invoice.attachmentUrl && (
-                                                <a
-                                                    href={invoice.attachmentUrl}
-                                                    download={`invoice_${invoice.id}_attachment`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    onClick={(e) => e.stopPropagation()}
-                                                    className="hidden md:inline-flex items-center gap-1.5 text-emerald-600 hover:text-emerald-700 ml-2 px-2 py-1 rounded-lg hover:bg-emerald-50 transition-colors group"
-                                                    title="Download Attachment"
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        setPreviewAttachment({ url: invoice.attachmentUrl!, id: invoice.id });
+                                                    }}
+                                                    className="hidden md:inline-flex items-center gap-1.5 text-emerald-600 hover:text-emerald-700 ml-2 px-2 py-1 rounded-lg hover:bg-emerald-50 transition-colors group min-h-[32px] min-w-[32px]"
+                                                    title="View Attachment"
+                                                    type="button"
                                                 >
                                                     <Paperclip className="w-3.5 h-3.5" />
                                                     <span className="text-xs font-medium">Attachment</span>
-                                                </a>
+                                                </button>
                                             )}
                                         </div>
 
@@ -326,16 +376,17 @@ export function Invoices() {
                                         {/* Mobile Attachment Button (Middle Row) */}
                                         {invoice.attachmentUrl && (
                                             <div className="md:hidden mt-3">
-                                                <a
-                                                    href={invoice.attachmentUrl}
-                                                    download={`invoice_${invoice.id}_attachment`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    onClick={(e) => e.stopPropagation()}
-                                                    className="flex items-center justify-center gap-2 w-full py-2 bg-slate-50 rounded-lg text-emerald-600 text-sm font-medium border border-slate-100 hover:bg-slate-100 transition-colors"
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        setPreviewAttachment({ url: invoice.attachmentUrl!, id: invoice.id });
+                                                    }}
+                                                    className="flex items-center justify-center gap-2 w-full py-2 bg-slate-50 rounded-lg text-emerald-600 text-sm font-medium border border-slate-100 hover:bg-slate-100 transition-colors min-h-[44px]"
+                                                    type="button"
                                                 >
-                                                    <Paperclip className="w-4 h-4" /> Download Attachment
-                                                </a>
+                                                    <Paperclip className="w-4 h-4" /> View Attachment
+                                                </button>
                                             </div>
                                         )}
                                     </div>

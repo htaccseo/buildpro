@@ -153,7 +153,7 @@ export function Schedule() {
                                                 "p-3 rounded-xl border shadow-sm hover:shadow-md transition-shadow cursor-pointer group",
                                                 reminder.completed
                                                     ? "bg-slate-50 border-slate-100 opacity-75"
-                                                    : "bg-black border-black shadow-black/10"
+                                                    : "bg-[#abaaa7] border-[#abaaa7] shadow-black/10"
                                             )}
                                             onClick={() => {
                                                 setSelectedReminder(reminder);
@@ -163,24 +163,29 @@ export function Schedule() {
                                             <div className="flex justify-between items-start mb-1">
                                                 <div className="flex items-center gap-2">
                                                     <div
-                                                        className={cn("w-2 h-2 rounded-full", reminder.completed ? "bg-slate-300" : "bg-emerald-500")}
+                                                        className={cn("w-2 h-2 rounded-full", reminder.completed ? "bg-slate-300" : "bg-navy-900")}
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             toggleReminder(reminder.id);
                                                         }}
                                                         title={reminder.completed ? "Mark as incomplete" : "Mark as done"}
                                                     />
-                                                    <span className={cn("text-xs font-bold", reminder.completed ? "text-text-muted" : "text-white")}>
+                                                    <span className={cn("text-xs font-bold", reminder.completed ? "text-text-muted" : "text-navy-900")}>
                                                         Reminder
                                                     </span>
                                                 </div>
-                                                <UserAvatar userId={reminder.createdBy} className="h-4 w-4 text-[8px]" />
+                                                <div className="flex -space-x-1 shrink-0">
+                                                    <UserAvatar userId={reminder.createdBy} className={cn("h-4 w-4 text-[8px] ring-1 z-10", reminder.completed ? "ring-slate-50" : "ring-[#abaaa7]")} />
+                                                    {reminder.assignedTo && reminder.assignedTo !== reminder.createdBy && (
+                                                        <UserAvatar userId={reminder.assignedTo} className={cn("h-4 w-4 text-[8px] ring-1 z-0", reminder.completed ? "ring-slate-50" : "ring-[#abaaa7]")} />
+                                                    )}
+                                                </div>
                                             </div>
-                                            <h4 className={cn("font-semibold text-sm line-clamp-2", reminder.completed ? "text-text-muted line-through" : "text-white")}>
+                                            <h4 className={cn("font-semibold text-sm line-clamp-2", reminder.completed ? "text-text-muted line-through" : "text-navy-900")}>
                                                 {reminder.title}
                                             </h4>
                                             {reminder.description && (
-                                                <p className={cn("text-xs mt-1 line-clamp-1", reminder.completed ? "text-text-muted" : "text-slate-400")}>
+                                                <p className={cn("text-xs mt-1 line-clamp-1", reminder.completed ? "text-text-muted" : "text-navy-800")}>
                                                     {reminder.description}
                                                 </p>
                                             )}

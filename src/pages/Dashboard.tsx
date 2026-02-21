@@ -444,21 +444,19 @@ export function Dashboard() {
                                 >
                                     <div className="flex items-center justify-between gap-3">
                                         <div className="flex items-center gap-3 flex-1 min-w-0">
-                                            {/* Creator Avatar (Left) */}
-                                            <UserAvatar userId={matter.createdBy} />
+                                            {/* Overlapping Avatars (Left) */}
+                                            <div className="flex -space-x-1.5 shrink-0">
+                                                <UserAvatar userId={matter.createdBy} className="w-6 h-6 text-[10px] ring-2 ring-white z-10" />
+                                                {matter.assignedTo && matter.assignedTo !== matter.createdBy && (
+                                                    <UserAvatar userId={matter.assignedTo} className="w-6 h-6 text-[10px] ring-2 ring-white z-0" />
+                                                )}
+                                            </div>
 
                                             {/* Note Title */}
                                             <h4 className="font-bold text-navy-900 truncate">
                                                 {matter.title}
                                             </h4>
                                         </div>
-
-                                        {/* Assignee Avatar (Right) */}
-                                        {matter.assignedTo && (
-                                            <div className="shrink-0">
-                                                <UserAvatar userId={matter.assignedTo} className="ring-2 ring-white" />
-                                            </div>
-                                        )}
                                     </div>
 
                                     {matter.address && (

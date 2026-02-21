@@ -672,7 +672,7 @@ export function ProjectDetails() {
                 <TaskDetailModal
                     isOpen={isTaskDetailOpen}
                     onClose={() => setIsTaskDetailOpen(false)}
-                    task={selectedTask!}
+                    task={project?.tasks?.find(t => t.id === selectedTask.id) || selectedTask}
                     users={users}
                     onEdit={(task) => {
                         setIsTaskDetailOpen(false);

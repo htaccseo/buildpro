@@ -592,7 +592,7 @@ export function ProjectDetails() {
                                         <p className="text-text-muted">No updates yet.</p>
                                     </div>
                                 ) : (
-                                    (project.updates || []).slice().reverse().map((update) => (
+                                    (project.updates || []).map((update) => (
                                         <ProjectUpdateCard
                                             key={update.id}
                                             update={update}

@@ -34,17 +34,10 @@ function ScrollToTop() {
     }
 
     setTimeout(() => {
-      // Mobile approach: try to scroll the new flex-1 scroll container
-      const mainContainer = document.getElementById('main-scroll-container');
-      if (mainContainer && window.innerWidth < 768) {
-        mainContainer.scrollTo({ top: 0, behavior: 'auto' });
-      } else {
-        // Desktop approach or fallback
-        window.scrollTo({
-          top: 0,
-          behavior: 'auto'
-        });
-      }
+      window.scrollTo({
+        top: 0,
+        behavior: 'auto'
+      });
     }, 50);
   }, [location.pathname, location.hash, searchParams]);
 

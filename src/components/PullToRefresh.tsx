@@ -15,9 +15,7 @@ export function PullToRefresh({ children }: { children: React.ReactNode }) {
         if (!el) return;
 
         const onTouchStart = (e: TouchEvent) => {
-            const mainScrollContainer = document.getElementById('main-scroll-container');
-            const scrollTop = mainScrollContainer && window.innerWidth < 768 ? mainScrollContainer.scrollTop : window.scrollY;
-            if (scrollTop <= 0) {
+            if (window.scrollY <= 0) {
                 startY.current = e.touches[0].clientY;
                 isPulling.current = true;
             }
@@ -29,10 +27,7 @@ export function PullToRefresh({ children }: { children: React.ReactNode }) {
             const y = e.touches[0].clientY;
             const dy = y - startY.current;
 
-            const mainScrollContainer = document.getElementById('main-scroll-container');
-            const scrollTop = mainScrollContainer && window.innerWidth < 768 ? mainScrollContainer.scrollTop : window.scrollY;
-
-            if (dy > 0 && scrollTop <= 0) {
+            if (dy > 0 && window.scrollY <= 0) {
                 // Apply a slowdown factor for a native pulling feel
                 const pullDistance = Math.min(dy * 0.4, 80);
                 setPullY(pullDistance);

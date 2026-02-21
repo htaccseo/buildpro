@@ -45,9 +45,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 
     return (
-        <div className="flex flex-col md:flex-row h-[100dvh] md:h-auto md:min-h-screen bg-bg-app font-sans transition-colors duration-300 overflow-hidden md:overflow-visible">
+        <div className="flex flex-col md:flex-row min-h-screen bg-bg-app font-sans transition-colors duration-300">
             {/* Mobile Header */}
-            <div className="md:hidden shrink-0 h-16 bg-white border-b border-slate-100 z-30 flex items-center justify-between px-4">
+            <div className="md:hidden sticky top-0 h-16 bg-white border-b border-slate-100 z-40 flex shrink-0 items-center justify-between px-4">
                 <div className="flex items-center gap-3">
                     <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 -ml-2 text-navy-900" aria-label="Open menu">
                         <Menu className="w-6 h-6" />
@@ -193,7 +193,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </aside>
 
             {/* Main Content */}
-            <main id="main-scroll-container" className="flex-1 md:ml-64 relative transition-all duration-300 overflow-y-auto md:overflow-visible md:min-h-screen">
+            <main className="flex-1 md:ml-64 relative transition-all duration-300 min-h-screen">
                 {/* Header - Desktop Only */}
                 <header className="hidden md:flex h-20 items-center justify-between px-8 sticky top-0 bg-bg-app/80 backdrop-blur-md z-20 transition-colors duration-300">
                     <div /> {/* Spacer */}
@@ -257,7 +257,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     </div>
                 </header>
 
-                <div className="p-4 md:p-8 pt-4 md:pt-8 max-w-7xl mx-auto">
+                <div className="p-4 md:p-8 max-w-7xl mx-auto">
                     <PullToRefresh>
                         {children}
                     </PullToRefresh>

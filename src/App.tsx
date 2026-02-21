@@ -1,6 +1,6 @@
 import React from 'react';
 // Force rebuild: 2026-02-09T11:40
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useSearchParams } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { Dashboard } from './pages/Dashboard';
 import { Projects } from './pages/Projects';
@@ -20,6 +20,26 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 function AuthGuard({ children }: { children: React.ReactNode }) {
   const { currentUser } = useStore();
   return currentUser ? <Layout>{children}</Layout> : <Navigate to="/login" replace />;
+}
+
+// Smart Scroll Restoration
+function ScrollToTop() {
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+
+  React.useEffect(() => {
+    // Exempt deep linking: hashes (#task-123) or specific query params (?taskId=...)
+    if (location.hash || searchParams.has('taskId') || searchParams.has('modal')) {
+      return;
+    }
+
+    window.scrollTo({
+      top: 0,
+      behavior: 'auto'
+    });
+  }, [location.pathname, location.hash, searchParams]);
+
+  return null;
 }
 
 function App() {
@@ -45,6 +65,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />

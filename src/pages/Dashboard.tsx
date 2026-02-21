@@ -403,8 +403,8 @@ export function Dashboard() {
                                 <div className="flex gap-3 items-center">
                                     <div className={cn("w-1.5 h-10 rounded-full", inv.type === 'received' ? "bg-rose-500" : "bg-emerald-500")} />
                                     <div>
-                                        <p className="font-bold text-navy-900 text-sm truncate w-24">{inv.clientName}</p>
-                                        <p className="text-xs text-text-muted">{formatDate(inv.dueDate, 'MMM d')}</p>
+                                        <p className="font-bold text-navy-900 text-base truncate w-24">{inv.clientName}</p>
+                                        <p className="text-sm text-text-muted mt-0.5">{formatDate(inv.dueDate, 'MMM d')}</p>
                                     </div>
                                 </div>
                                 <div className="text-right">

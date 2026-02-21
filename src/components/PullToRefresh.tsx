@@ -68,10 +68,15 @@ export function PullToRefresh({ children }: { children: React.ReactNode }) {
         };
     }, [isRefreshing, pullY, currentUser, fetchData]);
 
+    // Disable completely on desktop (w > 768px)
+    if (typeof window !== 'undefined' && window.innerWidth > 768) {
+        return <>{children}</>;
+    }
+
     return (
-        <div ref={containerRef} className="relative min-h-[calc(100vh-4rem)]">
+        <div ref={containerRef} className="relative min-h-[calc(100vh-4rem)] md:hidden">
             <div
-                className="absolute top-0 left-0 right-0 flex justify-center items-end"
+                className="absolute top-0 left-0 right-0 flex justify-center items-end opacity-0 pointer-events-none"
                 style={{
                     height: 60,
                     transform: `translateY(${pullY - 60}px)`,
@@ -86,7 +91,7 @@ export function PullToRefresh({ children }: { children: React.ReactNode }) {
                 </div>
             </div>
             <div
-                className="min-h-[calc(100vh-4rem)] bg-bg-app"
+                className="min-h-[calc(100vh-4rem)] bg-bg-app transition-transform"
                 style={{
                     transform: `translateY(${pullY}px)`,
                     transition: isPulling.current ? 'none' : 'transform 0.2s ease-out'

@@ -167,7 +167,7 @@ export default {
                         const { results: invoices } = await env.DB.prepare('SELECT * FROM invoices WHERE organization_id = ?').bind(orgId).all();
                         const { results: notifications } = await env.DB.prepare('SELECT * FROM notifications WHERE organization_id = ?').bind(orgId).all();
                         const { results: reminders } = await env.DB.prepare('SELECT * FROM reminders WHERE organization_id = ?').bind(orgId).all();
-                        const { results: otherMatters } = await env.DB.prepare('SELECT * FROM other_matters WHERE organization_id = ?').bind(orgId).all();
+                        const { results: otherMatters } = await env.DB.prepare('SELECT * FROM other_matters WHERE organization_id = ? ORDER BY date DESC').bind(orgId).all();
                         logs.push('All data fetched');
 
                         // Map comments to tasks

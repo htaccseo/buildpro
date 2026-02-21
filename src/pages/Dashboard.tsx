@@ -212,9 +212,10 @@ export function Dashboard() {
                                                     <h4 className={cn("font-medium truncate", reminder.completed ? "line-through text-text-muted" : "text-navy-900")} title={reminder.title}>
                                                         {reminder.title}
                                                     </h4>
-                                                    <div className="flex items-center gap-1">
-                                                        {reminder.assignedTo && (
-                                                            <UserAvatar userId={reminder.assignedTo} className="ring-2 ring-[#abaaa7]" />
+                                                    <div className="flex -space-x-1.5 shrink-0">
+                                                        <UserAvatar userId={reminder.createdBy} className={cn("w-6 h-6 text-[10px] ring-2 z-10", reminder.completed ? "ring-slate-50" : "ring-[#abaaa7]")} />
+                                                        {reminder.assignedTo && reminder.assignedTo !== reminder.createdBy && (
+                                                            <UserAvatar userId={reminder.assignedTo} className={cn("w-6 h-6 text-[10px] ring-2 z-0", reminder.completed ? "ring-slate-50" : "ring-[#abaaa7]")} />
                                                         )}
                                                     </div>
                                                 </div>

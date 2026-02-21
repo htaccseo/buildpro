@@ -319,6 +319,19 @@ export default {
                         `).bind(
                             task.id, task.projectId, task.title, task.description || null, task.status || 'pending', task.requiredDate || null, task.assignedTo || null, task.createdBy || null, JSON.stringify(task.attachments || [])
                         ).run();
+
+                        // Notification Trigger 1: Task Assignment (New Task)
+                        if (task.assignedTo && task.createdBy && task.assignedTo !== task.createdBy) {
+                            const taskProject: any = await env.DB.prepare('SELECT organization_id FROM projects WHERE id = ?').bind(task.projectId).first();
+                            const creator: any = await env.DB.prepare('SELECT name FROM users WHERE id = ?').bind(task.createdBy).first();
+                            await env.DB.prepare(`
+                                INSERT INTO notifications (id, organization_id, user_id, message, read, date, type, data)
+                                VALUES (?, ?, ?, ?, 0, ?, 'task_assigned', ?)
+                            `).bind(
+                                crypto.randomUUID(), taskProject?.organization_id || 'guest', task.assignedTo, `You have been assigned to task "${task.title}" by ${creator?.name || 'a team member'}`, new Date().toISOString(), JSON.stringify({ taskId: task.id })
+                            ).run();
+                        }
+
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {
                         return withCors(Response.json({ message: `Task Error: ${e.message}` }, { status: 500 }));
@@ -347,6 +360,8 @@ export default {
                 if (url.pathname === '/api/task/update' && request.method === 'POST') {
                     try {
                         const task = await request.json();
+                        const oldTask: any = await env.DB.prepare('SELECT assigned_to, project_id FROM tasks WHERE id = ?').bind(task.id).first();
+
                         await env.DB.prepare(`
                             UPDATE tasks 
                             SET title = ?, description = ?, status = ?, required_date = ?, assigned_to = ?, attachments = ?
@@ -354,6 +369,18 @@ export default {
                         `).bind(
                             task.title, task.description || null, task.status || 'pending', task.requiredDate || null, task.assignedTo || null, JSON.stringify(task.attachments || []), task.id
                         ).run();
+
+                        // Notification Trigger 1b: Task Assignment (Update)
+                        if (task.assignedTo && oldTask && oldTask.assigned_to !== task.assignedTo) {
+                            const taskProject: any = await env.DB.prepare('SELECT organization_id FROM projects WHERE id = ?').bind(oldTask.project_id).first();
+                            await env.DB.prepare(`
+                                INSERT INTO notifications (id, organization_id, user_id, message, read, date, type, data)
+                                VALUES (?, ?, ?, ?, 0, ?, 'task_assigned', ?)
+                            `).bind(
+                                crypto.randomUUID(), taskProject?.organization_id || 'guest', task.assignedTo, `You have been assigned to task "${task.title}"`, new Date().toISOString(), JSON.stringify({ taskId: task.id })
+                            ).run();
+                        }
+
                         return withCors(Response.json({ success: true }));
                     } catch (e: any) {
                         return withCors(Response.json({ message: `Task Update Error: ${e.message}` }, { status: 500 }));
@@ -618,6 +645,30 @@ export default {
                     }
                 }
 
+                // PUT /api/notification/read
+                if (url.pathname === '/api/notification/read' && request.method === 'PUT') {
+                    try {
+                        const { id } = await request.json();
+                        await env.DB.prepare('UPDATE notifications SET read = 1 WHERE id = ?').bind(id).run();
+                        return withCors(Response.json({ success: true }));
+                    } catch (e: any) {
+                        return withCors(Response.json({ message: `Notification Read Error: ${e.message}` }, { status: 500 }));
+                    }
+                }
+
+                // DELETE /api/notification/clear
+                if (url.pathname === '/api/notification/clear' && request.method === 'DELETE') {
+                    try {
+                        const { userId } = await request.json();
+                        if (userId) {
+                            await env.DB.prepare('DELETE FROM notifications WHERE user_id = ?').bind(userId).run();
+                        }
+                        return withCors(Response.json({ success: true }));
+                    } catch (e: any) {
+                        return withCors(Response.json({ message: `Notification Clear Error: ${e.message}` }, { status: 500 }));
+                    }
+                }
+
                 // POST /api/user/update
                 if (url.pathname === '/api/user/update' && request.method === 'POST') {
                     try {
@@ -802,6 +853,32 @@ export default {
                     `).bind(
                         id, taskId, userId, message, JSON.stringify(images || []), createdAt
                     ).run();
+
+                    // Notification Trigger 3: New Comment
+                    try {
+                        const taskRec: any = await env.DB.prepare('SELECT title, project_id, created_by, assigned_to FROM tasks WHERE id = ?').bind(taskId).first();
+                        const projectRec: any = await env.DB.prepare('SELECT organization_id FROM projects WHERE id = ?').bind(taskRec?.project_id).first();
+                        const commenter: any = await env.DB.prepare('SELECT name FROM users WHERE id = ?').bind(userId).first();
+
+                        if (taskRec) {
+                            const targets = new Set<string>();
+                            if (taskRec.created_by && taskRec.created_by !== userId) targets.add(taskRec.created_by);
+                            if (taskRec.assigned_to && taskRec.assigned_to !== userId) targets.add(taskRec.assigned_to);
+
+                            const notifMessage = `${commenter ? commenter.name : 'Someone'} left a comment on task "${taskRec.title}"`;
+
+                            for (const targetId of targets) {
+                                await env.DB.prepare(`
+                                    INSERT INTO notifications (id, organization_id, user_id, message, read, date, type, data)
+                                    VALUES (?, ?, ?, ?, 0, ?, 'comment_added', ?)
+                                `).bind(
+                                    crypto.randomUUID(), projectRec?.organization_id || 'guest', targetId, notifMessage, createdAt, JSON.stringify({ taskId })
+                                ).run();
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Notification Error:', e);
+                    }
 
                     return withCors(Response.json({ success: true, id }));
                 }

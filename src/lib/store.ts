@@ -59,10 +59,9 @@ interface AppState {
     addProjectUpdate: (projectId: string, update: ProjectUpdate) => void;
     updateProjectUpdate: (projectId: string, update: ProjectUpdate) => Promise<void>;
     deleteProjectUpdate: (projectId: string, updateId: string) => Promise<void>;
-    markNotificationRead: (id: string) => void;
-
-    // Project Deletion
     deleteProject: (id: string) => Promise<void>;
+    markNotificationRead: (id: string) => Promise<void>;
+    clearNotifications: () => Promise<void>;
 
     // Invoice Actions
     addInvoice: (invoice: Omit<Invoice, 'organizationId'>) => void;
@@ -655,9 +654,43 @@ export const useStore = create<AppState>((set, get) => ({
         }
     },
 
-    markNotificationRead: (id) => set((state) => ({
-        notifications: state.notifications.map(n => n.id === id ? { ...n, read: true } : n)
-    })),
+    markNotificationRead: async (id: string) => {
+        // Optimistic update
+        set((state) => ({
+            notifications: state.notifications.map(n => n.id === id ? { ...n, read: true } : n)
+        }));
+
+        try {
+            await apiRequest('/notification/read', 'PUT', { id });
+        } catch (e) {
+            console.error("Failed to mark notification as read", e);
+            // Revert on failure
+            set((state) => ({
+                notifications: state.notifications.map(n => n.id === id ? { ...n, read: false } : n)
+            }));
+        }
+    },
+
+    clearNotifications: async () => {
+        // Optimistic update
+        const currentOrgId = get().currentOrganization?.id;
+        if (!currentOrgId) return;
+
+        set((state) => ({
+            notifications: state.notifications.filter(n => n.organizationId !== currentOrgId)
+        }));
+
+        try {
+            await apiRequest('/notification/clear', 'DELETE', { userId: get().currentUser?.id });
+        } catch (e) {
+            console.error("Failed to clear notifications", e);
+            // Optionally refetch notifications here to fix state
+            const email = get().currentUser?.email;
+            if (email) {
+                get().fetchData(email);
+            }
+        }
+    },
 
     // Invoice Actions
 
@@ -758,7 +791,7 @@ export const useStore = create<AppState>((set, get) => ({
     },
 
     // Deletion Actions (Project, Task, Updates)
-    deleteProject: async (id) => {
+    deleteProject: async (id: string) => {
         set((state) => ({
             projects: state.projects.filter(p => p.id !== id),
         }));

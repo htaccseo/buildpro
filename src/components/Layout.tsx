@@ -7,7 +7,7 @@ import { UserAvatar } from '../components/UserAvatar';
 import { PullToRefresh } from './PullToRefresh';
 
 export function Layout({ children }: { children: React.ReactNode }) {
-    const { notifications, currentUser, currentOrganization } = useStore();
+    const { notifications, currentUser, currentOrganization, markNotificationRead, clearNotifications } = useStore();
     const location = useLocation();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
@@ -75,8 +75,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     {showNotifications && (
                         <div className="absolute top-full right-0 mt-2 w-80 bg-white border border-slate-100 rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 ring-1 ring-black/5 z-50">
                             <div className="p-4 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
-                                <h3 className="font-semibold text-navy-900">Notifications</h3>
-                                <span className="text-xs font-medium px-2 py-1 bg-emerald-50 text-emerald-600 rounded-full">{unreadCount} new</span>
+                                <div className="flex items-center gap-2">
+                                    <h3 className="font-semibold text-navy-900">Notifications</h3>
+                                    {unreadCount > 0 && <span className="text-xs font-medium px-2 py-1 bg-emerald-50 text-emerald-600 rounded-full">{unreadCount} new</span>}
+                                </div>
+                                {notifications.length > 0 && (
+                                    <button onClick={() => clearNotifications()} className="text-xs text-slate-500 hover:text-rose-500 font-medium transition-colors">
+                                        Clear All
+                                    </button>
+                                )}
                             </div>
                             <div className="max-h-[60vh] overflow-y-auto">
                                 {notifications.length === 0 ? (
@@ -89,8 +96,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
                                                 <div>
                                                     <p className="text-sm text-navy-900 font-medium line-clamp-2">{n.message}</p>
                                                     <div className="mt-1.5 flex items-center justify-between gap-4">
-                                                        <span className="text-xs text-slate-500">{new Date(n.date).toLocaleDateString()}</span>
-                                                        {n.data?.image && <span className="text-xs text-emerald-600 font-medium flex items-center gap-1">View Image</span>}
+                                                        <div className="flex items-center gap-4">
+                                                            <span className="text-xs text-slate-500">{new Date(n.date).toLocaleDateString()}</span>
+                                                            {n.data?.image && <span className="text-xs text-emerald-600 font-medium flex items-center gap-1">View Image</span>}
+                                                        </div>
+                                                        {!n.read && (
+                                                            <button onClick={(e) => { e.stopPropagation(); markNotificationRead(n.id); }} className="p-1 rounded hover:bg-slate-200 text-slate-400 hover:text-navy-900 transition-colors" title="Mark as read">
+                                                                <X className="w-3.5 h-3.5" />
+                                                            </button>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
@@ -202,8 +216,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
                         {showNotifications && (
                             <div className="absolute top-full right-0 mt-4 w-96 bg-white border border-slate-100 rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 ring-1 ring-black/5 z-50">
                                 <div className="p-4 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
-                                    <h3 className="font-semibold text-navy-900">Notifications</h3>
-                                    <span className="text-xs font-medium px-2 py-1 bg-emerald-50 text-emerald-600 rounded-full">{unreadCount} new</span>
+                                    <div className="flex items-center gap-2">
+                                        <h3 className="font-semibold text-navy-900">Notifications</h3>
+                                        {unreadCount > 0 && <span className="text-xs font-medium px-2 py-1 bg-emerald-50 text-emerald-600 rounded-full">{unreadCount} new</span>}
+                                    </div>
+                                    {notifications.length > 0 && (
+                                        <button onClick={() => clearNotifications()} className="text-xs text-slate-500 hover:text-rose-500 font-medium transition-colors">
+                                            Clear All
+                                        </button>
+                                    )}
                                 </div>
                                 <div className="max-h-96 overflow-y-auto">
                                     {notifications.length === 0 ? (
@@ -216,8 +237,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
                                                     <div>
                                                         <p className="text-sm text-navy-900 font-medium line-clamp-2">{n.message}</p>
                                                         <div className="mt-1.5 flex items-center justify-between gap-4">
-                                                            <span className="text-xs text-slate-500">{new Date(n.date).toLocaleDateString()}</span>
-                                                            {n.data?.image && <span className="text-xs text-emerald-600 font-medium flex items-center gap-1">View Image</span>}
+                                                            <div className="flex items-center gap-4">
+                                                                <span className="text-xs text-slate-500">{new Date(n.date).toLocaleDateString()}</span>
+                                                                {n.data?.image && <span className="text-xs text-emerald-600 font-medium flex items-center gap-1">View Image</span>}
+                                                            </div>
+                                                            {!n.read && (
+                                                                <button onClick={(e) => { e.stopPropagation(); markNotificationRead(n.id); }} className="p-1 rounded hover:bg-slate-200 text-slate-400 hover:text-navy-900 transition-colors" title="Mark as read">
+                                                                    <X className="w-3.5 h-3.5" />
+                                                                </button>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 </div>
